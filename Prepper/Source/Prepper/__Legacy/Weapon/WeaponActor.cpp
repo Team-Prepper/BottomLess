@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
+#include "Prepper/GamePlay/Weapon/Attack/WeaponAttacking.h"
 #include "Prepper/GamePlay/Weapon/Targeting/WeaponTargeting.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
 #include "Prepper/__Legacy/PlayerController/BasePlayerController.h"
@@ -48,6 +49,11 @@ AWeaponActor::AWeaponActor()
 	PickUpWidget->SetupAttachment(RootComponent);
 	
 	Targeting = CreateDefaultSubobject<UWeaponTargeting>("WeaponTargeting");
+	Attacking = CreateDefaultSubobject<UWeaponAttacking>("WeaponAttacking");
+	
+	Muzzle = CreateDefaultSubobject<USceneComponent>("Muzzle");
+	Muzzle->AttachToComponent(GetRootComponent(),
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
@@ -244,6 +250,12 @@ void AWeaponActor::GetCrosshair(float DeltaTime, bool bIsAiming, TObjectPtr<UTex
 	Top = nullptr;
 	Bottom = nullptr;
 	Spread = 0.5f;
+}
+
+void AWeaponActor::Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Fire"));
+	Attacking->Fire(Muzzle->GetComponentLocation(), HitTargets, Attacker);
 }
 
 void AWeaponActor::Fire(const TArray<FVector_NetQuantize>& HitTargets)

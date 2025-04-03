@@ -6,6 +6,7 @@
 #include "WeaponActor.generated.h"
 
 
+class UWeaponAttacking;
 class UWeaponTargeting;
 class IWeaponHandler;
 class UPlayerAimingEffect;
@@ -29,8 +30,14 @@ protected:
 	UAnimationAsset* FireAnimation;
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
+	
+	UPROPERTY(EditAnywhere, Category="Attack")
+	TObjectPtr<USceneComponent> Muzzle;
+	
 	UPROPERTY(VisibleAnywhere, Category="Targeting")
 	TObjectPtr<UWeaponTargeting> Targeting;
+	UPROPERTY(VisibleAnywhere, Category="Attack")
+	TObjectPtr<UWeaponAttacking> Attacking;
 
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	UMeshComponent* WeaponMesh;
@@ -75,6 +82,7 @@ public:
 	virtual FName AttachSocketName() { return WeaponSocketName; };
 	virtual FName GetReloadActionName() { return ReloadActionName; };
 	
+	void Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker);
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets);
 	virtual bool CanReload();
 	

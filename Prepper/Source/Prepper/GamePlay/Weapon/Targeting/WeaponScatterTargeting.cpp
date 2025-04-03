@@ -7,6 +7,8 @@
 // Sets default values for this component's properties
 UWeaponScatterTargeting::UWeaponScatterTargeting()
 {
+	PrimaryComponentTick.bCanEverTick = false;
+	
 	DistanceToSphere = 800.f;
 	SphereRadius = 75.f;
 	NumberOfPellets = 1;

@@ -3,7 +3,6 @@
 
 #include "ShotgunWeapon.h"
 
-#include "NiagaraFunctionLibrary.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"

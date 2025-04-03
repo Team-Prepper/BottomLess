@@ -174,6 +174,10 @@ void UBaseCombatComponent::Fire()
 	HitTargets = EquippedWeapon->GetTarget(HitTarget);
 	
 	LocalFireWeapon(HitTargets);
+
+	TArray<FVector_NetQuantize> NetworkHitTargets;
+
+	EquippedWeapon->GetTarget(HitTarget);
 	ServerFireWeapon(HitTargets);
 
 	CombatState = ECombatState::ECS_Fire;
@@ -201,7 +205,7 @@ void UBaseCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& Tr
 	
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	
-	EquippedWeapon->Fire(TraceHitTargets);
+	EquippedWeapon->Fire(TraceHitTargets, GetOwner()->GetInstigatorController());
 	Character->PlayAnim(AttackMontage);
 	
 }

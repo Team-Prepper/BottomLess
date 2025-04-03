@@ -19,7 +19,7 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	IDamageable* Target = Cast<IDamageable>(OtherActor);
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
 	
-	if (Target)
+	if (Target && OwnerCharacter)
 	{
 		AController* OwnerController = OwnerCharacter->Controller;
 		if (OwnerController)

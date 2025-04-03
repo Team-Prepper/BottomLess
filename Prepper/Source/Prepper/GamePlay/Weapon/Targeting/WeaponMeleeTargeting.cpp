@@ -7,6 +7,7 @@
 // Sets default values for this component's properties
 UWeaponMeleeTargeting::UWeaponMeleeTargeting()
 {
+	PrimaryComponentTick.bCanEverTick = false;
 	MeleeTypeVector = FVector(0.f, 0.f, 0.f);
 }
 
