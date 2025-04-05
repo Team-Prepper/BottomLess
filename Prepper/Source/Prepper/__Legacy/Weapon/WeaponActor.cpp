@@ -7,7 +7,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
+#include "Prepper/GamePlay/CharacterController/CharacterController.h"
+#include "Prepper/GamePlay/CharacterController/Combat.h"
 #include "Prepper/GamePlay/Weapon/Attack/WeaponAttacking.h"
+#include "Prepper/GamePlay/Weapon/Attack/WeaponHitScanAttacking.h"
 #include "Prepper/GamePlay/Weapon/Targeting/WeaponTargeting.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
 #include "Prepper/__Legacy/PlayerController/BasePlayerController.h"
@@ -125,6 +128,12 @@ void AWeaponActor::Interaction(APlayerCharacter* Target)
 {
 	Target->EquipWeapon(this);
 }
+
+void AWeaponActor::Interaction(ICharacterController* Target)
+{
+	Target->GetCombat()->EquipWeapon(this);
+}
+
 void AWeaponActor::SetWeaponState(EWeaponState State)
 {
 	WeaponState = State;
@@ -252,10 +261,10 @@ void AWeaponActor::GetCrosshair(float DeltaTime, bool bIsAiming, TObjectPtr<UTex
 	Spread = 0.5f;
 }
 
-void AWeaponActor::Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker)
+void AWeaponActor::Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, const bool IsSimulate) const
 {
 	UE_LOG(LogTemp, Warning, TEXT("Fire"));
-	Attacking->Fire(Muzzle->GetComponentLocation(), HitTargets, Attacker);
+	Attacking->Fire(Muzzle->GetComponentLocation(), HitTargets, Attacker, IsSimulate);
 }
 
 void AWeaponActor::Fire(const TArray<FVector_NetQuantize>& HitTargets)

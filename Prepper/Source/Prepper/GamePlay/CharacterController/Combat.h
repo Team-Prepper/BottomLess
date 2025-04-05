@@ -6,7 +6,7 @@
 #include "UObject/Interface.h"
 #include "Combat.generated.h"
 
-class AWeapon;
+class AWeaponActor;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UCombat : public UInterface
@@ -23,7 +23,7 @@ class PREPPER_API ICombat
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void EquipWeapon(AWeapon* Weapon) PURE_VIRTUAL();
+	virtual void EquipWeapon(AWeaponActor* Weapon) PURE_VIRTUAL();
 	virtual void AttackTrigger(bool IsTrigger) PURE_VIRTUAL();
 	virtual void AimTrigger(bool IsTrigger) PURE_VIRTUAL();
 	virtual void Reload() PURE_VIRTUAL();

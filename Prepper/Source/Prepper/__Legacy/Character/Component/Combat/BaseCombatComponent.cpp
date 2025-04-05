@@ -173,7 +173,7 @@ void UBaseCombatComponent::Fire()
 	
 	HitTargets = EquippedWeapon->GetTarget(HitTarget);
 	
-	LocalFireWeapon(HitTargets);
+	LocalFireWeapon(HitTargets, !Character->IsLocallyControlled());
 
 	TArray<FVector_NetQuantize> NetworkHitTargets;
 
@@ -199,13 +199,13 @@ bool UBaseCombatComponent::CanFire() const
 	return EquippedWeapon->GetLeftAmmo() != 0;
 }
 
-void UBaseCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const
+void UBaseCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets, const bool IsSimulate) const
 {
 	if (EquippedWeapon == nullptr || Character == nullptr) return;
 	
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	
-	EquippedWeapon->Fire(TraceHitTargets, GetOwner()->GetInstigatorController());
+	EquippedWeapon->Fire(TraceHitTargets, GetOwner()->GetInstigatorController(), IsSimulate);
 	Character->PlayAnim(AttackMontage);
 	
 }
@@ -220,7 +220,7 @@ void UBaseCombatComponent::ServerFireWeapon_Implementation(const TArray<FVector_
 void UBaseCombatComponent::MulticastFireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets) const
 {
 	if (Character && Character->IsLocallyControlled()) return;
-	LocalFireWeapon(TraceHitTargets);
+	LocalFireWeapon(TraceHitTargets, !Character->HasAuthority());
 }
 
 void UBaseCombatComponent::FinishFire()
@@ -244,7 +244,7 @@ void UBaseCombatComponent::HandleReload() const
 {
 	if (!Character) return;
 
-	Character->PlayAnim(ReloadMontage, EquippedWeapon->ReloadActionName);
+	Character->PlayAnim(ReloadMontage, EquippedWeapon->GetReloadActionName());
 }
 
 void UBaseCombatComponent::ReloadEmptyWeapon()

@@ -17,10 +17,10 @@ class PREPPER_API ABCharacter : public ACharacter
 	
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-	UFlexibleSpringArmComponent* FlexibleCameraBoom;
+	TObjectPtr<UFlexibleSpringArmComponent> FlexibleCameraBoom;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-	UCustomCameraComponent* FollowCamera;
+	TObjectPtr<UCustomCameraComponent> FollowCamera;
 	
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float WalkSpeed = 600;
@@ -38,7 +38,7 @@ public:
 	// Sets default values for this actor's properties
 	ABCharacter();
 	bool GetIsAiming() const { return IsAiming; }
-
+	void GetLookDirection(FVector& Start, FVector& Forward);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -49,7 +49,10 @@ public:
 
 	void Move(float X, float Z);
 	void Look(float Yaw, float Pitch);
-	
+
+	virtual void Crouch(bool bClientSimulation = false) override;
+	void UnCrouch(bool bClientSimulation = false);
+
 	void SprintTrigger(bool IsTrigger);
 	void AimTrigger(bool IsTrigger);
 	

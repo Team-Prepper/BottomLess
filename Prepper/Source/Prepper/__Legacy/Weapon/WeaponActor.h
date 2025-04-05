@@ -18,16 +18,16 @@ UCLASS()
 class PREPPER_API AWeaponActor : public AEquipment
 {
 	GENERATED_BODY()
-public:
+protected:
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	FName ReloadActionName = FName("AssaultRifle");
-protected:
 	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	FString WeaponCode;
 	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	TArray<TSubclassOf<UPlayerAimingEffect>> AimingEffectClasses;
 	UPROPERTY(EditAnywhere, Category ="Weapon Properties")
 	UAnimationAsset* FireAnimation;
+	
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 	
@@ -57,6 +57,7 @@ public:
 
 	virtual TArray<UPlayerAimingEffect*> GetAimingEffect();
 
+	virtual FName GetReloadActionName() const { return ReloadActionName; }
 	virtual FString GetCode() override { return WeaponCode; }
 	virtual EWeaponType GetWeaponType() { return WeaponType; };
 	virtual void SetWeaponHandler(IWeaponHandler* NewOwner);
@@ -64,6 +65,7 @@ public:
 	virtual int GetLeftAmmo() { return -1; }
 	
 	virtual void Interaction(APlayerCharacter* Target) override;
+	virtual void Interaction(ICharacterController* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual void OnRep_Owner() override;
@@ -82,7 +84,7 @@ public:
 	virtual FName AttachSocketName() { return WeaponSocketName; };
 	virtual FName GetReloadActionName() { return ReloadActionName; };
 	
-	void Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker);
+	void Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate) const;
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets);
 	virtual bool CanReload();
 	

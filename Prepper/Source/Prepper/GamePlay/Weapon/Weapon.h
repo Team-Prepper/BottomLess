@@ -60,7 +60,7 @@ public:
 	float GetFireDelay() const { return FireDelay; }
 	
 	virtual int GetLeftAmmo() { return -1; }
-	virtual void Interaction(ICharacterController* Target);
+	virtual void Interaction(ICharacterController* Target) override;
 	
 	TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) const;
 	void Fire(const TArray<FVector_NetQuantize>& HitTargets);

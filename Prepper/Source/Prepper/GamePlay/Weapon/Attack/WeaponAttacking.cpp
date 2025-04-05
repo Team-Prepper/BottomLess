@@ -11,12 +11,8 @@ UWeaponAttacking::UWeaponAttacking()
 	
 }
 
-TArray<FVector_NetQuantize> UWeaponAttacking::Fire(FVector Muzzle, const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker)
-{
-	return TArray<FVector_NetQuantize>();
-}
-
-void UWeaponAttacking::HitEffect(const TArray<FVector_NetQuantize>& HitTargets)
+void UWeaponAttacking::Fire(FVector Muzzle,
+	const TArray<FVector_NetQuantize>& HitTargets,AController* Attacker, bool IsSimulate)
 {
 	
 }

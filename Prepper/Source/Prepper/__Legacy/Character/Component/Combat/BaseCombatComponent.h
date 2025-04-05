@@ -75,7 +75,7 @@ protected:
 	
 	bool CanFire() const;
 	
-	virtual void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
+	virtual void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets, const bool IsSimulate) const;
 
 	UFUNCTION(Server, Reliable)
 	void ServerFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
@@ -132,13 +132,13 @@ protected:
 	UPROPERTY()
 	ABaseCharacter* Character;
 	
-	FVector HitTarget;
 	TArray<FVector_NetQuantize> HitTargets;
 
 public:
 	virtual void SetCharacter(ABaseCharacter* Target) override;
 	virtual void TargetElim() override;
 	
+	FVector HitTarget;
 // Combat State
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState)

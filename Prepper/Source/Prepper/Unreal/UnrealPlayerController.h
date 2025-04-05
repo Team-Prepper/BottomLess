@@ -10,7 +10,7 @@
 class UUnrealCombatComponent;
 class UUnrealStatusComponent;
 class UPlayerInputComponent;
-class UInputAction;
+class UUnrealInteractionComponent;
 class IControllerMapper;
 class ABCharacter;
 
@@ -51,7 +51,9 @@ class PREPPER_API AUnrealPlayerController :
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealStatusComponent> Status;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealCombatComponent> Combat;
+	TObjectPtr<UUnrealCombatComponent> Combat;;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UUnrealInteractionComponent> Interaction;
 
 protected:
 	virtual void SetupInputComponent() override;

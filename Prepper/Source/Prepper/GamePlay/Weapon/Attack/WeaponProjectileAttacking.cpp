@@ -12,13 +12,15 @@ UWeaponProjectileAttacking::UWeaponProjectileAttacking()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-TArray<FVector_NetQuantize> UWeaponProjectileAttacking::Fire(FVector Muzzle, const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker)
+void UWeaponProjectileAttacking::Fire(FVector Muzzle,
+	const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate)
 {
-	if (!ProjectileClass) return Super::Fire(Muzzle, HitTargets, Attacker);
+	if (IsSimulate) return;
+	if (!ProjectileClass) return;
 	
 	UWorld* World = GetWorld();
 	
-	if (!World) return Super::Fire(Muzzle, HitTargets, Attacker);
+	if (!World) return;
 
 	for(FVector HitTarget : HitTargets)
 	{
@@ -36,5 +38,4 @@ TArray<FVector_NetQuantize> UWeaponProjectileAttacking::Fire(FVector Muzzle, con
 		
 	}
 	
-	return Super::Fire(Muzzle, HitTargets, Attacker);
 }

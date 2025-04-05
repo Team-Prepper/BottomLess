@@ -40,4 +40,3 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bAiming = PlayerCharacter->GetIsAiming();
 
 }
-

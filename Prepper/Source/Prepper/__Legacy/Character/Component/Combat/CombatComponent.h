@@ -97,7 +97,7 @@ public:
 	virtual void Fire() override;
 
 protected:
-	virtual void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const override;
+	virtual void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets, const bool IsSimulate) const override;
 	virtual void FinishFire() override;
 	
 // Ammo

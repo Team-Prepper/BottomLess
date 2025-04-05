@@ -6,8 +6,10 @@
 #include "PlayerInputComponent.h"
 #include "UnrealStatusComponent.h"
 #include "UnrealCombatComponent.h"
+#include "UnrealInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/BCharacter.h"
+#include "Prepper/__Legacy/Interfaces/Interactable.h"
 
 AUnrealPlayerController::AUnrealPlayerController()
 {
@@ -20,6 +22,8 @@ AUnrealPlayerController::AUnrealPlayerController()
 	InputConnector = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 	Status = CreateDefaultSubobject<UUnrealStatusComponent>(TEXT("StatusComponent"));
 	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
+	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
+	
 }
 
 void AUnrealPlayerController::OnRep_Crouching()
@@ -85,7 +89,7 @@ void AUnrealPlayerController::SetupInputComponent()
 
 void AUnrealPlayerController::BeginPlay()
 {
-	Super::BeginPlay();;
+	Super::BeginPlay();
 	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
@@ -93,6 +97,9 @@ void AUnrealPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(InputConnector->GetMappingContext(), 0);
 	}
+
+	Combat->SetTargetCC(this);
+	Interaction->SetTargetCC(this);
 
 }
 
@@ -161,6 +168,7 @@ void AUnrealPlayerController::EquipButtonPressed()
 {
 	ServerEquipButtonPressed();
 }
+
 TObjectPtr<ABCharacter> AUnrealPlayerController::GetTargetCharacter()
 {
 	if (TargetCharacter == nullptr)
@@ -187,5 +195,8 @@ void AUnrealPlayerController::ServerCrouchTrigger_Implementation(bool IsTrigger)
 
 void AUnrealPlayerController::ServerEquipButtonPressed_Implementation()
 {
+	TScriptInterface<IInteractable> Target = Interaction->GetInteractable();
+	if (Target == nullptr) return;
 	
+	Target->Interaction(this);
 }

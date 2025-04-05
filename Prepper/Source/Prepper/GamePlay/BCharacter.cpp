@@ -34,6 +34,12 @@ ABCharacter::ABCharacter()
 	
 }
 
+void ABCharacter::GetLookDirection(FVector& Start, FVector& Forward)
+{
+	Start = FollowCamera->GetComponentLocation();
+	Forward = FollowCamera->GetForwardVector();
+}
+
 void ABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -57,6 +63,20 @@ void ABCharacter::Look(float Yaw, float Pitch)
 {
 	AddControllerYawInput(Yaw);
 	AddControllerPitchInput(Pitch);
+}
+
+void ABCharacter::Crouch(bool bClientSimulation)
+{
+	Super::Crouch(bClientSimulation);
+	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Crouch"));
+}
+
+
+void ABCharacter::UnCrouch(bool bClientSimulation)
+{
+	Super::UnCrouch(bClientSimulation);
+
+	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Default"));
 }
 
 void ABCharacter::SprintTrigger(bool IsTrigger)

@@ -14,7 +14,7 @@ class PREPPER_API UWeaponAttacking : public UActorComponent
 
 public:
 	UWeaponAttacking();
-	virtual TArray<FVector_NetQuantize> Fire(FVector Muzzle, const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker);
-	virtual void HitEffect(const TArray<FVector_NetQuantize>& HitTargets);
+	virtual void Fire (FVector Muzzle,
+		const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate);
 	
 };

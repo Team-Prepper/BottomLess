@@ -3,6 +3,8 @@
 
 #include "WeaponHitScanAttacking.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Prepper/__Legacy/Interfaces/Damageable.h"
 
 // Sets default values for this component's properties
@@ -11,24 +13,44 @@ UWeaponHitScanAttacking::UWeaponHitScanAttacking()
 	PrimaryComponentTick.bCanEverTick = false;
 	
 	Damage = 30.f;
+	ImpactParticles = nullptr;
+	HitSound = nullptr;
 }
 
-TArray<FVector_NetQuantize> UWeaponHitScanAttacking::Fire(FVector Muzzle, const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker)
+void UWeaponHitScanAttacking::Fire(FVector Muzzle,
+                                   const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate)
 {
-	TArray<FVector_NetQuantize> Retval;
+	const TObjectPtr<UWorld> World = GetWorld();
 
-	TMap<IDamageable*, uint32> HitMap;
+	if (World == nullptr) return;
+	
+	TArray<FHitResult> HitResults;
 	
 	UE_LOG(LogTemp, Warning, TEXT("타겟 수 : %d"), HitTargets.Num());
 	
 	for(FVector_NetQuantize HitTarget : HitTargets)
 	{
-		FHitResult FireHit;
+		FVector TraceEnd = Muzzle + (HitTarget - Muzzle) * 1.25f;
 		
-		WeaponTraceHit(Muzzle, HitTarget, FireHit);
-		Retval.Add(FireHit.Location);
-		
-		IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
+		if (FHitResult FireHit; WeaponTraceHit(World, Muzzle, TraceEnd, FireHit))
+		{
+			HitResults.Add(FireHit);
+		}
+		BeamEffect(World, Muzzle, TraceEnd);
+	}
+	
+	for (FHitResult HitResult : HitResults)
+	{
+		HitEffect(World, HitResult);
+	}
+	
+	if (IsSimulate) return;
+
+	TMap<IDamageable*, uint32> HitMap;
+	
+	for (FHitResult HitResult : HitResults)
+	{
+		IDamageable* DamagedTarget = Cast<IDamageable>(HitResult.GetActor());
 		
 		if (!DamagedTarget) continue;
 
@@ -44,32 +66,63 @@ TArray<FVector_NetQuantize> UWeaponHitScanAttacking::Fire(FVector Muzzle, const 
 	{
 		if (!HitPair.Key) continue;
 
-		UE_LOG(LogTemp, Warning, TEXT("데미지: %d"), HitPair.Value);
 		HitPair.Key->ReceiveDamage(Damage * HitPair.Value, Attacker, GetOwner());
 		
 	}
 	
-	return Retval;
 }
 
-bool UWeaponHitScanAttacking::WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit) const
+bool UWeaponHitScanAttacking::WeaponTraceHit(const TObjectPtr<UWorld> World,
+	const FVector& TraceStart, FVector& TraceEnd, FHitResult& OutHit) const
 {
-	const TObjectPtr<UWorld> World = GetWorld();
-	if (!World) return false;
+	if (World == nullptr) return false;
 	
 	bool IsBlock = false;
-	FVector End = TraceStart + (HitTarget - TraceStart) * 1.25f;
 
 	World->LineTraceSingleByChannel(
-		OutHit,
-		TraceStart,
-		End,
-		ECollisionChannel::ECC_Visibility
+		OutHit, TraceStart, TraceEnd,
+		ECC_Visibility
 	);
 	if (OutHit.bBlockingHit)
 	{
-		End = OutHit.ImpactPoint;
+		TraceEnd = OutHit.ImpactPoint;
 		IsBlock = true;
 	}
 	return IsBlock;
+}
+
+
+void UWeaponHitScanAttacking::BeamEffect(const TObjectPtr<UWorld> World, const FVector& TraceStart, const FVector& TraceEnd) const
+{
+	if (World == nullptr) return;
+	if (BeamParticles == nullptr) return;
+	
+	UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(
+		World,
+		BeamParticles,
+		TraceStart,
+		FRotator::ZeroRotator,
+		true
+	);
+	
+	if (Beam == nullptr) return;
+	
+	Beam->SetVectorParameter(FName("Target"), TraceEnd);
+}
+
+
+void UWeaponHitScanAttacking::HitEffect(const TObjectPtr<UWorld> World, const FHitResult& FireHit) const
+{
+	if(ImpactParticles)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			World,ImpactParticles,
+			FireHit.ImpactPoint, FireHit.ImpactNormal.Rotation()
+		);
+	}
+	if(HitSound == nullptr) return;
+	
+	UGameplayStatics::PlaySoundAtLocation(
+	this, HitSound, FireHit.ImpactPoint);
+	
 }

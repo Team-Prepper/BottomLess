@@ -67,7 +67,7 @@ void AWeapon::BeginPlay()
 
 void AWeapon::Interaction(ICharacterController* Target)
 {
-	Target->GetCombat()->EquipWeapon(this);
+	
 }
 
 void AWeapon::OnWeaponStateSet()

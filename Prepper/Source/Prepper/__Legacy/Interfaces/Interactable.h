@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "Interactable.generated.h"
 
+class ICharacterController;
 class APlayerCharacter;
 
 // This class does not need to be modified.
@@ -22,5 +23,7 @@ class PREPPER_API IInteractable
 
 public:
 	virtual void Interaction(APlayerCharacter* Target) PURE_VIRTUAL();
+	virtual void Interaction(ICharacterController* Target) PURE_VIRTUAL();
 	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL();
+
 };

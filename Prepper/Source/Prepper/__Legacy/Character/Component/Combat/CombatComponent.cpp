@@ -232,9 +232,9 @@ void UCombatComponent::Fire()
 	CrosshairShootingFactor = .75f;
 }
 
-void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const
+void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets, const bool IsSimulate) const
 {
-	Super::LocalFireWeapon(TraceHitTargets);
+	Super::LocalFireWeapon(TraceHitTargets, IsSimulate);
 	
 	if (EquippedRangeWeapon)
 	{
@@ -395,6 +395,7 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 	if (!bScreenToWorld) return;
 	
 	FVector Start = CrosshairWorldPosition;
+	const FVector End = Start + CrosshairWorldDirection * TRACE_LEN;
 
 	if (Character)
 	{
@@ -402,7 +403,6 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 		Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
 	}
 	
-	const FVector End = Start + CrosshairWorldDirection * TRACE_LEN;
 
 	const bool bHitSomething = GetWorld()->LineTraceSingleByChannel(
 		TraceHitResult, Start, End, ECC_Visibility);
