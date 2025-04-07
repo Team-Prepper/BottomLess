@@ -13,7 +13,6 @@ class PREPPER_API AMeleeWeapon : public AWeaponActor
 
 public:
 	AMeleeWeapon();
-	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 	
 	virtual bool CanReload() override { return false;}
 

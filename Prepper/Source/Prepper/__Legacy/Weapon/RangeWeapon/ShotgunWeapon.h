@@ -14,7 +14,6 @@ class PREPPER_API AShotgunWeapon : public AHitScanWeapon
 {
 	GENERATED_BODY()
 public:
-	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 	
 private:
 

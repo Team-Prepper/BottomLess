@@ -1,43 +1,9 @@
 #include "HitScanWeapon.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Prepper/__Legacy/Character/BaseCharacter.h"
-#include "Prepper/__Legacy/Interfaces/Damageable.h"
 #include "Sound/SoundCue.h"
-
-void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
-{
-	Super::Fire(HitTargets);
-
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn == nullptr) return;
-	
-	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
-	if (!MuzzleSocket) return;
-
-	FireEffect();
-	
-	FVector HitTarget = HitTargets.Top();
-	FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
-
-	FHitResult FireHit;
-
-	if (WeaponTraceHit(SocketTransform.GetLocation(), HitTarget, FireHit))
-	{
-		HitEffect(FireHit);
-	}
-	
-	AController* InstigatorController = OwnerPawn->GetController();
-	
-	if (!HasAuthority() || !InstigatorController) return;
-
-	if (IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor()))
-	{
-		DamagedTarget->ReceiveDamage(Damage, InstigatorController, this);
-	}
-}
 
 void AHitScanWeapon::FireEffect()
 {

@@ -4,35 +4,32 @@
 
 #include "CoreMinimal.h"
 #include "WeaponAttacking.h"
-#include "WeaponHitScanAttacking.generated.h"
-
+#include "WeaponMeleeAttacking.generated.h"
 
 class UNiagaraSystem;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PREPPER_API UWeaponHitScanAttacking : public UWeaponAttacking
+class PREPPER_API UWeaponMeleeAttacking : public UWeaponAttacking
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY(EditAnywhere, Category="Attack")
+	float AttackRange = 50.f;
+	UPROPERTY(EditAnywhere, Category="Attack")
+	float AttackReach = 100.f;
 	UPROPERTY(EditAnywhere, Category="Attack")
 	float Damage;
 	
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TObjectPtr<UNiagaraSystem> ImpactParticles;
+
 	UPROPERTY(EditAnywhere, Category="Attack")
-	TObjectPtr<UParticleSystem> BeamParticles;
-	
-	UPROPERTY(EditAnywhere, Category="Attack")
-	USoundBase* HitSound;
-	
+	TObjectPtr<USoundCue> HitSound;
+
 public:
-	UWeaponHitScanAttacking();
+	// Sets default values for this component's properties
+	UWeaponMeleeAttacking();
 	virtual void Fire (FVector Muzzle,
 		const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate) override;
-
-private:
-	bool WeaponTraceHit(TObjectPtr<UWorld> World, const FVector& TraceStart, FVector& TraceEnd, FHitResult& OutHit) const;
-	void BeamEffect(TObjectPtr<UWorld> World, const FVector& TraceStart, const FVector& TraceEnd) const;
-	void HitEffect(const TObjectPtr<UWorld> World, const FHitResult& FireHit) const;
-	
+	void DamageTarget(const FHitResult& HitTarget, AController* Attacker, bool IsSimulate) const;
 };

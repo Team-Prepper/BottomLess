@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
+#include "Prepper/__Legacy/Weapon/WeaponActor.h"
 #include "BCharacter.generated.h"
 
 class UCustomCameraComponent;
@@ -28,7 +29,7 @@ private:
 	float SprintSpeed = 900;
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float AimMovementSpeed = 400.f;
-	
+	EWeaponType EquippedWeaponType;
 	bool IsSprint;
 	bool IsAiming;
 
@@ -38,7 +39,10 @@ public:
 	// Sets default values for this actor's properties
 	ABCharacter();
 	bool GetIsAiming() const { return IsAiming; }
-	void GetLookDirection(FVector& Start, FVector& Forward);
+	void GetLookDirection(FVector& Start, FVector& Forward) const;
+	void AttachActorAtSocket(FName SocketName, AActor* TargetActor) const;
+	void SetEquippedWeaponType(EWeaponType WeaponType);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -51,7 +55,7 @@ public:
 	void Look(float Yaw, float Pitch);
 
 	virtual void Crouch(bool bClientSimulation = false) override;
-	void UnCrouch(bool bClientSimulation = false);
+	virtual void UnCrouch(bool bClientSimulation = false) override;
 
 	void SprintTrigger(bool IsTrigger);
 	void AimTrigger(bool IsTrigger);

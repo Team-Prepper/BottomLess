@@ -5,7 +5,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
 #include "Prepper/__Legacy/HUD/PrepperHUD.h"
-#include "Prepper/__Legacy/Weapon/MeleeWeapon.h"
 #include "Prepper/__Legacy/Weapon/WeaponActor.h"
 #include "Prepper/__Legacy/Weapon/AimingEffect/PlayerAimingEffect.h"
 #include "Prepper/__Legacy/Weapon/RangeWeapon/RangeWeapon.h"
@@ -57,8 +56,6 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
-	DOREPLIFETIME(UCombatComponent, EquippedRangeWeapon);
-	DOREPLIFETIME(UCombatComponent, EquippedMeleeWeapon);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 	DOREPLIFETIME(UCombatComponent, ReplicatedWeaponAmmoData);
 }
@@ -119,8 +116,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
-	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->OnEquipped(Character);
 	EquippedWeapon->SetWeaponHandler(this);
 	SetWeaponType();
 	UpdateCarriedAmmo();
@@ -133,7 +129,7 @@ void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
 	
 	SecondaryWeapon = WeaponToEquip;
 	SecondaryWeapon->SetOwner(Character);
-	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	SecondaryWeapon->OnEquippedSecondary(Character);
 	SecondaryWeapon->SetWeaponHandler(this);
 }
 
@@ -142,7 +138,6 @@ void UCombatComponent::DropEquippedWeapon()
 	if (!EquippedWeapon) return;
 	
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-	EquippedMeleeWeapon = nullptr;
 	EquippedRangeWeapon = nullptr;
 	
 	if (!Character->IsLocallyControlled()) return;
@@ -157,8 +152,6 @@ void UCombatComponent::SetWeaponType()
 {
 	if (!EquippedWeapon) return;
 	
-	EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
-	EquippedMeleeWeapon = Cast<AMeleeWeapon>(EquippedWeapon);
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -173,8 +166,7 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	if (!EquippedWeapon) return;
 	if (!Character) return;
 	
-	SecondaryWeapon->SetOwner(Character);
-	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	SecondaryWeapon->OnEquippedSecondary(Character);
 	SecondaryWeapon->SetWeaponHandler(this);
 }
 
@@ -210,8 +202,8 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
 
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	EquippedWeapon->OnEquipped(Character);
+	SecondaryWeapon->OnEquippedSecondary(Character);
 	
 	SetWeaponType();
 	UpdateCarriedAmmo();
@@ -235,7 +227,7 @@ void UCombatComponent::Fire()
 void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets, const bool IsSimulate) const
 {
 	Super::LocalFireWeapon(TraceHitTargets, IsSimulate);
-	
+
 	if (EquippedRangeWeapon)
 	{
 		Character->PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
@@ -243,7 +235,7 @@ void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceH
 	}
 	
 	Character->PlayAnim(MeleeWeaponMontage,
-		EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
+		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
 	
 }
 
@@ -359,13 +351,7 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime, const FLinearColor& Cros
 	
 	FHUDPackage HUDPackage;
 	
-	EquippedWeapon->GetCrosshair(DeltaTime, bAiming,
-	                             HUDPackage.CrosshairCenter,
-	                             HUDPackage.CrosshairLeft,
-	                             HUDPackage.CrosshairRight,
-	                             HUDPackage.CrosshairTop,
-	                             HUDPackage.CrosshairBottom,
-	                             HUDPackage.CrosshairSpread);
+	EquippedWeapon->GetCrosshair(DeltaTime, bAiming, HUDPackage);
 
 	HUDPackage.CrosshairColor = CrosshairColor;
 	
@@ -420,7 +406,7 @@ void UCombatComponent::TargetElim()
 		
 	if(SecondaryWeapon)
 	{
-		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+		SecondaryWeapon->OnDropped(Character);
 	}
 
 	if (EquippedWeapon == nullptr) return;

@@ -24,12 +24,7 @@ class PREPPER_API ARangeWeapon : public AWeaponActor
 public:
 	virtual void GetCrosshair(
 		float DeltaTime, bool bIsAiming,
-		TObjectPtr<UTexture2D>& Center,
-		TObjectPtr<UTexture2D>& Left,
-		TObjectPtr<UTexture2D>& Right,
-		TObjectPtr<UTexture2D>& Top,
-		TObjectPtr<UTexture2D>& Bottom,
-		float &Spread) override;
+		FHUDPackage& Crosshair) override;
 	/* CROSS HAIRS - 조준선 */
 	UPROPERTY(EditAnywhere, Category = Crosshiar)
 	UTexture2D* CrosshairCenter;
@@ -84,18 +79,12 @@ public:
 	bool bAutoReload = false;
 
 	void AddAmmo(int32 AmmoToAdd);
-
-	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 	
-	virtual int GetLeftAmmo() override { return Ammo; }
-
 protected:
 	float TargetDistance;
 	void SpendRound();
 	
 private:
-	UPROPERTY(EditAnywhere, Category="Weapon Properties")
-	int32 Ammo;
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateAmmo(int32 ServerAmmo);
@@ -112,7 +101,6 @@ private:
 	USkeletalMeshComponent* RangeWeaponMesh;
 
 public:
-	bool IsAmmoEmpty();
 	virtual bool CanReload() override;
 	USkeletalMeshComponent* GetRangeWeaponMesh();
 	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }

@@ -3,17 +3,11 @@
 
 #include "BCharacter.h"
 
+#include "CharacterAnimInstance.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Prepper/__Legacy/Component/CustomCameraComponent.h"
 #include "Prepper/__Legacy/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
-
-
-float ABCharacter::GetSpeed() const
-{
-	if (IsAiming) return AimMovementSpeed;
-	if (IsSprint) return SprintSpeed;
-	return WalkSpeed;
-}
 
 // Sets default values
 ABCharacter::ABCharacter()
@@ -31,13 +25,39 @@ ABCharacter::ABCharacter()
 	FollowCamera = CreateDefaultSubobject<UCustomCameraComponent>(TEXT("FollowCam"));
 	FollowCamera->SetupAttachment(FlexibleCameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
-	
+
+	EquippedWeaponType = EWeaponType::EWT_MAX;
 }
 
-void ABCharacter::GetLookDirection(FVector& Start, FVector& Forward)
+float ABCharacter::GetSpeed() const
+{
+	if (IsAiming) return AimMovementSpeed;
+	if (IsSprint) return SprintSpeed;
+	return WalkSpeed;
+}
+
+void ABCharacter::GetLookDirection(FVector& Start, FVector& Forward) const
 {
 	Start = FollowCamera->GetComponentLocation();
 	Forward = FollowCamera->GetForwardVector();
+}
+
+void ABCharacter::AttachActorAtSocket(FName SocketName, AActor* TargetActor) const
+{
+	if(const USkeletalMeshSocket* TargetSocket
+		= GetMesh()->GetSocketByName(SocketName))
+	{
+		//AttachedActor.Add(TargetActor);
+		TargetSocket->AttachActor(TargetActor, GetMesh());
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
+}
+
+void ABCharacter::SetEquippedWeaponType(EWeaponType WeaponType)
+{
+	EquippedWeaponType = WeaponType;
+	
+	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetEquippedWeaponType(WeaponType);
 }
 
 void ABCharacter::BeginPlay()
@@ -68,6 +88,8 @@ void ABCharacter::Look(float Yaw, float Pitch)
 void ABCharacter::Crouch(bool bClientSimulation)
 {
 	Super::Crouch(bClientSimulation);
+	
+	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetCrouch(true);
 	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Crouch"));
 }
 
@@ -75,7 +97,8 @@ void ABCharacter::Crouch(bool bClientSimulation)
 void ABCharacter::UnCrouch(bool bClientSimulation)
 {
 	Super::UnCrouch(bClientSimulation);
-
+	
+	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetCrouch(false);
 	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Default"));
 }
 
@@ -88,6 +111,7 @@ void ABCharacter::SprintTrigger(bool IsTrigger)
 void ABCharacter::AimTrigger(bool IsTrigger)
 {
 	IsAiming = IsTrigger;
+	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetAiming(IsAiming);
 	GetCharacterMovement()->MaxWalkSpeed = GetSpeed();
 }
 

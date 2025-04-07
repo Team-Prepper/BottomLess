@@ -43,9 +43,6 @@ private:
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
 
-	UPROPERTY(Replicated)
-	class AMeleeWeapon* EquippedMeleeWeapon;
-
 protected:
 	virtual void ActionEnd() override;
 	

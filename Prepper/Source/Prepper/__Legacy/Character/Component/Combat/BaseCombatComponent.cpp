@@ -112,7 +112,7 @@ void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->OnEquipped(Character);
 	EquippedWeapon->SetWeaponHandler(this);
 	
 	ReloadEmptyWeapon();
@@ -141,8 +141,7 @@ void UBaseCombatComponent::OnRep_EquippedWeapon()
 	if (!EquippedWeapon) return;
 	if (!Character) return;
 
-	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->OnEquipped(Character);
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
@@ -186,7 +185,7 @@ void UBaseCombatComponent::Fire()
 		ActionTimer,
 		this,
 		&UBaseCombatComponent::FinishFire,
-		EquippedWeapon->FireDelay
+		EquippedWeapon->GetFireDelay()
 	);
 }
 
@@ -196,7 +195,7 @@ bool UBaseCombatComponent::CanFire() const
 	if (!bFireButtonPressed) return false;
 	if (CombatState != ECombatState::ECS_Unoccupied) return false;
 
-	return EquippedWeapon->GetLeftAmmo() != 0;
+	return EquippedWeapon->CanAttack();
 }
 
 void UBaseCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets, const bool IsSimulate) const
@@ -249,7 +248,7 @@ void UBaseCombatComponent::HandleReload() const
 
 void UBaseCombatComponent::ReloadEmptyWeapon()
 {
-	if (EquippedWeapon == nullptr || EquippedWeapon->GetLeftAmmo() == 0) return;
+	if (EquippedWeapon == nullptr) return;
 	
 	Reload();
 }
@@ -307,7 +306,7 @@ void UBaseCombatComponent::TargetElim()
 	
 	if(EquippedWeapon)
 	{
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+		EquippedWeapon->OnDropped(Character);
 	}
 }
 

@@ -26,21 +26,23 @@ class PREPPER_API UUnrealCombatComponent :
 	
 	bool IsAttack;
 	bool IsAimingLocal;
+	
+	FTimerHandle ActionTimer;
+	bool IsAttackNow;
 
 	UFUNCTION()
 	void OnRep_Aiming();
 	UFUNCTION()
 	virtual void OnRep_EquippedWeapon();
 	
-	UFUNCTION(Server, Reliable)
-	void ServerFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
 	
-	
+	void TryAttack();
+	void AttackAct();
 	void AimingAct(bool IsTrigger);
-	void AttackAct(bool IsTrigger);
-	FHitResult TraceHit();
+	void FinishFire();
+	FVector TraceHit() const;
 
 public:	
 	// Sets default values for this component's properties

@@ -28,7 +28,6 @@ private:
 	
 public:
 	virtual void Update(const GaugeValue<float>& NewData) override;
-
 	
 	// UI에서 사용할 Vertical Box 변수
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)

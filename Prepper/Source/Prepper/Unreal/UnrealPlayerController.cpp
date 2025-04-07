@@ -8,7 +8,8 @@
 #include "UnrealCombatComponent.h"
 #include "UnrealInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "Prepper/GamePlay/BCharacter.h"
+#include "Prepper/GamePlay/Character/BCharacter.h"
+#include "Prepper/GamePlay/UI/PlayerOverlay.h"
 #include "Prepper/__Legacy/Interfaces/Interactable.h"
 
 AUnrealPlayerController::AUnrealPlayerController()
@@ -97,7 +98,13 @@ void AUnrealPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(InputConnector->GetMappingContext(), 0);
 	}
-
+	
+	if (PlayerOverlayClass)
+	{
+		PlayerOverlay = CreateWidget<UPlayerOverlay>(this, PlayerOverlayClass);
+		PlayerOverlay->AddToViewport();
+	}
+	
 	Combat->SetTargetCC(this);
 	Interaction->SetTargetCC(this);
 

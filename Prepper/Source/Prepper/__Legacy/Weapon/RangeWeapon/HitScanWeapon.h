@@ -16,7 +16,6 @@ class PREPPER_API AHitScanWeapon : public ARangeWeapon
 	GENERATED_BODY()
 	
 public:
-	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 	void FireEffect();
 	void HitEffect(const FHitResult& FireHit);
 

@@ -1,23 +1,27 @@
-#include "MeleeWeapon.h"
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "WeaponMeleeAttacking.h"
+
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/__Legacy/Interfaces/Damageable.h"
 #include "Sound/SoundCue.h"
 
 
-AMeleeWeapon::AMeleeWeapon()
+class IDamageable;
+// Sets default values for this component's properties
+UWeaponMeleeAttacking::UWeaponMeleeAttacking()
 {
-	WeaponSocketName = FName("MeleeWeaponSocket");
+	PrimaryComponentTick.bCanEverTick = false;
+	Damage = 20.f;
+
 }
 
-void AMeleeWeapon::FindActorsWithinRadius()
+void UWeaponMeleeAttacking::Fire(FVector Muzzle,
+	const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate)
 {
-	UWorld* World = Owner->GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid World!"));
-		return;
-	}
+	const TObjectPtr<UWorld> World = GetWorld();
 	
 	TArray<FHitResult> HitResults;
 	FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(AttackRange);
@@ -29,44 +33,34 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
 	
 	GetWorld()->SweepMultiByObjectType(
-        	HitResults,
-        	Owner->GetActorLocation(),
-        	Owner->GetActorLocation() + Owner->GetActorForwardVector() * AttackReach,
-        	FQuat::Identity,
-        	ObjectQueryParams,
-        	SphereCollisionShape
-        );
+			HitResults,
+			Muzzle,
+			Muzzle + GetOwner()->Owner->GetActorForwardVector() * AttackReach,
+			FQuat::Identity,
+			ObjectQueryParams,
+			SphereCollisionShape
+		);
 	
 	
 	for (const FHitResult& Hit : HitResults)
 	{
 		//CallDamageTargetAfterDelay(Hit); <- 현재 뭔가 오류 발생의 원인
-		DamageTarget(Hit);
+		DamageTarget(Hit, Attacker, IsSimulate);
 	}
 }
 
-// 애니메이션을 위해서 1초 뒤에 데미지 처리
-void AMeleeWeapon::CallDamageTargetAfterDelay(const FHitResult& HitTarget)
-{
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, HitTarget]()
-	{
-		DamageTarget(HitTarget);
-	}, 1.0f, false);
-}
-
-void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
+void UWeaponMeleeAttacking::DamageTarget(const FHitResult& HitTarget, AController* Attacker, bool IsSimulate) const
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s, %f"), *HitTarget.GetActor()->GetName(), Damage)
-	
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn == nullptr) return;
+
+	if (GetOwner() == nullptr) return;
 	if(!HitTarget.GetActor()) return;
 	if(HitTarget.GetActor() == GetOwner()) return;
 
-	
-	AController* InstigatorController = OwnerPawn->GetController();
 	IDamageable* DamagedTarget = Cast<IDamageable>(HitTarget.GetActor());
+	
 	if(!DamagedTarget) return;
+	
 	if(ImpactParticles)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
@@ -83,9 +77,11 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 		HitSound,
 		HitTarget.ImpactPoint);
 	}
-	if (HasAuthority() && InstigatorController)
-	{
-		DamagedTarget->ReceiveDamage(Damage, InstigatorController, this);
-	}
+	
+	if (IsSimulate) return;
+	if (!Attacker) return;
+
+	DamagedTarget->ReceiveDamage(Damage, Attacker, GetOwner());
+	
 }
 

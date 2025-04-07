@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Prepper/__Legacy/PlayerController/SurvivorController.h"
 #include "CharacterAnimInstance.generated.h"
 
 enum class ETurningInPlace : uint8;
@@ -18,7 +19,7 @@ class PREPPER_API UCharacterAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	
+
 private:
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = true))
 	TObjectPtr<ABCharacter> PlayerCharacter;
@@ -80,5 +81,10 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	bool bEquippedMeleeWeapon;
+
+public:
+	void SetAiming(bool Trigger);
+	void SetCrouch(bool Crouch);
+	void SetEquippedWeaponType(EWeaponType WeaponType);
 	
 };

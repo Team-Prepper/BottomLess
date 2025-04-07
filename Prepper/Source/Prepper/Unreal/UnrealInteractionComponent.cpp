@@ -4,7 +4,7 @@
 #include "UnrealInteractionComponent.h"
 
 #include "Prepper/Prepper.h"
-#include "Prepper/GamePlay/BCharacter.h"
+#include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "Prepper/__Legacy/Interfaces/Interactable.h"
 

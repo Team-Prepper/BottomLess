@@ -17,6 +17,9 @@ class ABCharacter;
 /**
  * 
  */
+
+class UPlayerOverlay;
+
 UCLASS()
 class PREPPER_API AUnrealPlayerController :
 		public APlayerController, public ICharacterController
@@ -32,6 +35,11 @@ class PREPPER_API AUnrealPlayerController :
 	UPROPERTY(ReplicatedUsing=OnRep_Jump)
 	bool IsJump;
 	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UPlayerOverlay>  PlayerOverlayClass;
+	UPROPERTY()
+	TObjectPtr<UPlayerOverlay> PlayerOverlay;
+
 	UFUNCTION()
 	void OnRep_Crouching();
 	UFUNCTION()

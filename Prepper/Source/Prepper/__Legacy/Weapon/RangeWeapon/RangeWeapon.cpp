@@ -3,26 +3,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
-
-void ARangeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
-{
-	if(FireAnimation)
-	{
-		GetRangeWeaponMesh()->PlayAnimation(FireAnimation, false);
-	}
-	
-	SpendRound();
-	
-}
-
-bool ARangeWeapon::IsAmmoEmpty()
-{
-	return Ammo <= 0;
-}
-
 bool ARangeWeapon::CanReload()
 {
-	return Ammo != MagCapacity;
+	return Magazine != MagCapacity;
 }
 
 USkeletalMeshComponent* ARangeWeapon::GetRangeWeaponMesh()
@@ -36,15 +19,6 @@ USkeletalMeshComponent* ARangeWeapon::GetRangeWeaponMesh()
 
 void ARangeWeapon::SpendRound()
 {
-	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
-	if(HasAuthority())
-	{
-		ClientUpdateAmmo(Ammo);
-	}
-	else if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
-	{
-		Sequence++;
-	}
 }
 
 void ARangeWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo)
@@ -56,25 +30,22 @@ void ARangeWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo)
 
 void ARangeWeapon::AddAmmo(int32 AmmoToAdd)
 {
-	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
 	ClientAddAmmo(AmmoToAdd);
 }
 
 void ARangeWeapon::ClientAddAmmo_Implementation(int32 AmmoToAdd)
 {
 	if (HasAuthority()) return;
-	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
 }
 
-void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, TObjectPtr<UTexture2D>& Center, TObjectPtr<UTexture2D>& Left,
-                                TObjectPtr<UTexture2D>& Right, TObjectPtr<UTexture2D>& Top, TObjectPtr<UTexture2D>& Bottom, float &Spread)
+void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, FHUDPackage& Crosshair)
 {
-	Center = CrosshairCenter;
-	Left   = CrosshairLeft;
-	Right  = CrosshairRight;
-	Top    = CrosshairTop;
-	Bottom = CrosshairBottom;
-	Spread = 0.5f;
+	Crosshair.CrosshairCenter = CrosshairCenter;
+	Crosshair.CrosshairLeft   = CrosshairLeft;
+	Crosshair.CrosshairRight  = CrosshairRight;
+	Crosshair.CrosshairTop    = CrosshairTop;
+	Crosshair.CrosshairBottom = CrosshairBottom;
+	Crosshair.CrosshairSpread = 0.5f;
 
 	if (bUseScatter || OwnerCharacter == nullptr) {
 		return;
@@ -121,7 +92,7 @@ void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, TObjectPtr<UTex
 	CurCrosshairShootingFactor =
 		FMath::FInterpTo(CurCrosshairShootingFactor, 0.f, DeltaTime, 40.f);
 
-	Spread += CrosshairVelocityFactor +
+	Crosshair.CrosshairSpread += CrosshairVelocityFactor +
 		CurCrosshairInAirFactor -
 		CurCrosshairAimFactor +
 		CurCrosshairShootingFactor;
