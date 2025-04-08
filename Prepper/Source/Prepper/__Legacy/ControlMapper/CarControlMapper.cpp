@@ -41,7 +41,7 @@ void UCarControlMapper::SpaceReleased() {}
 
 void UCarControlMapper::EPressed()
 {
-	TargetCar->Interaction();
+	TargetCar->InteractionAct();
 }
 
 void UCarControlMapper::RPressed(){}

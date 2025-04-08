@@ -133,7 +133,7 @@ void ACarPawn::Look(const FInputActionValue& Value)
 	
 }
 
-void ACarPawn::Interaction()
+void ACarPawn::InteractionAct()
 {
 	Controller->Possess(Driver);
 	

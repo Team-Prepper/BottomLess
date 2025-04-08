@@ -27,22 +27,21 @@ AWeaponActor::AWeaponActor()
 	AActor::SetReplicateMovement(true);
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	SetRootComponent(WeaponMesh);
-
 	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
+	WeaponMesh->MarkRenderStateDirty();
+	
+	SetRootComponent(WeaponMesh);
 
 	StaticWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
-	StaticWeaponMesh->SetupAttachment(RootComponent);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
-	WeaponMesh->MarkRenderStateDirty();
 	StaticWeaponMesh->MarkRenderStateDirty();
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
+	StaticWeaponMesh->SetupAttachment(RootComponent);
 
 	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
 	AreaBox->SetupAttachment(RootComponent);
@@ -134,6 +133,16 @@ void AWeaponActor::SetWeaponHandler(IWeaponHandler* NewOwner)
 	WeaponHandler = NewOwner;
 }
 
+void AWeaponActor::PlayReload(TObjectPtr<ABCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const
+{
+	TargetCharacter->PlayAnim(ReloadMontage, ReloadActionName);
+}
+
+void AWeaponActor::PlayReload(const TObjectPtr<ABaseCharacter> TargetCharacter, const TObjectPtr<UAnimMontage> ReloadMontage) const
+{
+	TargetCharacter->PlayAnim(ReloadMontage, ReloadActionName);
+}
+
 void AWeaponActor::Interaction(APlayerCharacter* Target)
 {
 	Target->EquipWeapon(this);
@@ -142,6 +151,31 @@ void AWeaponActor::Interaction(APlayerCharacter* Target)
 void AWeaponActor::Interaction(ICharacterController* Target)
 {
 	Target->GetCombat()->EquipWeapon(this);
+}
+
+void AWeaponActor::SetStateAiming(const TObjectPtr<ABCharacter> TargetCharacter)
+{
+	for (UPlayerAimingEffect* Effect : GetAimingEffect())
+	{
+		Effect->CharacterAimingStart(TargetCharacter);
+	}
+}
+
+void AWeaponActor::SetStateUnAiming()
+{
+	for (UPlayerAimingEffect* Effect : GetAimingEffect())
+	{
+		Effect->PlayerAimingEnd();
+		Effect->CharacterAimingEnd();
+	}
+}
+
+void AWeaponActor::SetStateAiming(TObjectPtr<APlayerCharacter> TargetCharacter)
+{
+	for (UPlayerAimingEffect* Effect : GetAimingEffect())
+	{
+		Effect->PlayerAimingStart(TargetCharacter);
+	}
 }
 
 bool AWeaponActor::CanAttack()
@@ -188,7 +222,7 @@ void AWeaponActor::OnWeaponStateSet()
 	}
 }
 
-void AWeaponActor::OnEquipped(ABCharacter* TargetCharacter)
+void AWeaponActor::OnEquipped(const TObjectPtr<ABCharacter> TargetCharacter)
 {
 	ShowPickUpWidget(false);
 	WeaponPhysicsActive(false);;
@@ -197,10 +231,11 @@ void AWeaponActor::OnEquipped(ABCharacter* TargetCharacter)
 
 	TargetCharacter->AttachActorAtSocket(WeaponSocketName, this);
 	TargetCharacter->SetEquippedWeaponType(WeaponType);
+	
 	PlayEquipWeaponSound(TargetCharacter);
 }
 
-void AWeaponActor::OnDropped(ABCharacter* TargetCharacter)
+void AWeaponActor::OnDropped(TObjectPtr<ABCharacter> TargetCharacter)
 {
 	const FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 
@@ -208,7 +243,7 @@ void AWeaponActor::OnDropped(ABCharacter* TargetCharacter)
 	WeaponMesh->DetachFromComponent(DetachRules);
 }
 
-void AWeaponActor::OnEquippedSecondary(ABCharacter* TargetCharacter)
+void AWeaponActor::OnEquippedSecondary(TObjectPtr<ABCharacter> TargetCharacter)
 {
 	ShowPickUpWidget(false);
 	WeaponPhysicsActive(false);
@@ -237,7 +272,8 @@ void AWeaponActor::OnEquipped(ABaseCharacter* TargetCharacter)
 	WeaponPhysicsActive(false);
 
 	if (!TargetCharacter) return;
-
+	
+	SetOwner(TargetCharacter);
 	TargetCharacter->AttachActorAtSocket(WeaponSocketName, this);
 	PlayEquipWeaponSound(TargetCharacter);
 	UE_LOG(LogTemp, Warning, TEXT("WEAPON : WEAPON EQUIPPED"));
@@ -284,6 +320,8 @@ void AWeaponActor::OnEquippedSecondary(ABaseCharacter* TargetCharacter)
 
 	if (!TargetCharacter) return;
 
+	SetOwner(TargetCharacter);
+	
 	UE_LOG(LogTemp, Warning, TEXT("WEAPON : WEAPON SECONDARY"));
 	TargetCharacter->AttachActorAtSocket(HolsteredWeaponSocketName, this);
 	PlayEquipWeaponSound(TargetCharacter);

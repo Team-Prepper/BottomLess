@@ -15,6 +15,8 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 
 	PlayerCharacter = Cast<ABCharacter>(TryGetPawnOwner());
+	bWeaponEquipped = false;
+	bRotateRootBone = true;
 }
 
 void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -38,23 +40,26 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsAccelerating = PlayerCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	
-	bRotateRootBone = false;
 	bElimmed = false;
 	bUseAimOffsets = true;
 	bTransformRightHand = false;
 	
 	bUseFABRIK = true;
 	
-	// OFFSET YAW FOR STRAFING
-	FRotator AimRotation = PlayerCharacter->GetBaseAimRotation();
-	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PlayerCharacter->GetVelocity());
-	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation,	AimRotation);
+	if (!bRotateRootBone && Speed > 0)
+	{
+		// OFFSET YAW FOR STRAFING
+		const FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(
+			UKismetMathLibrary::MakeRotFromX(Velocity), PlayerCharacter->GetBaseAimRotation());
+
+		AO_Yaw = 0;
+		YawOffset = DeltaRot.Yaw;
+		AO_Pitch = DeltaRot.Pitch;
+
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), PlayerCharacter->GetBaseAimRotation().Yaw);
 	
-	CharacterRotation = PlayerCharacter->GetActorRotation();
-
-	AO_Yaw = PlayerCharacter->GetBaseAimRotation().Yaw;
-	AO_Pitch = PlayerCharacter->GetBaseAimRotation().Pitch;
-
 	if (!bWeaponEquipped) return;
 	if (!PlayerCharacter->GetMesh()) return;
 
@@ -71,9 +76,11 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
-void UCharacterAnimInstance::SetEquippedWeaponType(EWeaponType WeaponType)
+void UCharacterAnimInstance::SetEquippedWeaponType(const EWeaponType WeaponType)
 {
 	bWeaponEquipped = WeaponType != EWeaponType::EWT_MAX;
+	
+	bRotateRootBone = !bWeaponEquipped;
 	bEquippedMiniGun = WeaponType == EWeaponType::EWT_MiniGun;
 	bEquippedMeleeWeapon = WeaponType == EWeaponType::EWT_MeleeWeaponBlunt ||
 		WeaponType == EWeaponType::EWT_MeleeWeaponSword;

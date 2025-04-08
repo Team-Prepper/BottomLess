@@ -243,7 +243,7 @@ void UBaseCombatComponent::HandleReload() const
 {
 	if (!Character) return;
 
-	Character->PlayAnim(ReloadMontage, EquippedWeapon->GetReloadActionName());
+	EquippedWeapon->PlayReload(Character, ReloadMontage);
 }
 
 void UBaseCombatComponent::ReloadEmptyWeapon()

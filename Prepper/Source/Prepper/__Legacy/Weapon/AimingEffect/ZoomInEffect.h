@@ -7,6 +7,8 @@
 #include "UObject/Object.h"
 #include "ZoomInEffect.generated.h"
 
+class APlayerCharacter;
+class ABCharacter;
 /**
  * 
  */
@@ -16,6 +18,8 @@ class PREPPER_API UZoomInEffect : public UPlayerAimingEffect
 	GENERATED_BODY()
 	UPROPERTY()
 	TObjectPtr<APlayerCharacter> TargetPlayer;
+	UPROPERTY()
+	TObjectPtr<ABCharacter> TargetCharacter;
 	
 	UPROPERTY(EditAnywhere, Category=ZoomIn)
 	float GoalFOV;
@@ -25,4 +29,6 @@ class PREPPER_API UZoomInEffect : public UPlayerAimingEffect
 public:
 	virtual void PlayerAimingStart(TObjectPtr<APlayerCharacter>) override;
 	virtual void PlayerAimingEnd() override;
+	virtual void CharacterAimingStart(const TObjectPtr<ABCharacter> Character) override;
+	virtual void CharacterAimingEnd() override;
 };

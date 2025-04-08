@@ -35,11 +35,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float FireDelay = .15f;
 	
+	UPROPERTY(EditAnywhere)
+	EWeaponType WeaponType;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
 	TObjectPtr<UPawnNoiseEmitterComponent> PawnNoiseEmitter; // 노이즈 발생 컴포넌트
-	
-	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
-	EWeaponState WeaponState;
 	
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TObjectPtr<USceneComponent> Muzzle;
@@ -63,39 +63,33 @@ protected:
 	
 	UPROPERTY()
 	TArray<UPlayerAimingEffect*> AimingEffects;
+	TArray<UPlayerAimingEffect*> GetAimingEffect();
 	
 	void WeaponPhysicsActive(bool bActive);
 	
 public:	
 	AWeaponActor();
-
-	virtual TArray<UPlayerAimingEffect*> GetAimingEffect();
-
+	
 	virtual FString GetCode() override { return WeaponCode; }
 	EWeaponType GetWeaponType() const { return WeaponType; };
-	FName GetReloadActionName() const { return ReloadActionName; }
+	void PlayReload(TObjectPtr<ABCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const;
 	float GetFireDelay() const { return FireDelay; };
 	
 	virtual void Interaction(APlayerCharacter* Target) override;
-	virtual void Interaction(ICharacterController* Target) override;
-	
 	virtual bool CanAttack();
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) const;
 
 	virtual void GetCrosshair(float DeltaTime, bool bIsAiming, FHUDPackage& Crosshair);
-	
-	virtual void OnEquipped(ABaseCharacter* TargetCharacter);
-	virtual void OnDropped(ABaseCharacter* TargetCharacter);
-	virtual void OnEquippedSecondary(ABaseCharacter* TargetCharacter);
+
+	void SetStateAiming(TObjectPtr<ABCharacter> TargetCharacter);
+	void SetStateUnAiming();
 	
 	void Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate) const;
 	virtual bool CanReload();
-	virtual void OnEquipped(ABCharacter* TargetCharacter);
-	virtual void OnDropped(ABCharacter* TargetCharacter);
-	virtual void OnEquippedSecondary(ABCharacter* TargetCharacter);
+	virtual void OnEquipped(TObjectPtr<ABCharacter> TargetCharacter);
+	virtual void OnDropped(TObjectPtr<ABCharacter> TargetCharacter);
+	virtual void OnEquippedSecondary(TObjectPtr<ABCharacter> TargetCharacter);
 	
 	void PlayEquipWeaponSound(const AActor* TargetActor) const;
 
@@ -107,8 +101,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
 
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
+	EWeaponState WeaponState;
 	IWeaponHandler* GetWeaponHandler();
-
+	
 	UFUNCTION()
 	void OnPingTooHigh(bool bPingTooHigh);
 	
@@ -125,14 +121,21 @@ protected:
 	
 	IWeaponHandler* WeaponHandler;
 
-	UPROPERTY(EditAnywhere)
-	EWeaponType WeaponType;
-
 public:
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	int GetLeftAmmo() const;
 	virtual void OnWeaponStateSet();
 	virtual void SetWeaponHandler(IWeaponHandler* NewOwner);
 	virtual void SetWeaponState(EWeaponState State);
+	
+	void PlayReload(TObjectPtr<ABaseCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const;
+	virtual void Interaction(ICharacterController* Target) override;
+	
+	void SetStateAiming(TObjectPtr<APlayerCharacter> TargetCharacter);
+	virtual void OnEquipped(ABaseCharacter* TargetCharacter);
+	virtual void OnDropped(ABaseCharacter* TargetCharacter);
+	virtual void OnEquippedSecondary(ABaseCharacter* TargetCharacter);
 };

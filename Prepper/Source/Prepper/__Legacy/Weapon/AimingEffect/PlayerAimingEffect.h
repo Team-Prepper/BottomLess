@@ -17,4 +17,6 @@ class PREPPER_API UPlayerAimingEffect : public UObject
 public:
 	virtual void PlayerAimingStart(TObjectPtr<APlayerCharacter>) PURE_VIRTUAL();
 	virtual void PlayerAimingEnd() PURE_VIRTUAL();
+	virtual void CharacterAimingStart(const TObjectPtr<ABCharacter> Character) PURE_VIRTUAL();
+	virtual void CharacterAimingEnd() PURE_VIRTUAL();
 };

@@ -8,6 +8,7 @@
 #include "Prepper/__Legacy/Weapon/WeaponActor.h"
 #include "BCharacter.generated.h"
 
+class UPawnSensingComponent;
 class UCustomCameraComponent;
 class UFlexibleSpringArmComponent;
 
@@ -22,6 +23,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UCustomCameraComponent> FollowCamera;
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	TObjectPtr<UPawnSensingComponent> PawnSensing;
 	
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float WalkSpeed = 600;
@@ -29,7 +32,7 @@ private:
 	float SprintSpeed = 900;
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float AimMovementSpeed = 400.f;
-	EWeaponType EquippedWeaponType;
+	
 	bool IsSprint;
 	bool IsAiming;
 
@@ -38,10 +41,12 @@ private:
 public:
 	// Sets default values for this actor's properties
 	ABCharacter();
+	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
 	bool GetIsAiming() const { return IsAiming; }
 	void GetLookDirection(FVector& Start, FVector& Forward) const;
 	void AttachActorAtSocket(FName SocketName, AActor* TargetActor) const;
 	void SetEquippedWeaponType(EWeaponType WeaponType);
+	TObjectPtr<UPawnSensingComponent> GetPawnSensing() const;
 
 protected:
 	// Called when the game starts or when spawned

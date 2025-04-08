@@ -7,6 +7,7 @@
 #include "UObject/Object.h"
 #include "SniperWidgetEffect.generated.h"
 
+class ABCharacter;
 /**
  * 
  */
@@ -22,4 +23,6 @@ class PREPPER_API USniperWidgetEffect : public UPlayerAimingEffect
 public:
 	virtual void PlayerAimingStart(TObjectPtr<APlayerCharacter>) override;
 	virtual void PlayerAimingEnd() override;
+	virtual void CharacterAimingStart(const TObjectPtr<ABCharacter> Character) override;
+	virtual void CharacterAimingEnd() override;
 };

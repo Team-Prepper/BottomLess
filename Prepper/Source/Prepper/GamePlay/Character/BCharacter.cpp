@@ -6,6 +6,7 @@
 #include "CharacterAnimInstance.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Perception/PawnSensingComponent.h"
 #include "Prepper/__Legacy/Component/CustomCameraComponent.h"
 #include "Prepper/__Legacy/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 
@@ -26,7 +27,23 @@ ABCharacter::ABCharacter()
 	FollowCamera->SetupAttachment(FlexibleCameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	EquippedWeaponType = EWeaponType::EWT_MAX;
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SetComponentTickEnabled(false);
+	
+	bUseControllerRotationYaw = false;
+}
+
+void ABCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
+{
+	if (Montage == nullptr) return;
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance) return;
+	
+	AnimInstance->Montage_Play(Montage);
+	if (SectionName.Compare("") == 0) return;
+	
+	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
 float ABCharacter::GetSpeed() const
@@ -53,11 +70,15 @@ void ABCharacter::AttachActorAtSocket(FName SocketName, AActor* TargetActor) con
 	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
-void ABCharacter::SetEquippedWeaponType(EWeaponType WeaponType)
+void ABCharacter::SetEquippedWeaponType(const EWeaponType WeaponType)
 {
-	EquippedWeaponType = WeaponType;
-	
+	bUseControllerRotationYaw = WeaponType != EWeaponType::EWT_MAX;
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetEquippedWeaponType(WeaponType);
+}
+
+TObjectPtr<UPawnSensingComponent> ABCharacter::GetPawnSensing() const
+{
+	return PawnSensing;
 }
 
 void ABCharacter::BeginPlay()

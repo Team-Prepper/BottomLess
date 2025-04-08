@@ -116,6 +116,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
+	
 	EquippedWeapon->OnEquipped(Character);
 	EquippedWeapon->SetWeaponHandler(this);
 	SetWeaponType();
@@ -128,7 +129,6 @@ void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	
 	SecondaryWeapon = WeaponToEquip;
-	SecondaryWeapon->SetOwner(Character);
 	SecondaryWeapon->OnEquippedSecondary(Character);
 	SecondaryWeapon->SetWeaponHandler(this);
 }
@@ -142,16 +142,13 @@ void UCombatComponent::DropEquippedWeapon()
 	
 	if (!Character->IsLocallyControlled()) return;
 
-	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
-	{
-		Effect->PlayerAimingEnd();
-	}
+	EquippedWeapon->SetStateUnAiming();
 }
 
 void UCombatComponent::SetWeaponType()
 {
 	if (!EquippedWeapon) return;
-	
+	EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -305,21 +302,15 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 
 	if (!bIsAiming)
 	{
-		for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
-		{
-			Effect->PlayerAimingEnd();
-		}
+		EquippedWeapon->SetStateUnAiming();
 		return;
 	}
 
 	TObjectPtr<APlayerCharacter> Player = Cast<APlayerCharacter>(Character);
 
 	if (Player == nullptr) return;
-	
-	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
-	{
-		Effect->PlayerAimingStart(Player);
-	}
+
+	EquippedWeapon->SetStateAiming(Player);
 
 }
 
@@ -413,10 +404,7 @@ void UCombatComponent::TargetElim()
 	
 	if (!Character->IsLocallyControlled()) return;
 	
-	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
-	{
-		Effect->PlayerAimingEnd();
-	}
+	EquippedWeapon->SetStateUnAiming();
 }
 
 void UCombatComponent::OnRep_Ammo()

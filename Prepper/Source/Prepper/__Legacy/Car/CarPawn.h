@@ -58,7 +58,7 @@ public:
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 
-	virtual void Interaction();
+	virtual void InteractionAct();
 	virtual void ChangeCam();
 	
 	virtual UCameraComponent* GetFollowCamera() override;

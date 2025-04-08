@@ -6,6 +6,7 @@
 #include "PlayerAimingEffect.h"
 #include "SensitivityChangeEffect.generated.h"
 
+class ABCharacter;
 /**
  * 
  */
@@ -20,5 +21,7 @@ class PREPPER_API USensitivityChangeEffect : public UPlayerAimingEffect
 public:
 	virtual void PlayerAimingStart(TObjectPtr<APlayerCharacter>) override;
 	virtual void PlayerAimingEnd() override;
+	virtual void CharacterAimingStart(const TObjectPtr<ABCharacter> Character) override;
+	virtual void CharacterAimingEnd() override;
 	
 };

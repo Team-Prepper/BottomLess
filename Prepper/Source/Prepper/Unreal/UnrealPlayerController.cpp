@@ -45,6 +45,25 @@ void AUnrealPlayerController::OnRep_Jump()
 	JumpAct(IsJump);
 }
 
+TObjectPtr<ABCharacter> AUnrealPlayerController::GetTargetCharacter()
+{
+	if (TargetCharacter == nullptr)
+	{
+		TargetCharacter = GetPawn<ABCharacter>();
+	}
+	return TargetCharacter;
+}
+
+IStatus* AUnrealPlayerController::GetStatus()
+{
+	return Status;
+}
+
+ICombat* AUnrealPlayerController::GetCombat()
+{
+	return Combat;
+}
+
 void AUnrealPlayerController::CrouchingAct(bool IsTrigger)
 {
 	const TObjectPtr<ABCharacter> Target = GetTargetCharacter();
@@ -123,16 +142,6 @@ void AUnrealPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AUnrealPlayerController, IsJump);
 }
 
-IStatus* AUnrealPlayerController::GetStatus()
-{
-	return Status;
-}
-
-ICombat* AUnrealPlayerController::GetCombat()
-{
-	return Combat;
-}
-
 void AUnrealPlayerController::Move(const FInputActionValue& Value)
 {
 	const TObjectPtr<ABCharacter> Target = GetTargetCharacter();
@@ -176,14 +185,6 @@ void AUnrealPlayerController::EquipButtonPressed()
 	ServerEquipButtonPressed();
 }
 
-TObjectPtr<ABCharacter> AUnrealPlayerController::GetTargetCharacter()
-{
-	if (TargetCharacter == nullptr)
-	{
-		TargetCharacter = GetPawn<ABCharacter>();
-	}
-	return TargetCharacter;
-}
 
 void AUnrealPlayerController::ServerJumpTrigger_Implementation(bool IsTrigger)
 {
