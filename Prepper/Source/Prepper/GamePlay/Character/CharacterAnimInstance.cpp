@@ -58,8 +58,6 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("%f"), PlayerCharacter->GetBaseAimRotation().Yaw);
-	
 	if (!bWeaponEquipped) return;
 	if (!PlayerCharacter->GetMesh()) return;
 

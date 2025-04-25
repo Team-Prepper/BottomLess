@@ -58,8 +58,11 @@ protected:
 	void ReloadButtonPressed();
 	void AimButtonPressed();
 	void AimButtonReleased();
-	void FireButtonPressed();
-	void FireButtonReleased();
+	void AttackButtonPressed();
+	void AttackButtonReleased();
+
+	void TabButtonPressed();
+	void TabButtonReleased();
 	
 	void SprintButtonPressed();
 	void SprintButtonReleased();

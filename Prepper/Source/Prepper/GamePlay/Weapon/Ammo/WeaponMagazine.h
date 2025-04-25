@@ -22,6 +22,7 @@ public:
 	
 	virtual void Reload(int Amount);
 	virtual void UseAmmo(int Amount);
+	virtual void SetAmmo(int Amount);
 	virtual FString ToString();
 	
 };

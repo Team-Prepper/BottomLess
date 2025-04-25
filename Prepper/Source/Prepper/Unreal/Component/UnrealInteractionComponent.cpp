@@ -94,7 +94,6 @@ void UUnrealInteractionComponent::SetItemInteractable(const TScriptInterface<IIn
 	CurInteractableItem = InteractableItem;
 	if(!CurInteractableItem) return;
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
 		CurInteractableItem->ShowPickUpWidget(true);
 	}
 }

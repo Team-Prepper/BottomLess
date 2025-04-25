@@ -13,8 +13,6 @@ class PREPPER_API AMeleeWeapon : public AWeaponActor
 
 public:
 	AMeleeWeapon();
-	
-	virtual bool CanReload() override { return false;}
 
 	void FindActorsWithinRadius();
 protected:

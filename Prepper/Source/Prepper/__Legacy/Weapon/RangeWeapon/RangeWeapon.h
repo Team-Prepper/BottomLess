@@ -101,7 +101,6 @@ private:
 	USkeletalMeshComponent* RangeWeaponMesh;
 
 public:
-	virtual bool CanReload() override;
 	USkeletalMeshComponent* GetRangeWeaponMesh();
 	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }
 	FORCEINLINE float GetZoomedFOV()					const { return ZoomFOV; }

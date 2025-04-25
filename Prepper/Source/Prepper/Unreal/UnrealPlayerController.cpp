@@ -3,10 +3,11 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "PlayerInputComponent.h"
-#include "UnrealStatusComponent.h"
-#include "UnrealCombatComponent.h"
-#include "UnrealInteractionComponent.h"
+#include "Component/PlayerInputComponent.h"
+#include "Component/UnrealStatusComponent.h"
+#include "Component/UnrealCombatComponent.h"
+#include "Component/TabAction/UnrealControllerTabActionComponent.h"
+#include "Component/UnrealInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/UI/PlayerOverlay.h"
@@ -24,6 +25,7 @@ AUnrealPlayerController::AUnrealPlayerController()
 	Status = CreateDefaultSubobject<UUnrealStatusComponent>(TEXT("StatusComponent"));
 	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
 	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
+	TabAction = CreateDefaultSubobject<UUnrealControllerTabActionComponent>(TEXT("TabActionComponent"));
 	
 }
 
@@ -185,6 +187,16 @@ void AUnrealPlayerController::EquipButtonPressed()
 	ServerEquipButtonPressed();
 }
 
+void AUnrealPlayerController::TabButtonPressed()
+{
+	TabAction->TabPressed();
+}
+
+void AUnrealPlayerController::TabButtonReleased()
+{
+	TabAction->TabReleased();
+}
+
 
 void AUnrealPlayerController::ServerJumpTrigger_Implementation(bool IsTrigger)
 {
@@ -204,7 +216,11 @@ void AUnrealPlayerController::ServerCrouchTrigger_Implementation(bool IsTrigger)
 void AUnrealPlayerController::ServerEquipButtonPressed_Implementation()
 {
 	TScriptInterface<IInteractable> Target = Interaction->GetInteractable();
-	if (Target == nullptr) return;
+	if (Target == nullptr)
+	{
+		Combat->Swap();
+		return;
+	}
 	
 	Target->Interaction(this);
 }

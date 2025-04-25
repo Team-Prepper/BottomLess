@@ -29,6 +29,7 @@ public:
 	
 	virtual void Reload(int Amount) override;
 	virtual void UseAmmo(int Amount) override;
+	virtual void SetAmmo(int Amount) override;
 	
 	virtual FString ToString() override;
 };

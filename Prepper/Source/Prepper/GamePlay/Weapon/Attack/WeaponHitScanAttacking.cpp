@@ -26,8 +26,6 @@ void UWeaponHitScanAttacking::Fire(FVector Muzzle,
 	
 	TArray<FHitResult> HitResults;
 	
-	UE_LOG(LogTemp, Warning, TEXT("타겟 수 : %d"), HitTargets.Num());
-	
 	for(FVector_NetQuantize HitTarget : HitTargets)
 	{
 		FVector TraceEnd = Muzzle + (HitTarget - Muzzle) * 1.25f;

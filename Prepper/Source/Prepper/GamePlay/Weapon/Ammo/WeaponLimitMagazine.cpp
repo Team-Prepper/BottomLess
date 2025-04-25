@@ -21,12 +21,16 @@ bool UWeaponLimitMagazine::CanAttack()
 
 bool UWeaponLimitMagazine::CanReload()
 {
-	return CurAmmo != MaxAmmo;
+	return CurAmmo < MaxAmmo;
 }
 
 void UWeaponLimitMagazine::Reload(const int Amount)
 {
 	CurAmmo += Amount;
+	if (CurAmmo > MaxAmmo)
+	{
+		CurAmmo = MaxAmmo;
+	}
 }
 
 FString UWeaponLimitMagazine::ToString()
@@ -37,4 +41,9 @@ FString UWeaponLimitMagazine::ToString()
 void UWeaponLimitMagazine::UseAmmo(const int Amount)
 {
 	CurAmmo -= Amount;
+}
+
+void UWeaponLimitMagazine::SetAmmo(int Amount)
+{
+	CurAmmo = Amount;
 }

@@ -109,10 +109,6 @@ void AWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, TObjectPtr<UTexture2
 	Spread = 0.5f;
 }
 
-void AWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
-{
-}
-
 bool AWeapon::CanReload()
 {
 	return true;

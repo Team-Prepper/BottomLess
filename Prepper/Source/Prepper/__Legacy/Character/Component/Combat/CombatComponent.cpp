@@ -137,7 +137,7 @@ void UCombatComponent::DropEquippedWeapon()
 {
 	if (!EquippedWeapon) return;
 	
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	EquippedWeapon->OnDropped(Character);
 	EquippedRangeWeapon = nullptr;
 	
 	if (!Character->IsLocallyControlled()) return;

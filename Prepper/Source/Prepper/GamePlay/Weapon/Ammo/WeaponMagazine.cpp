@@ -38,6 +38,11 @@ void UWeaponMagazine::UseAmmo(int Amount)
 {
 }
 
+void UWeaponMagazine::SetAmmo(int Amount)
+{
+	
+}
+
 FString UWeaponMagazine::ToString()
 {
 	return FString(TEXT("- / -"));

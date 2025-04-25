@@ -9,6 +9,7 @@
 
 class ICharacterController;
 class AWeaponActor;
+class UAnimMontage;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UUnrealCombatComponent :
@@ -20,11 +21,21 @@ class PREPPER_API UUnrealCombatComponent :
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	TObjectPtr<AWeaponActor> EquippedWeapon;
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	TObjectPtr<AWeaponActor> SecondaryWeapon;
+	UPROPERTY(ReplicatedUsing = OnRep_DroppedWeapon)
+	TObjectPtr<AWeaponActor> DroppedWeapon;
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TObjectPtr<UAnimMontage> ReloadMontage;
 	
 	UPROPERTY(ReplicatedUsing=OnRep_Aiming)
 	bool IsAiming;
+	UPROPERTY(ReplicatedUsing=OnRep_Ammo)
+	int EquippedAmmo;
 	
 	bool IsAttack;
+	bool IsReload;
 	bool IsAimingLocal;
 	
 	FTimerHandle ActionTimer;
@@ -33,21 +44,31 @@ class PREPPER_API UUnrealCombatComponent :
 	UFUNCTION()
 	void OnRep_Aiming();
 	UFUNCTION()
+	void OnRep_Ammo() const;
+	UFUNCTION()
 	virtual void OnRep_EquippedWeapon();
+	UFUNCTION()
+	virtual void OnRep_SecondaryWeapon();
+	UFUNCTION()
+	virtual void OnRep_DroppedWeapon();
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
+	void MulticastAttackWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
 	
 	void TryAttack();
+	void ReloadAct();
+	void TryReload();
 	void AttackAct();
 	void AimingAct(bool IsTrigger);
-	void FinishFire();
+	void FinishAttack();
+	void FinishReload();
 	FVector TraceHit() const;
 
 public:	
 	// Sets default values for this component's properties
 	UUnrealCombatComponent();
 	void SetTargetCC(ICharacterController* CC);
+	void Swap();
 
 protected:
 	// Called when the game starts

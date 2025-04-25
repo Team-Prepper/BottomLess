@@ -7,6 +7,7 @@
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "UnrealPlayerController.generated.h"
 
+class UUnrealControllerTabActionComponent;
 class UUnrealCombatComponent;
 class UUnrealStatusComponent;
 class UPlayerInputComponent;
@@ -62,6 +63,8 @@ class PREPPER_API AUnrealPlayerController :
 	TObjectPtr<UUnrealCombatComponent> Combat;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealInteractionComponent> Interaction;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UUnrealControllerTabActionComponent> TabAction;
 
 protected:
 	virtual void SetupInputComponent() override;
@@ -86,6 +89,9 @@ public:
 	virtual void SprintTrigger(bool IsTrigger) override;
 	
 	virtual void EquipButtonPressed() override;
+	
+	virtual void TabButtonPressed() override;
+	virtual void TabButtonReleased() override;
 	
 	UFUNCTION(Server, Reliable)
 	void ServerJumpTrigger(bool IsTrigger);

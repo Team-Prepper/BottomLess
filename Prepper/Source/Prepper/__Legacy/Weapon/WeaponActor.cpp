@@ -133,7 +133,7 @@ void AWeaponActor::SetWeaponHandler(IWeaponHandler* NewOwner)
 	WeaponHandler = NewOwner;
 }
 
-void AWeaponActor::PlayReload(TObjectPtr<ABCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const
+void AWeaponActor::PlayReload(const TObjectPtr<ABCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const
 {
 	TargetCharacter->PlayAnim(ReloadMontage, ReloadActionName);
 }
@@ -186,6 +186,21 @@ bool AWeaponActor::CanAttack()
 int AWeaponActor::GetLeftAmmo() const
 {
 	return Magazine->GetLeftAmmo();
+}
+
+void AWeaponActor::SetLeftAmmo(const int Amount) const
+{
+	Magazine->SetAmmo(Amount);
+}
+
+bool AWeaponActor::CanReload()
+{
+	return Magazine->CanReload();
+}
+
+void AWeaponActor::Reload()
+{
+	Magazine->Reload(30);
 }
 
 // client
@@ -345,11 +360,6 @@ IWeaponHandler* AWeaponActor::GetWeaponHandler()
 void AWeaponActor::OnPingTooHigh(bool bPingTooHigh)
 {
 	bUseServerSideRewind = !bPingTooHigh;
-}
-
-bool AWeaponActor::CanReload()
-{
-	return true;
 }
 
 void AWeaponActor::SetWeaponState(EWeaponState State)

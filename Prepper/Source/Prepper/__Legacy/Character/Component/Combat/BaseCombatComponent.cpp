@@ -130,7 +130,7 @@ void UBaseCombatComponent::DropEquippedWeapon()
 {
 	if (!EquippedWeapon) return;
 
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	EquippedWeapon->OnDropped(Character);
 	EquippedWeapon = nullptr;
 }
 
@@ -252,6 +252,7 @@ void UBaseCombatComponent::ReloadEmptyWeapon()
 	
 	Reload();
 }
+
 void UBaseCombatComponent::ServerReload_Implementation()
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;

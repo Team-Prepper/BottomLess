@@ -15,10 +15,12 @@ UUnrealCombatComponent::UUnrealCombatComponent()
 
 	TargetCC = nullptr;
 	EquippedWeapon = nullptr;
+	EquippedAmmo = 0;
 
 	IsAiming = false;
 	IsAttack = false;
 	IsAttackNow = false;
+	IsReload = false;
 
 	IsAimingLocal = false;
 }
@@ -26,6 +28,17 @@ UUnrealCombatComponent::UUnrealCombatComponent()
 void UUnrealCombatComponent::SetTargetCC(ICharacterController* CC)
 {
 	TargetCC = CC;
+}
+
+void UUnrealCombatComponent::Swap()
+{
+	if (SecondaryWeapon == nullptr) return;
+	const TObjectPtr<AWeaponActor> Temp = EquippedWeapon;
+	EquippedWeapon = SecondaryWeapon;
+	SecondaryWeapon = Temp;
+
+	EquippedWeapon->OnEquipped(TargetCC->GetTargetCharacter());
+	SecondaryWeapon->OnEquippedSecondary(TargetCC->GetTargetCharacter());
 }
 
 // Called when the game starts
@@ -45,19 +58,44 @@ void UUnrealCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UUnrealCombatComponent, IsAiming);
+	DOREPLIFETIME(UUnrealCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UUnrealCombatComponent, EquippedAmmo);
+	DOREPLIFETIME(UUnrealCombatComponent, SecondaryWeapon);
+	DOREPLIFETIME(UUnrealCombatComponent, DroppedWeapon);
 }
 
 void UUnrealCombatComponent::EquipWeapon(AWeaponActor* Weapon)
 {
+	if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
+	{
+		SecondaryWeapon = Weapon;
+		SecondaryWeapon->OnEquippedSecondary(TargetCC->GetTargetCharacter());
+		return;
+	}
+	
+	DroppedWeapon = EquippedWeapon;
+	
+	if (DroppedWeapon != nullptr)
+	{
+		DroppedWeapon->OnDropped(TargetCC->GetTargetCharacter());
+	}
+	
 	EquippedWeapon = Weapon;
 	EquippedWeapon->OnEquipped(TargetCC->GetTargetCharacter());
+	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
 	TryAttack();
+	
 }
 
 void UUnrealCombatComponent::OnRep_Aiming()
 {
 	if (GetOwner<APlayerController>()->IsLocalController()) return;
 	AimingAct(IsAiming);
+}
+
+void UUnrealCombatComponent::OnRep_Ammo() const
+{
+	EquippedWeapon->SetLeftAmmo(EquippedAmmo);
 }
 
 void UUnrealCombatComponent::OnRep_EquippedWeapon()
@@ -67,7 +105,19 @@ void UUnrealCombatComponent::OnRep_EquippedWeapon()
 	EquippedWeapon->OnEquipped(TargetCC->GetTargetCharacter());
 }
 
-void UUnrealCombatComponent::MulticastFireWeapon_Implementation(
+void UUnrealCombatComponent::OnRep_SecondaryWeapon()
+{
+	if (!SecondaryWeapon) return;
+	SecondaryWeapon->OnEquippedSecondary(TargetCC->GetTargetCharacter());
+}
+
+void UUnrealCombatComponent::OnRep_DroppedWeapon()
+{
+	if (!DroppedWeapon) return;
+	DroppedWeapon->OnDropped(TargetCC->GetTargetCharacter());
+}
+
+void UUnrealCombatComponent::MulticastAttackWeapon_Implementation(
 	const TArray<FVector_NetQuantize>& TraceHitTargets) const
 {
 	EquippedWeapon->Fire(TraceHitTargets, GetOwner<AController>(), !GetOwner()->HasAuthority());
@@ -81,19 +131,32 @@ void UUnrealCombatComponent::AimingAct(bool IsTrigger)
 	Target->AimTrigger(IsTrigger);
 }
 
-void UUnrealCombatComponent::FinishFire()
+void UUnrealCombatComponent::FinishAttack()
 {
+	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
 	TryAttack();
 	IsAttackNow = false;
 }
 
 void UUnrealCombatComponent::TryAttack()
 {
+	if (EquippedWeapon == nullptr) return;
 	if (!IsAttack) return;
 	if (IsAttackNow) return;
+	if (IsReload) return;
 	if (!EquippedWeapon->CanAttack()) return;
 
 	AttackAct();
+}
+
+void UUnrealCombatComponent::TryReload()
+{
+	if (EquippedWeapon == nullptr) return;
+	if (!EquippedWeapon->CanReload()) return;
+	if (IsAttackNow) return;
+	if (IsReload) return;
+
+	ReloadAct();
 }
 
 void UUnrealCombatComponent::AttackAct()
@@ -104,14 +167,34 @@ void UUnrealCombatComponent::AttackAct()
 
 	const TArray<FVector_NetQuantize> HitTargets = EquippedWeapon->GetTarget(HitTarget);
 
-	MulticastFireWeapon(HitTargets);
+	MulticastAttackWeapon(HitTargets);
 
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		ActionTimer,
 		this,
-		&UUnrealCombatComponent::FinishFire,
+		&UUnrealCombatComponent::FinishAttack,
 		EquippedWeapon->GetFireDelay()
 	);
+}
+
+void UUnrealCombatComponent::ReloadAct()
+{
+	IsReload = true;
+	GetOwner()->GetWorldTimerManager().SetTimer(
+		ActionTimer,
+		this,
+		&UUnrealCombatComponent::FinishReload,
+		EquippedWeapon->GetFireDelay()
+	);
+	EquippedWeapon->PlayReload(TargetCC->GetTargetCharacter(), ReloadMontage);
+}
+
+void UUnrealCombatComponent::FinishReload()
+{
+	EquippedWeapon->Reload();
+	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
+	UE_LOG(LogTemp, Warning, TEXT("Ammo: %d"), EquippedAmmo);
+	IsReload = false;
 }
 
 FVector UUnrealCombatComponent::TraceHit() const
@@ -166,11 +249,10 @@ void UUnrealCombatComponent::ServerAimTrigger_Implementation(bool IsTrigger)
 void UUnrealCombatComponent::ServerAttackTrigger_Implementation(bool IsTrigger)
 {
 	IsAttack = IsTrigger;
-
-	if (EquippedWeapon == nullptr) return;
 	TryAttack();
 }
 
 void UUnrealCombatComponent::ServerReload_Implementation()
 {
+	TryReload();
 }

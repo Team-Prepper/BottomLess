@@ -2,8 +2,8 @@
 
 
 #include "UnrealAIController.h"
-#include "UnrealStatusComponent.h"
-#include "UnrealCombatComponent.h"
+#include "Component/UnrealStatusComponent.h"
+#include "Component/UnrealCombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"

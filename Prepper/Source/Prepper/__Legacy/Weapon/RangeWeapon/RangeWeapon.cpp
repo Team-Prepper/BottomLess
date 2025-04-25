@@ -3,10 +3,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
-bool ARangeWeapon::CanReload()
-{
-	return Magazine != MagCapacity;
-}
 
 USkeletalMeshComponent* ARangeWeapon::GetRangeWeaponMesh()
 {

@@ -81,16 +81,28 @@ void UPlayerInputComponent::AimButtonReleased()
 	CC->GetCombat()->AimTrigger(false);
 }
 
-void UPlayerInputComponent::FireButtonPressed()
+void UPlayerInputComponent::AttackButtonPressed()
 {
 	if (CC == nullptr) return;
 	CC->GetCombat()->AttackTrigger(true);
 }
 
-void UPlayerInputComponent::FireButtonReleased()
+void UPlayerInputComponent::AttackButtonReleased()
 {
 	if (CC == nullptr) return;
 	CC->GetCombat()->AttackTrigger(false);
+}
+
+void UPlayerInputComponent::TabButtonPressed()
+{
+	if (CC == nullptr) return;
+	CC->TabButtonPressed();
+}
+
+void UPlayerInputComponent::TabButtonReleased()
+{
+	if (CC == nullptr) return;
+	CC->TabButtonReleased();
 }
 
 void UPlayerInputComponent::SprintButtonPressed()
@@ -158,12 +170,15 @@ void UPlayerInputComponent::SetInput(ICharacterController* cc, UEnhancedInputCom
 
 	// Fire
 	Input->BindAction(FireAction, ETriggerEvent::Triggered, this,
-	                  &UPlayerInputComponent::FireButtonPressed);
+	                  &UPlayerInputComponent::AttackButtonPressed);
 	Input->BindAction(FireAction, ETriggerEvent::Completed, this,
-	                  &UPlayerInputComponent::FireButtonReleased);
+	                  &UPlayerInputComponent::AttackButtonReleased);
 
 	// Reload
 	Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this,
 	                  &UPlayerInputComponent::ReloadButtonPressed);
+
+	Input->BindAction(OpenInventory, ETriggerEvent::Started, this, &UPlayerInputComponent::TabButtonPressed);
+	Input->BindAction(OpenInventory, ETriggerEvent::Completed, this, &UPlayerInputComponent::TabButtonReleased);
 
 }

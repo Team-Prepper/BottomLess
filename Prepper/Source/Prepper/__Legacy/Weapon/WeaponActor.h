@@ -71,7 +71,6 @@ public:
 	AWeaponActor();
 	
 	virtual FString GetCode() override { return WeaponCode; }
-	EWeaponType GetWeaponType() const { return WeaponType; };
 	void PlayReload(TObjectPtr<ABCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const;
 	float GetFireDelay() const { return FireDelay; };
 	
@@ -86,10 +85,14 @@ public:
 	void SetStateUnAiming();
 	
 	void Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate) const;
-	virtual bool CanReload();
+	bool CanReload();
 	virtual void OnEquipped(TObjectPtr<ABCharacter> TargetCharacter);
 	virtual void OnDropped(TObjectPtr<ABCharacter> TargetCharacter);
 	virtual void OnEquippedSecondary(TObjectPtr<ABCharacter> TargetCharacter);
+	
+	int GetLeftAmmo() const;
+	void SetLeftAmmo(const int Amount) const;
+	void Reload();
 	
 	void PlayEquipWeaponSound(const AActor* TargetActor) const;
 
@@ -126,7 +129,7 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	int GetLeftAmmo() const;
+	EWeaponType GetWeaponType() const { return WeaponType; };
 	virtual void OnWeaponStateSet();
 	virtual void SetWeaponHandler(IWeaponHandler* NewOwner);
 	virtual void SetWeaponState(EWeaponState State);

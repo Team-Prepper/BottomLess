@@ -46,6 +46,7 @@ public:
 	void GetLookDirection(FVector& Start, FVector& Forward) const;
 	void AttachActorAtSocket(FName SocketName, AActor* TargetActor) const;
 	void SetEquippedWeaponType(EWeaponType WeaponType);
+	int GetTeam() { return 1; }
 	TObjectPtr<UPawnSensingComponent> GetPawnSensing() const;
 
 protected:

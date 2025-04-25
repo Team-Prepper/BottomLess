@@ -27,7 +27,7 @@ class PREPPER_API ICharacterController
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual TObjectPtr<ABCharacter> GetTargetCharacter() PURE_VIRTUAL(ICharacterController::GetStatus, return nullptr; );
+	virtual TObjectPtr<ABCharacter> GetTargetCharacter() PURE_VIRTUAL(ICharacterController::GetStatus, return nullptr; )
 	virtual IStatus* GetStatus() PURE_VIRTUAL(ICharacterController::GetStatus, return nullptr; );
 	virtual ICombat* GetCombat() PURE_VIRTUAL(ICharacterController::GetCombat, return nullptr; );
 	
@@ -37,4 +37,7 @@ public:
 	virtual void JumpTrigger(bool IsTrigger) PURE_VIRTUAL();
 	virtual void SprintTrigger(bool IsTrigger) PURE_VIRTUAL();
 	virtual void EquipButtonPressed() PURE_VIRTUAL();
+	
+	virtual void TabButtonPressed() PURE_VIRTUAL();
+	virtual void TabButtonReleased() PURE_VIRTUAL();
 };
