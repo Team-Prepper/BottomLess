@@ -54,5 +54,5 @@ public:
 	UFUNCTION()
 	void PawnSensingSeen(APawn* SeenPawn);
 	UFUNCTION()
-	void PawnSensingHearn(APawn* HearnPawn, const FVector& Location, float Volume);
+	void PawnSensingHeard(APawn* HeardPawn, const FVector& Location, float Volume);
 };

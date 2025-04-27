@@ -3,10 +3,10 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Component/PlayerInputComponent.h"
+#include "Component/UnrealPlayerInputComponent.h"
 #include "Component/UnrealStatusComponent.h"
 #include "Component/UnrealCombatComponent.h"
-#include "Component/TabAction/UnrealControllerTabActionComponent.h"
+#include "Component/UnrealTabActionComponent.h"
 #include "Component/UnrealInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
@@ -21,11 +21,11 @@ AUnrealPlayerController::AUnrealPlayerController()
 	IsCrouchingLocal = false;
 	IsSprintLocal = false;
 	
-	InputConnector = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
+	InputConnector = CreateDefaultSubobject<UUnrealPlayerInputComponent>(TEXT("InputComponent"));
 	Status = CreateDefaultSubobject<UUnrealStatusComponent>(TEXT("StatusComponent"));
 	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
 	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
-	TabAction = CreateDefaultSubobject<UUnrealControllerTabActionComponent>(TEXT("TabActionComponent"));
+	TabAction = CreateDefaultSubobject<UUnrealTabActionComponent>(TEXT("TabActionComponent"));
 	
 }
 

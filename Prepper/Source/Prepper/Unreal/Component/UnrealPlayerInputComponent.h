@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "PlayerInputComponent.generated.h"
+#include "UnrealPlayerInputComponent.generated.h"
 
 
 struct FInputActionValue;
@@ -13,7 +13,7 @@ class UInputAction;
 class ICharacterController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PREPPER_API UPlayerInputComponent : public UActorComponent
+class PREPPER_API UUnrealPlayerInputComponent : public UActorComponent
 {
 	GENERATED_BODY()
 	
@@ -21,7 +21,7 @@ class PREPPER_API UPlayerInputComponent : public UActorComponent
 
 public:
 	// Sets default values for this component's properties
-	UPlayerInputComponent();
+	UUnrealPlayerInputComponent();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))

@@ -18,7 +18,7 @@ void AUnrealAIController::BeginPlay()
 	GetTargetCharacter()->GetPawnSensing()->SetPeripheralVisionAngle(100.f);
 	
 	GetTargetCharacter()->GetPawnSensing()->OnSeePawn.AddDynamic(this, &AUnrealAIController::PawnSensingSeen);
-	GetTargetCharacter()->GetPawnSensing()->OnHearNoise.AddDynamic(this, &AUnrealAIController::PawnSensingHearn);
+	GetTargetCharacter()->GetPawnSensing()->OnHearNoise.AddDynamic(this, &AUnrealAIController::PawnSensingHeard);
 }
 
 void AUnrealAIController::Tick(float DeltaSeconds)
@@ -124,13 +124,13 @@ void AUnrealAIController::PawnSensingSeen(APawn* SeenPawn)
 	
 }
 
-void AUnrealAIController::PawnSensingHearn(APawn* HearnPawn, const FVector& Location, float Volume)
+void AUnrealAIController::PawnSensingHeard(APawn* HeardPawn, const FVector& Location, float Volume)
 {
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 	
 	UE_LOG(LogTemp, Display, TEXT("CODE : zombie HEAR"));
 	
-	PatrolTarget = HearnPawn;
+	PatrolTarget = HeardPawn;
 	
 	if (EnemyState != EEnemyState::EES_Attacking)
 	{

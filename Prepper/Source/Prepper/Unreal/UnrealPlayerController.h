@@ -7,10 +7,10 @@
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "UnrealPlayerController.generated.h"
 
-class UUnrealControllerTabActionComponent;
+class UUnrealTabActionComponent;
 class UUnrealCombatComponent;
 class UUnrealStatusComponent;
-class UPlayerInputComponent;
+class UUnrealPlayerInputComponent;
 class UUnrealInteractionComponent;
 class IControllerMapper;
 class ABCharacter;
@@ -56,7 +56,7 @@ class PREPPER_API AUnrealPlayerController :
 	bool IsSprintLocal;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UPlayerInputComponent> InputConnector;
+	TObjectPtr<UUnrealPlayerInputComponent> InputConnector;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealStatusComponent> Status;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -64,7 +64,7 @@ class PREPPER_API AUnrealPlayerController :
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealInteractionComponent> Interaction;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealControllerTabActionComponent> TabAction;
+	TObjectPtr<UUnrealTabActionComponent> TabAction;
 
 protected:
 	virtual void SetupInputComponent() override;
