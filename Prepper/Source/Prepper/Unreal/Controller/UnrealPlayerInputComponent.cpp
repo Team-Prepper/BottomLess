@@ -3,8 +3,9 @@
 
 #include "UnrealPlayerInputComponent.h"
 #include "EnhancedInputComponent.h"
-#include "Prepper/GamePlay/CharacterController/CharacterController.h"
-#include "Prepper/GamePlay/CharacterController/Combat.h"
+#include "UnrealPlayerController.h"
+#include "Prepper/GamePlay/Character/BCharacter.h"
+#include "Prepper/GamePlay/Character/BCombatComponent.h"
 
 
 class UEnhancedInputLocalPlayerSubsystem;
@@ -36,61 +37,61 @@ UUnrealPlayerInputComponent::UUnrealPlayerInputComponent()
 void UUnrealPlayerInputComponent::Move(const FInputActionValue& Value)
 {
 	if (CC == nullptr) return;
-	CC->Move(Value);
+	CC->GetTargetCharacter()->Move(Value);
 }
 
 void UUnrealPlayerInputComponent::Look(const FInputActionValue& Value)
 {
 	if (CC == nullptr) return;
-	CC->Look(Value);
+	CC->GetTargetCharacter()->Look(Value);
 }
 
 void UUnrealPlayerInputComponent::JumpButtonPressed()
 {
 	if (CC == nullptr) return;
-	CC->JumpTrigger(true);
+	CC->GetTargetCharacter()->JumpTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::JumpButtonReleased()
 {
 	if (CC == nullptr) return;
-	CC->JumpTrigger(false);
+	CC->GetTargetCharacter()->JumpTrigger(false);
 }
 
 void UUnrealPlayerInputComponent::CrouchButtonPressed()
 {
 	if (CC == nullptr) return;
-	CC->CrouchToggle();
+	CC->GetTargetCharacter()->CrouchToggle();
 }
 
 void UUnrealPlayerInputComponent::ReloadButtonPressed()
 {
 	if (CC == nullptr) return;
-	CC->GetCombat()->Reload();
+	CC->GetTargetCharacter()->GetCombat()->Reload();
 }
 
 void UUnrealPlayerInputComponent::AimButtonPressed()
 {
 	if (CC == nullptr) return;
-	CC->GetCombat()->AimTrigger(true);
+	CC->GetTargetCharacter()->GetCombat()->AimTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::AimButtonReleased()
 {
 	if (CC == nullptr) return;
-	CC->GetCombat()->AimTrigger(false);
+	CC->GetTargetCharacter()->GetCombat()->AimTrigger(false);
 }
 
 void UUnrealPlayerInputComponent::AttackButtonPressed()
 {
 	if (CC == nullptr) return;
-	CC->GetCombat()->AttackTrigger(true);
+	CC->GetTargetCharacter()->GetCombat()->AttackTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::AttackButtonReleased()
 {
 	if (CC == nullptr) return;
-	CC->GetCombat()->AttackTrigger(false);
+	CC->GetTargetCharacter()->GetCombat()->AttackTrigger(false);
 }
 
 void UUnrealPlayerInputComponent::TabButtonPressed()
@@ -108,19 +109,19 @@ void UUnrealPlayerInputComponent::TabButtonReleased()
 void UUnrealPlayerInputComponent::SprintButtonPressed()
 {
 	if (CC == nullptr) return;
-	CC->SprintTrigger(true);
+	CC->GetTargetCharacter()->SprintTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::SprintButtonReleased()
 {
 	if (CC == nullptr) return;
-	CC->SprintTrigger(false);
+	CC->GetTargetCharacter()->SprintTrigger(false);
 }
 
 void UUnrealPlayerInputComponent::EquipButtonPressed()
 {
 	if (CC == nullptr) return;
-	CC->EquipButtonPressed();
+	CC->GetTargetCharacter()->EquipButtonPressed();
 }
 
 TObjectPtr<UInputMappingContext> UUnrealPlayerInputComponent::GetMappingContext()
@@ -128,7 +129,7 @@ TObjectPtr<UInputMappingContext> UUnrealPlayerInputComponent::GetMappingContext(
 	return PlayerMappingContext;
 }
 
-void UUnrealPlayerInputComponent::SetInput(ICharacterController* cc, UEnhancedInputComponent* Input)
+void UUnrealPlayerInputComponent::SetInput(TObjectPtr<AUnrealPlayerController> cc, UEnhancedInputComponent* Input)
 {
 	CC = cc;
 
@@ -149,27 +150,27 @@ void UUnrealPlayerInputComponent::SetInput(ICharacterController* cc, UEnhancedIn
 	                  this, &UUnrealPlayerInputComponent::JumpButtonReleased);
 
 	//Sprint
-	Input->BindAction(SprintAction, ETriggerEvent::Triggered,
+	Input->BindAction(SprintAction, ETriggerEvent::Started,
 	                  this, &UUnrealPlayerInputComponent::SprintButtonPressed);
 	Input->BindAction(SprintAction, ETriggerEvent::Completed, this,
 	                  &UUnrealPlayerInputComponent::SprintButtonReleased);
 
 	// Equip
-	Input->BindAction(EquipAction, ETriggerEvent::Triggered, this,
+	Input->BindAction(EquipAction, ETriggerEvent::Started, this,
 	                  &UUnrealPlayerInputComponent::EquipButtonPressed);
 
 	// Crouch
-	Input->BindAction(CrouchAction, ETriggerEvent::Triggered, this,
+	Input->BindAction(CrouchAction, ETriggerEvent::Started, this,
 	                  &UUnrealPlayerInputComponent::CrouchButtonPressed);
 
 	//Aim
-	Input->BindAction(AimAction, ETriggerEvent::Triggered, this,
+	Input->BindAction(AimAction, ETriggerEvent::Started, this,
 	                  &UUnrealPlayerInputComponent::AimButtonPressed);
 	Input->BindAction(AimAction, ETriggerEvent::Completed, this,
 	                  &UUnrealPlayerInputComponent::AimButtonReleased);
 
 	// Fire
-	Input->BindAction(FireAction, ETriggerEvent::Triggered, this,
+	Input->BindAction(FireAction, ETriggerEvent::Started, this,
 	                  &UUnrealPlayerInputComponent::AttackButtonPressed);
 	Input->BindAction(FireAction, ETriggerEvent::Completed, this,
 	                  &UUnrealPlayerInputComponent::AttackButtonReleased);

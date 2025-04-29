@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/Unreal/Component/UnrealInitialSettingComponent.h"
+#include "Prepper/Unreal/Controller/UnrealInitialSettingComponent.h"
 #include "UnrealSurvivorInitialSettingComponent.generated.h"
 
 

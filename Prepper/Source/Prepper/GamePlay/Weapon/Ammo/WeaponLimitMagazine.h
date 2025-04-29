@@ -27,7 +27,7 @@ public:
 	virtual bool CanAttack() override;
 	virtual bool CanReload() override;
 	
-	virtual void Reload(int Amount) override;
+	virtual void Reload(IAmmoBox* AmmoBox, EWeaponType WeaponType) override;
 	virtual void UseAmmo(int Amount) override;
 	virtual void SetAmmo(int Amount) override;
 	

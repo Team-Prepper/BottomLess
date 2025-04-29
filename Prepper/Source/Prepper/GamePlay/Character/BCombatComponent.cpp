@@ -1,0 +1,36 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "BCombatComponent.h"
+
+
+// Sets default values for this component's properties
+UBCombatComponent::UBCombatComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UBCombatComponent::SetTargetCharacter(TObjectPtr<ABCharacter> Character)
+{
+
+	TargetCharacter = Character;
+}
+
+void UBCombatComponent::Attach(IObserver<UBCombatComponent>* Observer)
+{
+	Observers.Add(Observer);;
+	Observer->Update(*this);
+}
+
+void UBCombatComponent::Detach(IObserver<UBCombatComponent>* Observer)
+{
+	Observers.Remove(Observer);
+}
+
+void UBCombatComponent::Notify()
+{
+	for (const auto Observer : Observers)
+	{
+		Observer->Update(*this);
+	}
+}

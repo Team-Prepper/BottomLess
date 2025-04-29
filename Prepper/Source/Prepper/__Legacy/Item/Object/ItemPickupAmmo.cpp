@@ -13,7 +13,7 @@ void AItemPickupAmmo::Interaction(APlayerCharacter* Target)
 	{
 		if(UBaseCombatComponent* Combat = Target->GetCombatComponent())
 		{
-			Combat->PickupAmmo(WeaponType, AmmoAmount);
+			Combat->AddAmmo(WeaponType, AmmoAmount);
 		}
 	}
 	Destroy();

@@ -6,12 +6,15 @@
 #include "Prepper/__Legacy/HUD/UI/CharacterOverlay/CharacterOverlay.h"
 #include "PlayerOverlay.generated.h"
 
+class UStatusComponent;
+class IStatus;
 struct FHUDPackage;
 /**
  * 
  */
 UCLASS()
-class PREPPER_API UPlayerOverlay : public UUserWidget
+class PREPPER_API UPlayerOverlay : public UUserWidget,
+									public IObserver<UStatusComponent>
 {
 	GENERATED_BODY()
 private:
@@ -23,7 +26,7 @@ private:
 	float CrosshairSpreadMax = 16.f;
 	
 public:
-	void SetHP(float CurHP, float MaxHP);
+	virtual void Update(const UStatusComponent& NewData) override;
 	void DrawCrosshair(const FHUDPackage& Crosshair);
 	void DrawCrosshairUnit(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread,
 	                              const FLinearColor& CrosshairColor);

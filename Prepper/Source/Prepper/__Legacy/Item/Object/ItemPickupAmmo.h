@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "InteractableItem.h"
-#include "Prepper/__Legacy/Weapon/WeaponTypes.h"
 #include "ItemPickupAmmo.generated.h"
 
+enum class EWeaponType : uint8;
 /**
  * 
  */

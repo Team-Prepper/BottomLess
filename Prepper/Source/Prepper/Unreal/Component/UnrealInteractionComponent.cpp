@@ -5,6 +5,7 @@
 
 #include "Prepper/Prepper.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
+#include "Prepper/GamePlay/Character/BCombatComponent.h"
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "Prepper/__Legacy/Interfaces/Interactable.h"
 
@@ -16,12 +17,12 @@ UUnrealInteractionComponent::UUnrealInteractionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	TargetCC = nullptr;
+	TargetCharacter = nullptr;
 }
 
-void UUnrealInteractionComponent::SetTargetCC(ICharacterController* CC)
+void UUnrealInteractionComponent::SetTargetCharacter(TObjectPtr<ABCharacter> Character)
 {
-	TargetCC = CC;
+	TargetCharacter = Character;
 }
 
 
@@ -29,9 +30,6 @@ void UUnrealInteractionComponent::SetTargetCC(ICharacterController* CC)
 void UUnrealInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -48,17 +46,16 @@ void UUnrealInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UUnrealInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 {
-	if (TargetCC == nullptr) return;
+	if (TargetCharacter == nullptr) return;
 	
 	FVector Start;
 	FVector Direction;
 	
-	TargetCC->GetTargetCharacter()->GetLookDirection(Start, Direction);
+	TargetCharacter->GetLookDirection(Start, Direction);
 	const FVector End = Start + Direction * TraceRange;
 	
 	FCollisionQueryParams QueryParams;
-	const TObjectPtr<AActor> Character = TargetCC->GetTargetCharacter();
-	QueryParams.AddIgnoredActor(Character);
+	QueryParams.AddIgnoredActor(TargetCharacter);
 
 	if (GetWorld()->LineTraceSingleByObjectType(
 		TraceHitResult,
@@ -96,4 +93,22 @@ void UUnrealInteractionComponent::SetItemInteractable(const TScriptInterface<IIn
 	{
 		CurInteractableItem->ShowPickUpWidget(true);
 	}
+}
+
+void UUnrealInteractionComponent::Interaction()
+{
+	ServerEquipButtonPressed();
+}
+
+void UUnrealInteractionComponent::ServerEquipButtonPressed_Implementation()
+{
+	const TScriptInterface<IInteractable> Target = GetInteractable();
+	
+	if (Target == nullptr)
+	{
+		TargetCharacter->GetCombat()->Swap();
+		return;
+	}
+	
+	Target->Interaction(TargetCharacter);
 }

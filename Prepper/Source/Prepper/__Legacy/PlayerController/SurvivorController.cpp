@@ -15,7 +15,6 @@
 #include "Prepper/__Legacy/HUD/UI/CharacterOverlay/StatusWidget.h"
 #include "Prepper/__Legacy/HUD/UI/Inventory/InventoryUI.h"
 #include "Prepper/__Legacy/HUD/UI/Survivor/QuickSlotWidget.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
 
 void ASurvivorController::BeginWidget()
 {

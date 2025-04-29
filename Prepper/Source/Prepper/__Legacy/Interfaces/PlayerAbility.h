@@ -23,7 +23,7 @@ class PREPPER_API IPlayerAbility
 public:
 	virtual void AddItem(const FString& ItemCode, int Count) PURE_VIRTUAL();
 	virtual void UseQuickSlotItem(int Idx) PURE_VIRTUAL();
-	virtual void EquipWeapon(class AWeaponActor* Weapon) PURE_VIRTUAL();
+	virtual void EquipWeapon(class AWeapon* Weapon) PURE_VIRTUAL();
 	virtual void EquipBackpack(class AItemBackpack* BackpackToEquip) PURE_VIRTUAL();
 
 	virtual void Heal(float Amount) PURE_VIRTUAL();

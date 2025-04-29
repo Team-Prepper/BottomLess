@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../WeaponActor.h"
+#include "Prepper/GamePlay/Weapon/Weapon.h"
 #include "RangeWeapon.generated.h"
 
 UENUM(BlueprintType)
@@ -17,7 +17,7 @@ enum class EFireType : uint8
 };
 
 UCLASS()
-class PREPPER_API ARangeWeapon : public AWeaponActor
+class PREPPER_API ARangeWeapon : public AWeapon
 {
 	GENERATED_BODY()
 
@@ -77,8 +77,6 @@ public:
 	bool bAutomatic = false;
 	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	bool bAutoReload = false;
-
-	void AddAmmo(int32 AmmoToAdd);
 	
 protected:
 	float TargetDistance;

@@ -2,10 +2,8 @@
 #include "AIController.h"
 #include "Component/Combat/BaseCombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/Prepper.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
 #include "Prepper/__Legacy/Weapon/RangeWeapon/RangeWeapon.h"
 
 AEnemyBaseCharacter::AEnemyBaseCharacter()
@@ -229,8 +227,8 @@ void AEnemyBaseCharacter::SpawnWeaponActor()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this; // Setting the owner
 
-	const TObjectPtr<AWeaponActor> EquippedWeapon =
-		World->SpawnActor<AWeaponActor>(WeaponActorClass, Location, Rotation, SpawnParams);
+	const TObjectPtr<AWeapon> EquippedWeapon =
+		World->SpawnActor<AWeapon>(WeaponActorClass, Location, Rotation, SpawnParams);
 
 	if (!EquippedWeapon) return;
 	

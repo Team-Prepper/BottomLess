@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "BaseCombatComponent.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/__Legacy/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
 // 아이템 코드와 수량을 저장할 구조체 이름을 FItemConvertData로 변경
@@ -38,7 +37,7 @@ protected:
 	// Equip Weapon
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
-	AWeaponActor* SecondaryWeapon;
+	AWeapon* SecondaryWeapon;
 	
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
@@ -47,11 +46,11 @@ protected:
 	virtual void ActionEnd() override;
 	
 public:
-	virtual void EquipWeapon(AWeaponActor* WeaponToEquip) override;
+	virtual void EquipWeapon(AWeapon* WeaponToEquip) override;
 
 private:
-	void EquipPrimaryWeapon(AWeaponActor* WeaponToEquip);
-	void EquipSecondaryWeapon(AWeaponActor* WeaponToEquip);
+	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
+	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
 	virtual void DropEquippedWeapon() override;
 	
 	UFUNCTION()
@@ -122,7 +121,8 @@ protected:
 	virtual FGaugeInt GetAmmoShow() override;
 
 public:
-	virtual void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount) override;
+	virtual void AddAmmo(EWeaponType WeaponType, int32 AmmoAmount) override;
+	virtual int UseAmmo(EWeaponType WeaponType, int32 MaxUse) override;
 // Reload
 private:
 	bool bLocallyReload = false;
@@ -132,8 +132,6 @@ public:
 	
 protected:
 	virtual void FinishReload() override;
-private:
-	int32 AmountToReload();
 
 // Set Aiming
 private:

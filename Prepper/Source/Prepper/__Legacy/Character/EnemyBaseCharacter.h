@@ -7,7 +7,7 @@
 #include "Prepper/__Legacy/Interfaces/IDetectable.h"
 #include "EnemyBaseCharacter.generated.h"
 
-class AWeaponActor;
+class AWeapon;
 
 UENUM(BlueprintType)
 enum class EEnemyState : uint8
@@ -106,6 +106,6 @@ protected:
 	void SpawnWeaponActor();
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	TSubclassOf<AWeaponActor> WeaponActorClass;
+	TSubclassOf<AWeapon> WeaponActorClass;
 	
 };

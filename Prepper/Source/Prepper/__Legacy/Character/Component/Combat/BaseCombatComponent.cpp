@@ -3,8 +3,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
-#include "Prepper/GamePlay//Weapon/Weapon.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
+#include "Prepper/GamePlay/Weapon/Weapon.h"
 
 // Actor
 UBaseCombatComponent::UBaseCombatComponent()
@@ -29,7 +28,6 @@ void UBaseCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	HitTarget = TraceHit().Location;
 	
-
 }
 
 void UBaseCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -101,7 +99,7 @@ void UBaseCombatComponent::NotifyWeapon()
 	
 }
 // Equipped Weapon
-void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
+void UBaseCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
@@ -120,7 +118,7 @@ void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	NotifyWeapon();
 }
 
-void UBaseCombatComponent::EquipWeaponSet(AWeaponActor* WeaponToEquip)
+void UBaseCombatComponent::EquipWeaponSet(AWeapon* WeaponToEquip)
 {
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetOwner(Character);

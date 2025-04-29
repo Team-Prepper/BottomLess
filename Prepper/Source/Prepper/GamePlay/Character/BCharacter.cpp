@@ -4,9 +4,16 @@
 #include "BCharacter.h"
 
 #include "CharacterAnimInstance.h"
+#include "InputActionValue.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Prepper/GamePlay/Weapon/WeaponTypes.h"
+#include "Prepper/Unreal/Component/UnrealAmmoBoxComponent.h"
+#include "Prepper/Unreal/Component/UnrealCharacterMoveComponent.h"
+#include "Prepper/Unreal/Component/UnrealCombatComponent.h"
+#include "Prepper/Unreal/Component/UnrealInteractionComponent.h"
+#include "Prepper/Unreal/Component/UnrealStatusComponent.h"
 #include "Prepper/__Legacy/Component/CustomCameraComponent.h"
 #include "Prepper/__Legacy/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 
@@ -14,9 +21,6 @@
 ABCharacter::ABCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	IsAiming = false;
-	IsSprint = false;
 	
 	FlexibleCameraBoom = CreateDefaultSubobject<UFlexibleSpringArmComponent>(TEXT("FlexibleCameraBoom"));
 	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Default"));
@@ -30,7 +34,33 @@ ABCharacter::ABCharacter()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SetComponentTickEnabled(false);
 	
+	Status = CreateDefaultSubobject<UUnrealStatusComponent>(TEXT("StatusComponent"));
+	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
+	AmmoBox = CreateDefaultSubobject<UUnrealAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
+	
+	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
+	CharacterMove = CreateDefaultSubobject<UUnrealCharacterMoveComponent>(TEXT("CharacterMoveComponent"));
+	
 	bUseControllerRotationYaw = false;
+}
+
+TObjectPtr<UStatusComponent> ABCharacter::GetStatus()
+{
+	return Status;
+}
+
+TObjectPtr<UBCombatComponent> ABCharacter::GetCombat()
+{
+	return Combat;
+}
+
+TObjectPtr<UAmmoBoxComponent> ABCharacter::GetAmmoBox()
+{
+	return AmmoBox;
+}
+
+void ABCharacter::PlayAnim(const FString& String)
+{
 }
 
 void ABCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
@@ -44,13 +74,6 @@ void ABCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) cons
 	if (SectionName.Compare("") == 0) return;
 	
 	AnimInstance->Montage_JumpToSection(SectionName);
-}
-
-float ABCharacter::GetSpeed() const
-{
-	if (IsAiming) return AimMovementSpeed;
-	if (IsSprint) return SprintSpeed;
-	return WalkSpeed;
 }
 
 void ABCharacter::GetLookDirection(FVector& Start, FVector& Forward) const
@@ -76,6 +99,11 @@ void ABCharacter::SetEquippedWeaponType(const EWeaponType WeaponType)
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetEquippedWeaponType(WeaponType);
 }
 
+void ABCharacter::SetTeamIdx(int Idx)
+{
+	TeamIdx = Idx;
+}
+
 TObjectPtr<UPawnSensingComponent> ABCharacter::GetPawnSensing() const
 {
 	return PawnSensing;
@@ -85,10 +113,14 @@ void ABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Combat->SetTargetCharacter(this);
+	Interaction->SetTargetCharacter(this);
 }
 
-void ABCharacter::Move(float X, float Z)
+void ABCharacter::Move(const FInputActionValue& Value)
 {
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+	
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -96,14 +128,26 @@ void ABCharacter::Move(float X, float Z)
 	
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(RightDirection, X);
-	AddMovementInput(ForwardDirection, Z);
+	AddMovementInput(RightDirection, MovementVector.X);
+	AddMovementInput(ForwardDirection, MovementVector.Y);
 }
 
-void ABCharacter::Look(float Yaw, float Pitch)
+void ABCharacter::Look(const FInputActionValue& Value)
 {
-	AddControllerYawInput(Yaw);
-	AddControllerPitchInput(Pitch);
+	const FVector2D LookAxisVector = Value.Get<FVector2D>();
+	
+	AddControllerYawInput(LookAxisVector.X);
+	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void ABCharacter::CrouchToggle()
+{
+	CharacterMove->CrouchToggle();
+}
+
+void ABCharacter::JumpTrigger(bool IsTrigger)
+{
+	CharacterMove->JumpTrigger(IsTrigger);
 }
 
 void ABCharacter::Crouch(bool bClientSimulation)
@@ -125,15 +169,20 @@ void ABCharacter::UnCrouch(bool bClientSimulation)
 
 void ABCharacter::SprintTrigger(bool IsTrigger)
 {
-	IsSprint = IsTrigger;
-	GetCharacterMovement()->MaxWalkSpeed = GetSpeed();
+	CharacterMove->SprintTrigger(IsTrigger);
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMove->GetSpeed();
+}
+
+void ABCharacter::EquipButtonPressed()
+{
+	Interaction->Interaction();
 }
 
 void ABCharacter::AimTrigger(bool IsTrigger)
 {
-	IsAiming = IsTrigger;
-	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetAiming(IsAiming);
-	GetCharacterMovement()->MaxWalkSpeed = GetSpeed();
+	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetAiming(IsTrigger);
+	CharacterMove->SetAiming(IsTrigger);
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMove->GetSpeed();
 }
 
 void ABCharacter::Tick(float DeltaTime)

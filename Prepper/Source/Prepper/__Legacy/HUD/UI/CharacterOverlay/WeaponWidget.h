@@ -8,13 +8,16 @@
 #include "Prepper/_Base/Util/GaugeValue.h"
 #include "WeaponWidget.generated.h"
 
+class UBCombatComponent;
+class ICombat;
 class UImage;
 class UTextBlock;
 /**
  * 
  */
 UCLASS()
-class PREPPER_API UWeaponWidget : public UUserWidget, public IObserver<GaugeValue<int>>, public IObserver<FString>
+class PREPPER_API UWeaponWidget : public UUserWidget,
+	public IObserver<GaugeValue<int>>, public IObserver<FString>, public IObserver<UBCombatComponent>
 {
 	GENERATED_BODY()
 private:
@@ -28,4 +31,5 @@ private:
 public:
 	virtual void Update(const GaugeValue<int>& NewData) override;
 	virtual void Update(const FString& NewData) override;
+	virtual void Update(const UBCombatComponent& NewData) override;
 };

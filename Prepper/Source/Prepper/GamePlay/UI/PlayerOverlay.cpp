@@ -3,17 +3,20 @@
 
 #include "PlayerOverlay.h"
 
-#include "GameFramework/GameSession.h"
+#include "Kismet/GameplayStatics.h"
+#include "Prepper/GamePlay/Character/StatusComponent.h"
 #include "Prepper/__Legacy/HUD/PrepperHUD.h"
 
-void UPlayerOverlay::SetHP(float CurHP, float MaxHP)
+void UPlayerOverlay::Update(const UStatusComponent& NewData)
 {
+	float CurHP = NewData.GetCurHealth();
+	float MaxHP = NewData.GetMaxHealth();
+	
 	HealthBar->SetPercent(CurHP / MaxHP);
 	
 	const FString Text = FString::Printf(TEXT("%d/%d"),
 		FMath::CeilToInt(CurHP), FMath::CeilToInt(MaxHP));
 	HealthText->SetText(FText::FromString(Text));
-	
 }
 
 void UPlayerOverlay::DrawCrosshair(const FHUDPackage& Crosshair)
@@ -40,8 +43,8 @@ void UPlayerOverlay::DrawCrosshairUnit(UTexture2D* Texture, const FVector2D& Vie
 	const float TextureWidth = Texture->GetSizeX();
 	const float TextureHeight =  Texture->GetSizeY();
 
-	return;
-	GetPlayerControllerFromNetId(GetWorld(), 0)->GetHUD()->DrawTexture(
+	const APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PC->GetHUD()->DrawTexture(
 		Texture,
 		ViewportCenter.X - (TextureWidth / 2.f) + Spread.X,
 		ViewportCenter.Y - (TextureHeight / 2.f) + Spread.Y,

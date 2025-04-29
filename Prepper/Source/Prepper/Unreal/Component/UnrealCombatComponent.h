@@ -4,27 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/GamePlay/CharacterController/Combat.h"
+#include "Prepper/GamePlay/Character/BCombatComponent.h"
 #include "UnrealCombatComponent.generated.h"
 
+class ABCharacter;
 class ICharacterController;
-class AWeaponActor;
+class AWeapon;
 class UAnimMontage;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UUnrealCombatComponent :
-		public UActorComponent, public ICombat
+class PREPPER_API UUnrealCombatComponent : public UBCombatComponent
 {
 	GENERATED_BODY()
-
-	ICharacterController* TargetCC;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	TObjectPtr<AWeaponActor> EquippedWeapon;
+	TObjectPtr<AWeapon> EquippedWeapon;
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
-	TObjectPtr<AWeaponActor> SecondaryWeapon;
+	TObjectPtr<AWeapon> SecondaryWeapon;
 	UPROPERTY(ReplicatedUsing = OnRep_DroppedWeapon)
-	TObjectPtr<AWeaponActor> DroppedWeapon;
+	TObjectPtr<AWeapon> DroppedWeapon;
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TObjectPtr<UAnimMontage> ReloadMontage;
@@ -44,7 +42,7 @@ class PREPPER_API UUnrealCombatComponent :
 	UFUNCTION()
 	void OnRep_Aiming();
 	UFUNCTION()
-	void OnRep_Ammo() const;
+	void OnRep_Ammo();
 	UFUNCTION()
 	virtual void OnRep_EquippedWeapon();
 	UFUNCTION()
@@ -59,7 +57,7 @@ class PREPPER_API UUnrealCombatComponent :
 	void ReloadAct();
 	void TryReload();
 	void AttackAct();
-	void AimingAct(bool IsTrigger);
+	void AimingAct(bool IsTrigger) const;
 	void FinishAttack();
 	void FinishReload();
 	FVector TraceHit() const;
@@ -67,8 +65,7 @@ class PREPPER_API UUnrealCombatComponent :
 public:	
 	// Sets default values for this component's properties
 	UUnrealCombatComponent();
-	void SetTargetCC(ICharacterController* CC);
-	void Swap();
+	virtual void Swap() override;
 
 protected:
 	// Called when the game starts
@@ -79,10 +76,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	virtual void EquipWeapon(AWeaponActor* Weapon) override;
+	virtual void EquipWeapon(AWeapon* Weapon) override;
 	virtual void AimTrigger(bool IsTrigger) override;
 	virtual void AttackTrigger(bool IsTrigger) override;
 	virtual void Reload() override;
+	
+	virtual FString GetEquippedWeaponCode() const override;
+	virtual FString GetAmmoValue() const override;
 	
 	UFUNCTION(Server, Reliable)
 	void ServerAimTrigger(bool IsTrigger);

@@ -8,6 +8,7 @@
 #include "BCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/__Legacy/Character/Enums/TurningInPlace.h"
 
 void UCharacterAnimInstance::NativeInitializeAnimation()
@@ -35,6 +36,8 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	
 	Speed = Velocity.Size();
 
+	//UE_LOG(LogTemp, Warning, TEXT("Speed: %f"), Speed);
+	
 	bIsInAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
 
 	bIsAccelerating = PlayerCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;

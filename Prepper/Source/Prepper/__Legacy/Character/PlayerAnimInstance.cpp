@@ -6,7 +6,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/__Legacy/Weapon/RangeWeapon/RangeWeapon.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
 {

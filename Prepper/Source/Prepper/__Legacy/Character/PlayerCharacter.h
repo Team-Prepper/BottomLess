@@ -20,7 +20,7 @@ class UFlexibleSpringArmComponent;
 class UInputAction;
 class UCustomCameraComponent;
 class UMapInventory;
-class AWeaponActor;
+class AWeapon;
 class UStatusEffectComponent;
 struct FInputActionValue;
 enum class ETurningInPlace : uint8;
@@ -78,7 +78,7 @@ public:
 
 	virtual void AddItem(const FString& ItemCode, int Count = 1) override;
 	virtual void UseQuickSlotItem(int Idx) override;
-	virtual void EquipWeapon(AWeaponActor* Weapon) override;
+	virtual void EquipWeapon(AWeapon* Weapon) override;
 	virtual void EquipBackpack(AItemBackpack* BackpackToEquip) override;
 	
 	virtual void Heal(float Amount) override;
@@ -204,7 +204,7 @@ public:
 	bool IsAiming();
 	bool IsLocallyReloading();
 	
-	AWeaponActor* GetEquippedWeapon();
+	AWeapon* GetEquippedWeapon();
 	FVector GetHitTarget() const;
 	ECombatState GetCombatState() const;
 

@@ -2,12 +2,10 @@
 
 
 #include "UnrealAIController.h"
-#include "Component/UnrealStatusComponent.h"
-#include "Component/UnrealCombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/__Legacy/Character/EnemyBaseCharacter.h"
+#include "Prepper/GamePlay/Character/BCombatComponent.h"
 
 void AUnrealAIController::BeginPlay()
 {
@@ -30,13 +28,13 @@ void AUnrealAIController::Tick(float DeltaSeconds)
 	{
 		GetTargetCharacter()->GetCharacterMovement()->StopMovementImmediately();
 		//UE_LOG(LogTemp, Warning, TEXT("CODE : zombie Attack"));
-		Combat->AttackTrigger(true);
+		GetTargetCharacter()->GetCombat()->AttackTrigger(true);
 
 		//UE_LOG(LogTemp, Warning, TEXT("%hs"), CombatComp == nullptr ? "True":"False");
 		return;
 	}
 	
-	Combat->AttackTrigger(false);
+	GetTargetCharacter()->GetCombat()->AttackTrigger(false);
 
 	if (InTargetRange(PatrolTarget, CombatRadius))
 	{
@@ -73,42 +71,6 @@ TObjectPtr<ABCharacter> AUnrealAIController::GetTargetCharacter()
 		TargetCharacter = GetPawn<ABCharacter>();
 	}
 	return TargetCharacter;
-}
-
-IStatus* AUnrealAIController::GetStatus()
-{
-	return Status;
-}
-
-ICombat* AUnrealAIController::GetCombat()
-{
-	return Combat;
-}
-
-void AUnrealAIController::Move(const FInputActionValue& Value)
-{
-	
-}
-
-void AUnrealAIController::Look(const FInputActionValue& Value)
-{
-	
-}
-
-void AUnrealAIController::CrouchToggle()
-{
-}
-
-void AUnrealAIController::JumpTrigger(bool IsTrigger)
-{
-}
-
-void AUnrealAIController::SprintTrigger(bool IsTrigger)
-{
-}
-
-void AUnrealAIController::EquipButtonPressed()
-{
 }
 
 void AUnrealAIController::PawnSensingSeen(APawn* SeenPawn)

@@ -5,15 +5,24 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
+#include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "BCharacter.generated.h"
 
+class UAmmoBoxComponent;
+class UStatusComponent;
+class UBCombatComponent;
+class UUnrealCharacterMoveComponent;
+class UUnrealInteractionComponent;
+class UUnrealCombatComponent;
+class UUnrealStatusComponent;
+class ICombat;
+class IStatus;
 class UPawnSensingComponent;
 class UCustomCameraComponent;
 class UFlexibleSpringArmComponent;
 
 UCLASS()
-class PREPPER_API ABCharacter : public ACharacter
+class PREPPER_API ABCharacter : public ACharacter, public ICharacterController
 {
 	GENERATED_BODY()
 	
@@ -21,32 +30,52 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UFlexibleSpringArmComponent> FlexibleCameraBoom;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStatusComponent> Status;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBCombatComponent> Combat;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAmmoBoxComponent> AmmoBox;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UUnrealInteractionComponent> Interaction;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UUnrealCharacterMoveComponent> CharacterMove;
+	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UCustomCameraComponent> FollowCamera;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
 	
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float WalkSpeed = 600;
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float SprintSpeed = 900;
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float AimMovementSpeed = 400.f;
-	
-	bool IsSprint;
-	bool IsAiming;
-
-	float GetSpeed() const;
+	UPROPERTY(EditAnywhere, Category = "Player Default Team Idx")
+	int TeamIdx = 1;
 
 public:
 	// Sets default values for this actor's properties
 	ABCharacter();
+	virtual TObjectPtr<UStatusComponent> GetStatus() override;
+	virtual TObjectPtr<UBCombatComponent> GetCombat() override;
+	virtual TObjectPtr<UAmmoBoxComponent> GetAmmoBox() override;
+	
+	void PlayAnim(const FString& String);
+	
+	virtual void Move(const FInputActionValue& Value) override;
+	virtual void Look(const FInputActionValue& Value) override;
+	
+	virtual void CrouchToggle() override;
+	
+	virtual void JumpTrigger(bool IsTrigger) override;
+	virtual void SprintTrigger(bool IsTrigger) override;
+	
+	virtual void EquipButtonPressed() override;
+	
 	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
-	bool GetIsAiming() const { return IsAiming; }
 	void GetLookDirection(FVector& Start, FVector& Forward) const;
 	void AttachActorAtSocket(FName SocketName, AActor* TargetActor) const;
 	void SetEquippedWeaponType(EWeaponType WeaponType);
-	int GetTeam() { return 1; }
+
+	void SetTeamIdx(int Idx);
+	int GetTeam() const { return TeamIdx; }
 	TObjectPtr<UPawnSensingComponent> GetPawnSensing() const;
 
 protected:
@@ -57,13 +86,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Move(float X, float Z);
-	void Look(float Yaw, float Pitch);
-
 	virtual void Crouch(bool bClientSimulation = false) override;
 	virtual void UnCrouch(bool bClientSimulation = false) override;
 
-	void SprintTrigger(bool IsTrigger);
 	void AimTrigger(bool IsTrigger);
 	
 };

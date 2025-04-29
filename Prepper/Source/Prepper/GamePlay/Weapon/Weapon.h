@@ -1,18 +1,27 @@
 #pragma once
-#include "Prepper/GamePlay/CharacterController/CharacterController.h"
-#include "Prepper/__Legacy/Equipment/Equipment.h"
 
+#include "WeaponTypes.h"
+#include "Prepper/__Legacy/Equipment/Equipment.h"
+#include "Prepper/__Legacy/HUD/PrepperHUD.h"
+#include "Prepper/__Legacy/Object/InteractableActor.h"
 #include "Weapon.generated.h"
 
+
+class IAmmoBox;
+class ABCharacter;
+class UWeaponMagazine;
+class UWeaponAttacking;
 class UWeaponTargeting;
+class IWeaponHandler;
 class UPlayerAimingEffect;
+class ABasePlayerController;
+class ABaseCharacter;
 class USoundCue;
 
 UCLASS()
 class PREPPER_API AWeapon : public AEquipment
 {
 	GENERATED_BODY()
-	
 protected:
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	FName ReloadActionName = FName("AssaultRifle");
@@ -21,72 +30,117 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	TArray<TSubclassOf<UPlayerAimingEffect>> AimingEffectClasses;
 	UPROPERTY(EditAnywhere, Category ="Weapon Properties")
-	UAnimationAsset* FireAnimation;
+	TObjectPtr<UAnimationAsset> FireAnimation;
+	UPROPERTY(EditAnywhere, Category ="Weapon Properties")
+	TObjectPtr<USoundCue> EquipSound;
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float FireDelay = .15f;
 	
+	UPROPERTY(EditAnywhere)
+	EWeaponType WeaponType;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
+	TObjectPtr<UPawnNoiseEmitterComponent> PawnNoiseEmitter; // 노이즈 발생 컴포넌트
+	
+	UPROPERTY(EditAnywhere, Category="Attack")
+	TObjectPtr<USceneComponent> Muzzle;
+	
+	UPROPERTY(VisibleAnywhere, Category="Attack")
+	TObjectPtr<UWeaponAttacking> Attacking;
+	UPROPERTY(VisibleAnywhere, Category="Targeting")
+	TObjectPtr<UWeaponTargeting> Targeting;
+	UPROPERTY(VisibleAnywhere, Category="Magazine")
+	TObjectPtr<UWeaponMagazine> Magazine;
+
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	TObjectPtr<UMeshComponent> WeaponMesh;
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	TObjectPtr<UStaticMeshComponent> StaticWeaponMesh;
+
 	UPROPERTY(EditAnywhere, Category ="Equip")
 	FName WeaponSocketName = FName("RightHandSocket");
 	UPROPERTY(EditAnywhere, Category ="Equip")
 	FName HolsteredWeaponSocketName = FName("HolsteredWeaponSocket");
 	
 	UPROPERTY()
-	TObjectPtr<USoundCue> EquipSound;
-	
-	UPROPERTY(EditAnywhere)
-	float Damage = 20.f;
-	UPROPERTY(EditAnywhere, Category = Combat)
-	float FireDelay = .15f;
-
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
-	UMeshComponent* WeaponMesh;
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
-	UStaticMeshComponent* StaticWeaponMesh;
-
-	UPROPERTY(VisibleAnywhere, Category="Targeting")
-	TObjectPtr<UWeaponTargeting> Targeting;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
-	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트
-	
-	UPROPERTY()
 	TArray<UPlayerAimingEffect*> AimingEffects;
 	TArray<UPlayerAimingEffect*> GetAimingEffect();
+	
+	void WeaponPhysicsActive(bool bActive);
 	
 public:	
 	AWeapon();
 	
-	FName AttachSocketName() const { return WeaponSocketName; }
-	FName GetReloadActionName() const { return ReloadActionName; }
 	virtual FString GetCode() override { return WeaponCode; }
+	void PlayReload(TObjectPtr<ABCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const;
 	float GetFireDelay() const { return FireDelay; }
+	FString GetAmmoValue();
 	
-	virtual int GetLeftAmmo() { return -1; }
-	virtual void Interaction(ICharacterController* Target) override;
-	
+	virtual void Interaction(APlayerCharacter* Target) override;
+	virtual bool CanAttack();
+
 	TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) const;
-	void Fire(const TArray<FVector_NetQuantize>& HitTargets);
+
+	virtual void GetCrosshair(float DeltaTime, bool bIsAiming, FHUDPackage& Crosshair);
+
+	void SetStateAiming(TObjectPtr<ABCharacter> TargetCharacter);
+	void SetStateUnAiming();
 	
-	virtual bool CanReload();
-	virtual void GetCrosshair(
-		float DeltaTime, bool bIsAiming,
-		TObjectPtr<UTexture2D>& Center,
-		TObjectPtr<UTexture2D>& Left,
-		TObjectPtr<UTexture2D>& Right,
-		TObjectPtr<UTexture2D>& Top,
-		TObjectPtr<UTexture2D>& Bottom,
-		float &Spread);
+	void Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate) const;
+	bool CanReload();
+	virtual void OnEquipped(TObjectPtr<ABCharacter> TargetCharacter);
+	virtual void OnDropped(TObjectPtr<ABCharacter> TargetCharacter);
+	virtual void OnEquippedSecondary(TObjectPtr<ABCharacter> TargetCharacter);
 	
-	void PlayEquipWeaponSound();
+	int GetLeftAmmo() const;
+	void SetLeftAmmo(const int Amount) const;
+	void Reload(IAmmoBox* AmmoBox);
+	
+	void PlayEquipWeaponSound(const AActor* TargetActor) const;
 
 protected:
 	virtual void BeginPlay() override;
 
-public:
-	virtual void OnWeaponStateSet();
-	virtual void OnEquipped();
-	virtual void OnDropped();
-	virtual void OnEquippedSecondary();
+	//Legacy
+protected:
+	UPROPERTY(EditAnywhere)
+	float Damage = 20.f;
 
-private:
-	void WeaponPhysicsActive(bool bActive);
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
+	EWeaponState WeaponState;
+	IWeaponHandler* GetWeaponHandler();
 	
+	UFUNCTION()
+	void OnPingTooHigh(bool bPingTooHigh);
+	
+	UPROPERTY(Replicated, EditAnywhere)
+	bool bUseServerSideRewind = false;
+	
+	UFUNCTION()
+	void OnRep_WeaponState();
+	
+	UPROPERTY()
+	ABaseCharacter* OwnerCharacter;
+	UPROPERTY()
+	ABasePlayerController* PlayerOwnerController;
+	
+	IWeaponHandler* WeaponHandler;
+
+public:
+	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	EWeaponType GetWeaponType() const { return WeaponType; };
+	virtual void OnWeaponStateSet();
+	virtual void SetWeaponHandler(IWeaponHandler* NewOwner);
+	virtual void SetWeaponState(EWeaponState State);
+	
+	void PlayReload(TObjectPtr<ABaseCharacter> TargetCharacter, TObjectPtr<UAnimMontage> ReloadMontage) const;
+	virtual void Interaction(ICharacterController* Target) override;
+	
+	void SetStateAiming(TObjectPtr<APlayerCharacter> TargetCharacter);
+	virtual void OnEquipped(ABaseCharacter* TargetCharacter);
+	virtual void OnDropped(ABaseCharacter* TargetCharacter);
+	virtual void OnEquippedSecondary(ABaseCharacter* TargetCharacter);
 };

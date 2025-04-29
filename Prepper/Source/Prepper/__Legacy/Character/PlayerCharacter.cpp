@@ -17,11 +17,11 @@
 #include "Prepper/Prepper.h"
 #include "Prepper/__Legacy/GameMode/DeathMatchGameMode.h"
 #include "Prepper/__Legacy/PlayerState/DeathMatchPlayerState.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
 #include "Prepper/__Legacy/Item/Object/ItemBackpack.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Enums/CombatState.h"
 #include "Enums/TurningInPlace.h"
+#include "Prepper/GamePlay/Weapon/Weapon.h"
 #include "Prepper/__Legacy/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 #include "Prepper/__Legacy/ControlMapper/CharacterControlMapper.h"
 #include "Prepper/__Legacy/Item/Inventory/MapInventory.h"
@@ -191,7 +191,7 @@ void APlayerCharacter::UseQuickSlotItem(int Idx)
 	Inventory->UseItemAtQuickSlot(Idx);
 }
 
-void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
+void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
 	if(bDisableGamePlay) return;
@@ -594,7 +594,7 @@ bool APlayerCharacter::IsLocallyReloading()
 	return CombatComp->bLocallyReload;
 }
 
-AWeaponActor* APlayerCharacter::GetEquippedWeapon()
+AWeapon* APlayerCharacter::GetEquippedWeapon()
 {
 	if(CombatComp == nullptr) return nullptr;
 	return CombatComp->EquippedWeapon;

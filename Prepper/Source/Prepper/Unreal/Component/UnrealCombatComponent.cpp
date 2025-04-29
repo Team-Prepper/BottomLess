@@ -4,16 +4,16 @@
 
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/CharacterController/CharacterController.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
+#include "Prepper/GamePlay/Weapon/Weapon.h"
+#include "Prepper/GamePlay/Character/AmmoBoxComponent.h"
 
-class ICharacterController;
 // Sets default values for this component's properties
 UUnrealCombatComponent::UUnrealCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicated(true);
 
-	TargetCC = nullptr;
+	TargetCharacter = nullptr;
 	EquippedWeapon = nullptr;
 	EquippedAmmo = 0;
 
@@ -25,20 +25,17 @@ UUnrealCombatComponent::UUnrealCombatComponent()
 	IsAimingLocal = false;
 }
 
-void UUnrealCombatComponent::SetTargetCC(ICharacterController* CC)
-{
-	TargetCC = CC;
-}
-
 void UUnrealCombatComponent::Swap()
 {
 	if (SecondaryWeapon == nullptr) return;
-	const TObjectPtr<AWeaponActor> Temp = EquippedWeapon;
+	const TObjectPtr<AWeapon> Temp = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = Temp;
 
-	EquippedWeapon->OnEquipped(TargetCC->GetTargetCharacter());
-	SecondaryWeapon->OnEquippedSecondary(TargetCC->GetTargetCharacter());
+	EquippedWeapon->OnEquipped(TargetCharacter);
+	SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
+	
+	Notify();
 }
 
 // Called when the game starts
@@ -64,12 +61,12 @@ void UUnrealCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UUnrealCombatComponent, DroppedWeapon);
 }
 
-void UUnrealCombatComponent::EquipWeapon(AWeaponActor* Weapon)
+void UUnrealCombatComponent::EquipWeapon(AWeapon* Weapon)
 {
 	if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
 	{
 		SecondaryWeapon = Weapon;
-		SecondaryWeapon->OnEquippedSecondary(TargetCC->GetTargetCharacter());
+		SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
 		return;
 	}
 	
@@ -77,55 +74,62 @@ void UUnrealCombatComponent::EquipWeapon(AWeaponActor* Weapon)
 	
 	if (DroppedWeapon != nullptr)
 	{
-		DroppedWeapon->OnDropped(TargetCC->GetTargetCharacter());
+		DroppedWeapon->OnDropped(TargetCharacter);
 	}
 	
 	EquippedWeapon = Weapon;
-	EquippedWeapon->OnEquipped(TargetCC->GetTargetCharacter());
+	EquippedWeapon->OnEquipped(TargetCharacter);
 	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
+
+	Notify();
+	
 	TryAttack();
 	
 }
 
 void UUnrealCombatComponent::OnRep_Aiming()
 {
-	if (GetOwner<APlayerController>()->IsLocalController()) return;
+	if (GetOwner()->GetInstigatorController() &&
+		GetOwner()->GetInstigatorController()->IsLocalController()) return;
 	AimingAct(IsAiming);
 }
 
-void UUnrealCombatComponent::OnRep_Ammo() const
+void UUnrealCombatComponent::OnRep_Ammo()
 {
 	EquippedWeapon->SetLeftAmmo(EquippedAmmo);
+
+	Notify();
 }
 
 void UUnrealCombatComponent::OnRep_EquippedWeapon()
 {
 	if (!EquippedWeapon) return;
 
-	EquippedWeapon->OnEquipped(TargetCC->GetTargetCharacter());
+	EquippedWeapon->OnEquipped(TargetCharacter);
+	Notify();
 }
 
 void UUnrealCombatComponent::OnRep_SecondaryWeapon()
 {
 	if (!SecondaryWeapon) return;
-	SecondaryWeapon->OnEquippedSecondary(TargetCC->GetTargetCharacter());
+	SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
 }
 
 void UUnrealCombatComponent::OnRep_DroppedWeapon()
 {
 	if (!DroppedWeapon) return;
-	DroppedWeapon->OnDropped(TargetCC->GetTargetCharacter());
+	DroppedWeapon->OnDropped(TargetCharacter);
 }
 
 void UUnrealCombatComponent::MulticastAttackWeapon_Implementation(
 	const TArray<FVector_NetQuantize>& TraceHitTargets) const
 {
-	EquippedWeapon->Fire(TraceHitTargets, GetOwner<AController>(), !GetOwner()->HasAuthority());
+	EquippedWeapon->Fire(TraceHitTargets, GetOwner()->GetInstigatorController(), !GetOwner()->HasAuthority());
 }
 
-void UUnrealCombatComponent::AimingAct(bool IsTrigger)
+void UUnrealCombatComponent::AimingAct(const bool IsTrigger) const
 {
-	const TObjectPtr<ABCharacter> Target = TargetCC->GetTargetCharacter();
+	const TObjectPtr<ABCharacter> Target = TargetCharacter;
 
 	if (Target == nullptr) return;
 	Target->AimTrigger(IsTrigger);
@@ -134,8 +138,9 @@ void UUnrealCombatComponent::AimingAct(bool IsTrigger)
 void UUnrealCombatComponent::FinishAttack()
 {
 	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
-	TryAttack();
+	Notify();
 	IsAttackNow = false;
+	TryAttack();
 }
 
 void UUnrealCombatComponent::TryAttack()
@@ -186,15 +191,16 @@ void UUnrealCombatComponent::ReloadAct()
 		&UUnrealCombatComponent::FinishReload,
 		EquippedWeapon->GetFireDelay()
 	);
-	EquippedWeapon->PlayReload(TargetCC->GetTargetCharacter(), ReloadMontage);
+	EquippedWeapon->PlayReload(TargetCharacter, ReloadMontage);
 }
 
 void UUnrealCombatComponent::FinishReload()
 {
-	EquippedWeapon->Reload();
+	EquippedWeapon->Reload(TargetCharacter->GetAmmoBox());
 	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
-	UE_LOG(LogTemp, Warning, TEXT("Ammo: %d"), EquippedAmmo);
 	IsReload = false;
+
+	Notify();
 }
 
 FVector UUnrealCombatComponent::TraceHit() const
@@ -202,13 +208,13 @@ FVector UUnrealCombatComponent::TraceHit() const
 	FVector Start;
 	FVector Direction;
 
-	TargetCC->GetTargetCharacter()->GetLookDirection(Start, Direction);
+	TargetCharacter->GetLookDirection(Start, Direction);
 	float TraceDistance = 80000.f; // 트레이스 거리 (1,000 유닛)
 	FVector End = Start + (Direction * TraceDistance);
 
 	FCollisionQueryParams TraceParams;
 	TraceParams.bTraceComplex = true; // 복잡한 충돌 확인 여부
-	TraceParams.AddIgnoredActor(TargetCC->GetTargetCharacter()); // 자신은 충돌 무시
+	TraceParams.AddIgnoredActor(TargetCharacter); // 자신은 충돌 무시
 
 	if (FHitResult HitResult; GetWorld()->LineTraceSingleByChannel(
 		HitResult, // 충돌 결과 저장
@@ -233,12 +239,25 @@ void UUnrealCombatComponent::AimTrigger(bool IsTrigger)
 void UUnrealCombatComponent::AttackTrigger(bool IsTrigger)
 {
 	IsAttack = IsTrigger;
+	UE_LOG(LogTemp, Warning, TEXT("AttackTrigger: %d"), IsTrigger ? 1 : 0);
 	ServerAttackTrigger(IsAttack);
 }
 
 void UUnrealCombatComponent::Reload()
 {
 	ServerReload();
+}
+
+FString UUnrealCombatComponent::GetEquippedWeaponCode() const
+{
+	if (EquippedWeapon == nullptr) return FString();
+	return EquippedWeapon->GetCode();
+}
+
+FString UUnrealCombatComponent::GetAmmoValue() const
+{
+	if (EquippedWeapon == nullptr) return FString("- / -");
+	return EquippedWeapon->GetAmmoValue();
 }
 
 void UUnrealCombatComponent::ServerAimTrigger_Implementation(bool IsTrigger)

@@ -7,6 +7,7 @@
 #include "UnrealInteractionComponent.generated.h"
 
 
+class ABCharacter;
 class ICharacterController;
 class IInteractable;
 
@@ -18,13 +19,13 @@ private:
 	UPROPERTY()
 	TScriptInterface<IInteractable> CurInteractableItem;
 	
-	ICharacterController* TargetCC;
-	float TraceRange = 5000.f;
+	TObjectPtr<ABCharacter> TargetCharacter;
+	float TraceRange = 500.f;
 	
 public:
 	// Sets default values for this component's properties
 	UUnrealInteractionComponent();
-	void SetTargetCC(ICharacterController* CC);
+	void SetTargetCharacter(TObjectPtr<ABCharacter> Character);
 	TScriptInterface<IInteractable> GetInteractable() const { return CurInteractableItem; }
 
 protected:
@@ -37,4 +38,8 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	void TraceInteractionItem(FHitResult& TraceHitResult);
 	void SetItemInteractable(TScriptInterface<IInteractable> InteractableItem);
+
+	void Interaction();
+	UFUNCTION(Server, Reliable)
+	void ServerEquipButtonPressed();
 };

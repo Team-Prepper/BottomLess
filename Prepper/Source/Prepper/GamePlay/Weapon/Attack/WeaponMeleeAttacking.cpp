@@ -40,7 +40,8 @@ void UWeaponMeleeAttacking::Fire(FVector Muzzle,
 			ObjectQueryParams,
 			SphereCollisionShape
 		);
-	
+
+	if (IsSimulate) return;
 	
 	for (const FHitResult& Hit : HitResults)
 	{

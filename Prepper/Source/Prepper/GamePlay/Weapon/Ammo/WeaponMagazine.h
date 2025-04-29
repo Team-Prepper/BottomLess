@@ -7,6 +7,9 @@
 #include "WeaponMagazine.generated.h"
 
 
+enum class EWeaponType : uint8;
+class IAmmoBox;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PREPPER_API UWeaponMagazine : public UActorComponent
 {
@@ -20,9 +23,8 @@ public:
 	virtual bool CanAttack();
 	virtual bool CanReload();
 	
-	virtual void Reload(int Amount);
+	virtual void Reload(IAmmoBox* AmmoBox, EWeaponType WeaponType);
 	virtual void UseAmmo(int Amount);
 	virtual void SetAmmo(int Amount);
 	virtual FString ToString();
-	
 };

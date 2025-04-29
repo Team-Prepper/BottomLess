@@ -5,17 +5,18 @@
 #include "CoreMinimal.h"
 #include "../CharacterComponent.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/GamePlay/Weapon/AmmoBox.h"
+#include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/__Legacy/Character/Enums/CombatState.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "Prepper/_Base/Util/GaugeInt.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
 #include "Prepper/__Legacy/Weapon/WeaponHandler.h"
-#include "Prepper/__Legacy/Weapon/WeaponTypes.h"
 #include "BaseCombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UBaseCombatComponent : public UCharacterComponent,
-									 public IWeaponHandler, public ISubject<GaugeValue<int>>, public ISubject<FString>
+									 public IWeaponHandler, public ISubject<GaugeValue<int>>, public ISubject<FString>, public IAmmoBox
 {
 	GENERATED_BODY()
 	friend class ABaseCharacter;
@@ -44,11 +45,11 @@ public:
 // Equip Weapon
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	AWeaponActor* EquippedWeapon;
+	AWeapon* EquippedWeapon;
 	
 public:
-	virtual void EquipWeapon(AWeaponActor* WeaponToEquip) override;
-	void EquipWeaponSet(AWeaponActor* WeaponToEquip);
+	virtual void EquipWeapon(AWeapon* WeaponToEquip) override;
+	void EquipWeaponSet(AWeapon* WeaponToEquip);
 
 protected:
 	virtual void DropEquippedWeapon();
@@ -94,10 +95,8 @@ protected:
 	
 public:
 	virtual void Reload() override;
-	virtual void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
-	{
-		
-	}
+	virtual void AddAmmo(EWeaponType WeaponType, int32 AmmoAmount) override {}
+	virtual int UseAmmo(EWeaponType WeaponType, int32 MaxUse) override { return MaxUse; }
 	void HandleReload() const;
 	
 protected:

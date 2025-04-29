@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/GamePlay/CharacterController/Status.h"
+#include "Prepper/GamePlay/Character/StatusComponent.h"
 #include "UnrealStatusComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UUnrealStatusComponent :
-		public UActorComponent, public IStatus
+class PREPPER_API UUnrealStatusComponent : public UStatusComponent
 {
 	GENERATED_BODY()
 	
@@ -35,8 +34,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual int GetCurHealth() override;
-	virtual int GetMaxHealth() override;
+	virtual int GetCurHealth() const override;
+	virtual int GetMaxHealth() const override;
 	virtual void TakeDamage(int Amount) override;
+	
 	
 };

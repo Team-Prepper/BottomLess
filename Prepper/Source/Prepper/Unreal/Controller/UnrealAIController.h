@@ -14,7 +14,7 @@ class UUnrealStatusComponent;
  * 
  */
 UCLASS()
-class PREPPER_API AUnrealAIController : public AAIController, public ICharacterController
+class PREPPER_API AUnrealAIController : public AAIController
 {
 	GENERATED_BODY()
 
@@ -40,16 +40,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	bool InTargetRange(TObjectPtr<AActor> Target, float Radius);
-	virtual TObjectPtr<ABCharacter> GetTargetCharacter() override;
-	virtual IStatus* GetStatus() override;
-	virtual ICombat* GetCombat() override;
-	
-	virtual void Move(const FInputActionValue& Value) override;
-	virtual void Look(const FInputActionValue& Value) override;
-	virtual void CrouchToggle() override;
-	virtual void JumpTrigger(bool IsTrigger) override;
-	virtual void SprintTrigger(bool IsTrigger) override;
-	virtual void EquipButtonPressed() override;
+	virtual TObjectPtr<ABCharacter> GetTargetCharacter();
 	
 	UFUNCTION()
 	void PawnSensingSeen(APawn* SeenPawn);

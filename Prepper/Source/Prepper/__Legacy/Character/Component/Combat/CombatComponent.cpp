@@ -5,8 +5,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
 #include "Prepper/__Legacy/HUD/PrepperHUD.h"
-#include "Prepper/__Legacy/Weapon/WeaponActor.h"
-#include "Prepper/__Legacy/Weapon/AimingEffect/PlayerAimingEffect.h"
 #include "Prepper/__Legacy/Weapon/RangeWeapon/RangeWeapon.h"
 #include "Prepper/_Base/Util/GaugeInt.h"
 
@@ -86,7 +84,7 @@ void UCombatComponent::ActionEnd()
 	
 }
 
-void UCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
+void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr)
 	{
@@ -111,7 +109,7 @@ void UCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	Character->bUseControllerRotationYaw = true;
 }
 
-void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
+void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
 	DropEquippedWeapon();
@@ -124,7 +122,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	ReloadEmptyWeapon();
 }
 
-void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
+void UCombatComponent::EquipSecondaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
 	
@@ -195,7 +193,7 @@ void UCombatComponent::FinishSwap()
 void UCombatComponent::FinishSwapAttachWeapons()
 {
 	if (Character == nullptr) return;
-	AWeaponActor* TempWeapon = EquippedWeapon;
+	AWeapon* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
 
@@ -256,38 +254,15 @@ void UCombatComponent::FinishReload()
 	Super::FinishReload();
 	
 	if (Character == nullptr || EquippedRangeWeapon == nullptr) return;
-	
-	int32 ReloadAmount = AmountToReload();
 
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
-	{
-		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
-	}
-	
-	EquippedRangeWeapon->AddAmmo(ReloadAmount);
+	EquippedWeapon->Reload(this);
 	
 	NotifyAmmo();
 	ActionEnd();
 	
 }
 
-int32 UCombatComponent::AmountToReload()
-{
-	if (EquippedRangeWeapon == nullptr) return 0;
-	const int32 RoomInMag = EquippedRangeWeapon->GetMagCapacity() - EquippedRangeWeapon->GetLeftAmmo();
-
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
-	{
-		int32 AmountCarried = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
-		int32 Least = FMath::Min(RoomInMag, AmountCarried);
-		return FMath::Clamp(RoomInMag, 0, Least);
-	}
-	return 0;
-}
-
 // Set Aiming
-
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
@@ -425,7 +400,7 @@ FGaugeInt UCombatComponent::GetAmmoShow()
 }
 
 // Ammo
-void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
+void UCombatComponent::AddAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 {
 	if (CarriedAmmoMap.Contains(WeaponType))
 	{
@@ -434,6 +409,22 @@ void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 	}
 
 	ReloadEmptyWeapon();
+}
+
+int UCombatComponent::UseAmmo(EWeaponType WeaponType, int32 MaxUse)
+{
+	if (CarriedAmmoMap.Contains(WeaponType))
+	{
+		return 0;
+	}
+	
+	int Retval = CarriedAmmoMap[WeaponType];
+	if (Retval > MaxUse) Retval = MaxUse;
+
+	CarriedAmmoMap[WeaponType] -= Retval;
+	NotifyAmmo();
+	
+	return Retval;
 }
 
 void UCombatComponent::OnRep_CarriedAmmo()

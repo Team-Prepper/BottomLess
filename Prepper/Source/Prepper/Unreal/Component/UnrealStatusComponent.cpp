@@ -6,6 +6,7 @@
 
 void UUnrealStatusComponent::OnRep_Health()
 {
+	Notify();
 }
 
 void UUnrealStatusComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -20,6 +21,7 @@ UUnrealStatusComponent::UUnrealStatusComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicated(true);
 
 }
 
@@ -38,12 +40,12 @@ void UUnrealStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 }
 
-int UUnrealStatusComponent::GetCurHealth()
+int UUnrealStatusComponent::GetCurHealth() const
 {
 	return CurrentHealth;
 }
 
-int UUnrealStatusComponent::GetMaxHealth()
+int UUnrealStatusComponent::GetMaxHealth() const
 {
 	return MaxHealth;
 }
@@ -53,9 +55,10 @@ void UUnrealStatusComponent::TakeDamage(int Amount)
 	CurrentHealth -= Amount;
 
 	if (CurrentHealth < 0) CurrentHealth = 0;
+
+	Notify();
+	
 	if(CurrentHealth != 0.f) return;
 
-	
-	
 }
 

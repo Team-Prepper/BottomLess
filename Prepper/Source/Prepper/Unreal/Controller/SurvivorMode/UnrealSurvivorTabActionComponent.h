@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/Unreal/Component/UnrealTabActionComponent.h"
+#include "Prepper/Unreal/Controller/UnrealTabActionComponent.h"
 #include "UnrealSurvivorTabActionComponent.generated.h"
 
 

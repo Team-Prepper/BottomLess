@@ -29,9 +29,8 @@ bool UWeaponMagazine::CanReload()
 	return false;
 }
 
-void UWeaponMagazine::Reload(int Amount)
+void UWeaponMagazine::Reload(IAmmoBox* AmmoBox, EWeaponType WeaponType)
 {
-	
 }
 
 void UWeaponMagazine::UseAmmo(int Amount)

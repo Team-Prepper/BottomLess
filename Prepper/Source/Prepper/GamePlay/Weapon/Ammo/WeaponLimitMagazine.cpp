@@ -3,6 +3,9 @@
 
 #include "WeaponLimitMagazine.h"
 
+#include "Prepper/GamePlay/Weapon/AmmoBox.h"
+#include "Prepper/GamePlay/Weapon/WeaponTypes.h"
+
 UWeaponLimitMagazine::UWeaponLimitMagazine()
 {
 	MaxAmmo = 20;
@@ -24,18 +27,16 @@ bool UWeaponLimitMagazine::CanReload()
 	return CurAmmo < MaxAmmo;
 }
 
-void UWeaponLimitMagazine::Reload(const int Amount)
+void UWeaponLimitMagazine::Reload(IAmmoBox* AmmoBox, EWeaponType WeaponType)
 {
-	CurAmmo += Amount;
-	if (CurAmmo > MaxAmmo)
-	{
-		CurAmmo = MaxAmmo;
-	}
+	const int AddAmount = AmmoBox->UseAmmo(WeaponType, MaxAmmo - CurAmmo);
+	UE_LOG(LogTemp, Warning, TEXT("Ammo: %d"), AddAmount);
+	CurAmmo += AddAmount;
 }
 
 FString UWeaponLimitMagazine::ToString()
 {
-	return Super::ToString();
+	return FString::Printf(TEXT("%d / %d"), CurAmmo, MaxAmmo);
 }
 
 void UWeaponLimitMagazine::UseAmmo(const int Amount)

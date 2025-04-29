@@ -7,6 +7,7 @@
 #include "UnrealPlayerInputComponent.generated.h"
 
 
+class AUnrealPlayerController;
 struct FInputActionValue;
 class UInputMappingContext;
 class UInputAction;
@@ -17,7 +18,7 @@ class PREPPER_API UUnrealPlayerInputComponent : public UActorComponent
 {
 	GENERATED_BODY()
 	
-	ICharacterController* CC;
+	TObjectPtr<AUnrealPlayerController> CC;
 
 public:
 	// Sets default values for this component's properties
@@ -69,6 +70,6 @@ protected:
 	void EquipButtonPressed();
 
 public:
-	virtual void SetInput(ICharacterController* cc, UEnhancedInputComponent* Input);
+	virtual void SetInput(TObjectPtr<AUnrealPlayerController> cc, UEnhancedInputComponent* Input);
 	TObjectPtr<UInputMappingContext> GetMappingContext();
 };
