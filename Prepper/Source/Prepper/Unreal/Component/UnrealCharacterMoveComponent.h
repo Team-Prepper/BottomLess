@@ -19,31 +19,33 @@ class PREPPER_API UUnrealCharacterMoveComponent : public UActorComponent
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float AimMovementSpeed = 400.f;
 
-	UPROPERTY(ReplicatedUsing=OnRep_Crouching)
-	bool IsCrouching;
 	UPROPERTY(ReplicatedUsing=OnRep_Sprint)
 	bool IsSprint;
+	UPROPERTY(ReplicatedUsing=OnRep_Aiming)
+	bool IsAiming;
+	UPROPERTY(ReplicatedUsing=OnRep_Crouching)
+	bool IsCrouching;
 	UPROPERTY(ReplicatedUsing=OnRep_Jump)
 	bool IsJump;
-	
 
-	UFUNCTION()
-	void OnRep_Crouching();
 	UFUNCTION()
 	void OnRep_Sprint();
 	UFUNCTION()
-	void OnRep_Jump();
-	UFUNCTION()
 	void OnRep_Aiming();
+	UFUNCTION()
+	void OnRep_Crouching();
+	UFUNCTION()
+	void OnRep_Jump();
 	
-	bool IsCrouchingLocal;
 	bool IsAimingLocal;
 	bool IsSprintLocal;
+	bool IsCrouchingLocal;
 
 	bool IsLocal;
 
 	void CrouchingAct(bool IsTrigger) const;
 	void JumpAct(bool IsTrigger) const;
+	void SetOwnerSpeed();
 
 protected:
 	virtual void BeginPlay() override;
@@ -61,9 +63,11 @@ public:
 	void SetAiming(bool IsTrigger);
 	
 	UFUNCTION(Server, Reliable)
-	void ServerJumpTrigger(bool IsTrigger);
-	UFUNCTION(Server, Reliable)
 	void ServerSprintTrigger(bool IsTrigger);
+	UFUNCTION(Server, Reliable)
+	void ServerAimingTrigger(bool IsTrigger);
+	UFUNCTION(Server, Reliable)
+	void ServerJumpTrigger(bool IsTrigger);
 	UFUNCTION(Server, Reliable)
 	void ServerCrouchTrigger(bool IsTrigger);
 	

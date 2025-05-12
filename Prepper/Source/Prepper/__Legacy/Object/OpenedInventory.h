@@ -4,7 +4,9 @@
 #include "GameFramework/Actor.h"
 #include "OpenedInventory.generated.h"
 
-class UMapInventory;
+class UInventoryComponent;
+class UUnrealInventoryComponent;
+
 UCLASS()
 class PREPPER_API AOpenedInventory : public AActor
 {
@@ -13,7 +15,7 @@ class PREPPER_API AOpenedInventory : public AActor
 public:	
 	AOpenedInventory();
 
-	void SetTargetInventory(UMapInventory* Inventory);
+	void SetTargetInventory(UInventoryComponent* Inventory);
 
 	UFUNCTION()
 	void CloseInventory();
@@ -35,7 +37,7 @@ protected:
 	float HeightPivot = 171;
 
 	UPROPERTY()
-	UMapInventory* TargetInventory;
+	UInventoryComponent* TargetInventory;
 
 	UPROPERTY()
 	class AInventoryInteractableItem* InventoryInteractableItem;
@@ -43,6 +45,7 @@ protected:
 	UPROPERTY()
 	TSubclassOf<class AInventoryInteractableItem> InventoryInteractableItemClass;
 
+	UPROPERTY()
 	TArray<AActor*> SpawnedActors;
 	
 	UPROPERTY(VisibleAnywhere)

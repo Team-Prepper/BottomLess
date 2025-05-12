@@ -4,10 +4,10 @@
 #include "QuickSlotWidget.h"
 
 #include "Components/ListView.h"
-#include "Prepper/__Legacy/HUD/UI/Inventory/InventoryUIUnitData.h"
-#include "Prepper/__Legacy/Item/Inventory/Inventory.h"
+#include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
+#include "Prepper/GamePlay/Item/Inventory/UI/InventoryUIUnitData.h"
 
-void UQuickSlotUI::Update(IInventory* const& NewData)
+void UQuickSlotUI::Update(UInventoryComponent* const& NewData)
 {
 	QuickSlotView->ClearListItems();
 	TArray<FItemConvertData> QuickSlots = NewData->GetQuickSlotIter();

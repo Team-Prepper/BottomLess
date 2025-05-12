@@ -1,10 +1,9 @@
 #include "CharacterOverlay.h"
 
-#include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/VerticalBox.h"
-#include "Engine/Canvas.h"
-#include "Prepper/__Legacy/Item/ItemManager.h"
+#include "Prepper/GamePlay/Item/ItemManager.h"
+#include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
 
 void UCharacterOverlay::Update(const GaugeValue<float>& NewData)
 {

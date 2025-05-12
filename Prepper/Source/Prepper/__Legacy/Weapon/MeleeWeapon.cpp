@@ -1,7 +1,6 @@
 #include "MeleeWeapon.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/__Legacy/Interfaces/Damageable.h"
 #include "Sound/SoundCue.h"
 
 

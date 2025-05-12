@@ -5,7 +5,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
-#include "Prepper/GamePlay/Character/AmmoBoxComponent.h"
 
 // Sets default values for this component's properties
 UUnrealCombatComponent::UUnrealCombatComponent()
@@ -239,7 +238,6 @@ void UUnrealCombatComponent::AimTrigger(bool IsTrigger)
 void UUnrealCombatComponent::AttackTrigger(bool IsTrigger)
 {
 	IsAttack = IsTrigger;
-	UE_LOG(LogTemp, Warning, TEXT("AttackTrigger: %d"), IsTrigger ? 1 : 0);
 	ServerAttackTrigger(IsAttack);
 }
 

@@ -3,7 +3,7 @@
 
 #include "WeaponProjectileAttacking.h"
 
-#include "Prepper/__Legacy/Weapon/Projectile/Projectile.h"
+#include "Prepper/GamePlay/Weapon/Projectile/Projectile.h"
 
 
 // Sets default values for this component's properties

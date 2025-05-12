@@ -5,7 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "UnrealPlayerController.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/Character/BCombatComponent.h"
+#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 
 
 class UEnhancedInputLocalPlayerSubsystem;

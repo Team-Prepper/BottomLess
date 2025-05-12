@@ -4,8 +4,8 @@
 #include "UnrealSurvivorInitialSettingComponent.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Prepper/GamePlay/Item/Inventory/UI/InventoryUI.h"
 #include "Prepper/__Legacy/HUD/UI/CharacterOverlay/StatusWidget.h"
-#include "Prepper/__Legacy/HUD/UI/Inventory/InventoryUI.h"
 #include "Prepper/__Legacy/HUD/UI/Survivor/QuickSlotWidget.h"
 
 
@@ -14,7 +14,7 @@ UUnrealSurvivorInitialSettingComponent::UUnrealSurvivorInitialSettingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }

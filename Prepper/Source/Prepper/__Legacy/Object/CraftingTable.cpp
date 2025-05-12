@@ -3,7 +3,7 @@
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Prepper/__Legacy/HUD/UI/ItemCombination/ItemCombinationUI.h"
+#include "Prepper/GamePlay/Item/ItemCombination/UI/ItemCombinationUI.h"
 #include "Prepper/__Legacy/PlayerController/BasePlayerController.h"
 
 ACraftingTable::ACraftingTable()

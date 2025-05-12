@@ -5,9 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
+#include "Prepper/GamePlay/Interactable.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
-#include "Prepper/__Legacy/Interfaces/Damageable.h"
-#include "Prepper/__Legacy/Interfaces/Interactable.h"
 
 #include "CarPawn.generated.h"
 

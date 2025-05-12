@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "CharacterComponent.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/__Legacy/Interfaces/Interactable.h"
 #include "InteractionComponent.generated.h"
 
 

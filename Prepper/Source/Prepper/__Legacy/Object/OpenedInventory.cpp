@@ -1,7 +1,8 @@
 #include "OpenedInventory.h"
 
-#include "Prepper/__Legacy/Item/ItemManager.h"
-#include "Prepper/__Legacy/Item/Object/InventoryInteractableItem.h"
+#include "Prepper/GamePlay/Item/ItemManager.h"
+#include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
+#include "Prepper/GamePlay/Item/Object/InventoryInteractableItem.h"
 
 AOpenedInventory::AOpenedInventory()
 {
@@ -15,7 +16,7 @@ AOpenedInventory::AOpenedInventory()
 	InventoryMesh->SetupAttachment(RootComponent);
 }
 
-void AOpenedInventory::SetTargetInventory(UMapInventory* Inventory)
+void AOpenedInventory::SetTargetInventory(UInventoryComponent* Inventory)
 {
 	TargetInventory = Inventory;
 	InitInventory();

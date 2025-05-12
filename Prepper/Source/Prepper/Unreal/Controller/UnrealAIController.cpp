@@ -2,14 +2,24 @@
 
 
 #include "UnrealAIController.h"
+
+#include "AmmoBox/UnrealAIAmmoBoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/Character/BCombatComponent.h"
+#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
+
+AUnrealAIController::AUnrealAIController()
+{
+	EnemyState = EEnemyState::EES_Patrolling;
+	
+	AmmoBox = CreateDefaultSubobject<UUnrealAIAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
+}
 
 void AUnrealAIController::BeginPlay()
 {
-	if (!GetTargetCharacter()) return;
+	
+	if (!HasAuthority()) return;
 	
 	GetTargetCharacter()->GetPawnSensing()->SetComponentTickEnabled(true);
 	GetTargetCharacter()->GetPawnSensing()->SightRadius = 4000.f;
@@ -52,7 +62,6 @@ void AUnrealAIController::Tick(float DeltaSeconds)
 		GetTargetCharacter()->SprintTrigger(false);
 		MoveToActor(PatrolTarget);
 	}
-	
 }
 
 bool AUnrealAIController::InTargetRange(const TObjectPtr<AActor> Target, const float Radius)
@@ -75,6 +84,10 @@ TObjectPtr<ABCharacter> AUnrealAIController::GetTargetCharacter()
 
 void AUnrealAIController::PawnSensingSeen(APawn* SeenPawn)
 {
+	const TObjectPtr<ABCharacter> SeenCharacter = Cast<ABCharacter>(SeenPawn);
+
+	if (SeenCharacter == nullptr || SeenCharacter->GetTeam() != 0) return;
+	
 	PatrolTarget = SeenPawn;
 	
 	if (EnemyState != EEnemyState::EES_Attacking)
@@ -89,6 +102,10 @@ void AUnrealAIController::PawnSensingSeen(APawn* SeenPawn)
 void AUnrealAIController::PawnSensingHeard(APawn* HeardPawn, const FVector& Location, float Volume)
 {
 	if (EnemyState == EEnemyState::EES_Chasing) return;
+
+	const TObjectPtr<ABCharacter> HeardCharacter = Cast<ABCharacter>(HeardPawn);
+
+	if (HeardCharacter == nullptr || HeardCharacter->GetTeam() != 0) return;
 	
 	UE_LOG(LogTemp, Display, TEXT("CODE : zombie HEAR"));
 	

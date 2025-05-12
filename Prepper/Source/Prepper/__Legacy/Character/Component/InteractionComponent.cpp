@@ -5,8 +5,8 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Prepper.h"
+#include "Prepper/GamePlay/Interactable.h"
 #include "Prepper/__Legacy/Character/BaseCharacter.h"
-#include "Prepper/__Legacy/Interfaces/Interactable.h"
 
 UInteractionComponent::UInteractionComponent()
 {

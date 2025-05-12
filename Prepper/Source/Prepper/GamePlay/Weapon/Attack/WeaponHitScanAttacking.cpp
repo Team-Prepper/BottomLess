@@ -5,7 +5,7 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/__Legacy/Interfaces/Damageable.h"
+#include "Prepper/GamePlay/Damageable.h"
 
 // Sets default values for this component's properties
 UWeaponHitScanAttacking::UWeaponHitScanAttacking()

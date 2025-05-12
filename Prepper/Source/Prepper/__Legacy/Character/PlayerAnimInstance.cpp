@@ -71,11 +71,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	AO_Yaw = PlayerCharacter->GetAO_Yaw();
 	AO_Pitch = PlayerCharacter->GetAO_Pitch();
-	
-	YawOffset = 45;
-	AO_Yaw = 45;
-	AO_Pitch = 45;
-	Lean = 45;
 
 	if(bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PlayerCharacter->GetMesh())
 	{

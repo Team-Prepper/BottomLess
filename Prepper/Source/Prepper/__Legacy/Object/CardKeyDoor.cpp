@@ -5,8 +5,9 @@
 
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
-#include "Prepper/__Legacy/Item/Inventory/MapInventory.h"
 
 
 // Sets default values

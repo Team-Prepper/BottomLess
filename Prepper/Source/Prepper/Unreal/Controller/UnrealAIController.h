@@ -18,12 +18,11 @@ class PREPPER_API AUnrealAIController : public AAIController
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAmmoBoxComponent> AmmoBox;
+
+	UPROPERTY()
 	TObjectPtr<ABCharacter> TargetCharacter;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealStatusComponent> Status;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealCombatComponent> Combat;
 	
 	UPROPERTY(EditAnywhere)
 	float CombatRadius = 500.f;
@@ -37,6 +36,7 @@ class PREPPER_API AUnrealAIController : public AAIController
 	EEnemyState EnemyState;
 
 public:
+	AUnrealAIController();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	bool InTargetRange(TObjectPtr<AActor> Target, float Radius);

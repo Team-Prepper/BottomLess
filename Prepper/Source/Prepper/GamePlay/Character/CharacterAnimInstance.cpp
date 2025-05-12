@@ -16,8 +16,12 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 
 	PlayerCharacter = Cast<ABCharacter>(TryGetPawnOwner());
+	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+	
 	bWeaponEquipped = false;
 	bRotateRootBone = true;
+	
+	AO_Yaw = 0;
 }
 
 void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -41,24 +45,24 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsInAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
 
 	bIsAccelerating = PlayerCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
-	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	
 	bElimmed = false;
 	bUseAimOffsets = true;
 	bTransformRightHand = false;
 	
-	bUseFABRIK = true;
+	bUseFABRIK = false;
 	
 	if (!bRotateRootBone && Speed > 0)
 	{
 		// OFFSET YAW FOR STRAFING
 		const FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(
 			UKismetMathLibrary::MakeRotFromX(Velocity), PlayerCharacter->GetBaseAimRotation());
-
-		AO_Yaw = 0;
+		
 		YawOffset = DeltaRot.Yaw;
 		AO_Pitch = DeltaRot.Pitch;
 
+		//UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), YawOffset);
+		
 	}
 
 	if (!bWeaponEquipped) return;

@@ -413,7 +413,7 @@ void UCombatComponent::AddAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 
 int UCombatComponent::UseAmmo(EWeaponType WeaponType, int32 MaxUse)
 {
-	if (CarriedAmmoMap.Contains(WeaponType))
+	if (!CarriedAmmoMap.Contains(WeaponType))
 	{
 		return 0;
 	}

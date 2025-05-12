@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
-#include "Prepper/__Legacy/Interfaces/Damageable.h"
 #include "GameFramework/Character.h"
+#include "Prepper/GamePlay/Damageable.h"
 #include "BaseCharacter.generated.h"
 
 class UCharacterComponent;

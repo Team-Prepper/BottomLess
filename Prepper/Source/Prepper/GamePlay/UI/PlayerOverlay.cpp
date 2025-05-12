@@ -4,13 +4,13 @@
 #include "PlayerOverlay.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/GamePlay/Character/StatusComponent.h"
+#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
 #include "Prepper/__Legacy/HUD/PrepperHUD.h"
 
 void UPlayerOverlay::Update(const UStatusComponent& NewData)
 {
-	float CurHP = NewData.GetCurHealth();
-	float MaxHP = NewData.GetMaxHealth();
+	const float CurHP = NewData.GetCurHealth();
+	const float MaxHP = NewData.GetMaxHealth();
 	
 	HealthBar->SetPercent(CurHP / MaxHP);
 	

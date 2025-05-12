@@ -3,9 +3,8 @@
 
 #include "PrepperGameInstance.h"
 
+#include "Prepper/GamePlay/Item/ItemManager.h"
 #include "Prepper/__Legacy/Equipment/EquipmentManager.h"
-#include "Prepper/__Legacy/Item/ItemManager.h"
-#include "Prepper/__Legacy/Item/ItemData/ItemData.h"
 #include "Prepper/_Base/DataTableGetter.h"
 #include "Prepper/_Base/UISystem/UIManager.h"
 

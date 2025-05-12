@@ -5,9 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
+#include "Prepper/GamePlay/Damageable.h"
+#include "Prepper/GamePlay/PlayerAbility.h"
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
+#include "Prepper/GamePlay/Weapon/AmmoBox.h"
 #include "BCharacter.generated.h"
 
+enum class EWeaponType : uint8;
 class UAmmoBoxComponent;
 class UStatusComponent;
 class UBCombatComponent;
@@ -22,11 +26,10 @@ class UCustomCameraComponent;
 class UFlexibleSpringArmComponent;
 
 UCLASS()
-class PREPPER_API ABCharacter : public ACharacter, public ICharacterController
+class PREPPER_API ABCharacter : public ACharacter, public ICharacterController, public IPlayerAbility, public IDamageable
 {
 	GENERATED_BODY()
 	
-private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UFlexibleSpringArmComponent> FlexibleCameraBoom;
 
@@ -36,6 +39,8 @@ private:
 	TObjectPtr<UBCombatComponent> Combat;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAmmoBoxComponent> AmmoBox;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInventoryComponent> Inventory;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealInteractionComponent> Interaction;
@@ -55,7 +60,8 @@ public:
 	ABCharacter();
 	virtual TObjectPtr<UStatusComponent> GetStatus() override;
 	virtual TObjectPtr<UBCombatComponent> GetCombat() override;
-	virtual TObjectPtr<UAmmoBoxComponent> GetAmmoBox() override;
+	virtual IAmmoBox* GetAmmoBox() override;
+	void SetAmmoBox(TObjectPtr<UAmmoBoxComponent> NewAmmoBox);
 	
 	void PlayAnim(const FString& String);
 	
@@ -68,11 +74,26 @@ public:
 	virtual void SprintTrigger(bool IsTrigger) override;
 	
 	virtual void EquipButtonPressed() override;
+
+	void SetMaxSpeed(float MaxSpeed);
 	
 	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
 	void GetLookDirection(FVector& Start, FVector& Forward) const;
 	void AttachActorAtSocket(FName SocketName, AActor* TargetActor) const;
 	void SetEquippedWeaponType(EWeaponType WeaponType);
+	
+	virtual void AddItem(const FString& ItemCode, int Count) override;
+	virtual void UseQuickSlotItem(int Idx) override;
+	virtual void EquipWeapon(class AWeapon* Weapon) override;
+	virtual void EquipBackpack(class AItemBackpack* BackpackToEquip) override;
+
+	virtual void Heal(float Amount) override;
+	virtual void Eat(float Amount) override;
+	virtual void Drink(float Amount) override;
+
+	virtual UInventoryComponent* GetInventory() const override;
+	
+	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
 	void SetTeamIdx(int Idx);
 	int GetTeam() const { return TeamIdx; }

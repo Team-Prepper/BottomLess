@@ -1,6 +1,6 @@
 #include "WeaponBoxSpawner.h"
 #include "Net/UnrealNetwork.h"
-#include "Prepper/__Legacy/Item/Object/InteractableBox.h"
+#include "Prepper/GamePlay/Item/Object/InteractableBox.h"
 
 // Sets default values
 AWeaponBoxSpawner::AWeaponBoxSpawner()

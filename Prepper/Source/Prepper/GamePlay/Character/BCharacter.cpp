@@ -5,17 +5,19 @@
 
 #include "CharacterAnimInstance.h"
 #include "InputActionValue.h"
+#include "Component/CustomCameraComponent.h"
+#include "Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Prepper/GamePlay/Character/Component/AmmoBoxComponent.h"
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
-#include "Prepper/Unreal/Component/UnrealAmmoBoxComponent.h"
 #include "Prepper/Unreal/Component/UnrealCharacterMoveComponent.h"
 #include "Prepper/Unreal/Component/UnrealCombatComponent.h"
 #include "Prepper/Unreal/Component/UnrealInteractionComponent.h"
 #include "Prepper/Unreal/Component/UnrealStatusComponent.h"
-#include "Prepper/__Legacy/Component/CustomCameraComponent.h"
-#include "Prepper/__Legacy/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
+#include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
 
 // Sets default values
 ABCharacter::ABCharacter()
@@ -36,7 +38,7 @@ ABCharacter::ABCharacter()
 	
 	Status = CreateDefaultSubobject<UUnrealStatusComponent>(TEXT("StatusComponent"));
 	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
-	AmmoBox = CreateDefaultSubobject<UUnrealAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
+	Inventory = CreateDefaultSubobject<UUnrealInventoryComponent>(TEXT("Inventory"));
 	
 	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
 	CharacterMove = CreateDefaultSubobject<UUnrealCharacterMoveComponent>(TEXT("CharacterMoveComponent"));
@@ -54,9 +56,14 @@ TObjectPtr<UBCombatComponent> ABCharacter::GetCombat()
 	return Combat;
 }
 
-TObjectPtr<UAmmoBoxComponent> ABCharacter::GetAmmoBox()
+IAmmoBox* ABCharacter::GetAmmoBox()
 {
 	return AmmoBox;
+}
+
+void ABCharacter::SetAmmoBox(const TObjectPtr<UAmmoBoxComponent> NewAmmoBox)
+{
+	AmmoBox = NewAmmoBox;
 }
 
 void ABCharacter::PlayAnim(const FString& String)
@@ -66,12 +73,15 @@ void ABCharacter::PlayAnim(const FString& String)
 void ABCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
 {
 	if (Montage == nullptr) return;
+	UE_LOG(LogTemp, Warning, TEXT("Play Anim"));
 	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	
 	if (!AnimInstance) return;
 	
 	AnimInstance->Montage_Play(Montage);
-	if (SectionName.Compare("") == 0) return;
+	
+	if (SectionName.IsEqual("")) return;
 	
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
@@ -99,6 +109,65 @@ void ABCharacter::SetEquippedWeaponType(const EWeaponType WeaponType)
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetEquippedWeaponType(WeaponType);
 }
 
+void ABCharacter::AddItem(const FString& ItemCode, int Count)
+{
+
+}
+
+void ABCharacter::UseQuickSlotItem(int Idx)
+{
+
+}
+
+void ABCharacter::EquipWeapon(AWeapon* Weapon)
+{
+
+}
+
+void ABCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
+{
+
+}
+
+void ABCharacter::Heal(float Amount)
+{
+
+}
+
+void ABCharacter::Eat(float Amount)
+{
+
+}
+
+void ABCharacter::Drink(float Amount)
+{
+
+}
+
+UInventoryComponent* ABCharacter::GetInventory() const
+{
+	return Inventory;
+}
+
+void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
+{
+	GetStatus()->TakeDamage(Damage);
+	
+	if (GetStatus()->GetCurHealth() > 0) return;
+
+	/*
+	// 해당 캐릭터가 사망했다면 
+	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	
+	if(PrepperGameMode == nullptr) return;
+	
+	ABasePlayerController* PrepperPlayerController = Cast<ABasePlayerController>(Controller);
+	ABasePlayerController* AttackerController = Cast<ABasePlayerController>(InstigatorController);
+	
+	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);*/
+
+}
+
 void ABCharacter::SetTeamIdx(int Idx)
 {
 	TeamIdx = Idx;
@@ -115,10 +184,13 @@ void ABCharacter::BeginPlay()
 	
 	Combat->SetTargetCharacter(this);
 	Interaction->SetTargetCharacter(this);
+	Inventory->SetOwner(this);
 }
 
 void ABCharacter::Move(const FInputActionValue& Value)
 {
+	if (Controller == nullptr) return;
+	
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 	
 	const FRotator Rotation = Controller->GetControlRotation();
@@ -134,10 +206,13 @@ void ABCharacter::Move(const FInputActionValue& Value)
 
 void ABCharacter::Look(const FInputActionValue& Value)
 {
+	if (Controller == nullptr) return;
+	
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
 	
 	AddControllerYawInput(LookAxisVector.X);
 	AddControllerPitchInput(LookAxisVector.Y);
+	
 }
 
 void ABCharacter::CrouchToggle()
@@ -170,7 +245,6 @@ void ABCharacter::UnCrouch(bool bClientSimulation)
 void ABCharacter::SprintTrigger(bool IsTrigger)
 {
 	CharacterMove->SprintTrigger(IsTrigger);
-	GetCharacterMovement()->MaxWalkSpeed = CharacterMove->GetSpeed();
 }
 
 void ABCharacter::EquipButtonPressed()
@@ -178,11 +252,15 @@ void ABCharacter::EquipButtonPressed()
 	Interaction->Interaction();
 }
 
+void ABCharacter::SetMaxSpeed(float MaxSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
+}
+
 void ABCharacter::AimTrigger(bool IsTrigger)
 {
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetAiming(IsTrigger);
 	CharacterMove->SetAiming(IsTrigger);
-	GetCharacterMovement()->MaxWalkSpeed = CharacterMove->GetSpeed();
 }
 
 void ABCharacter::Tick(float DeltaTime)

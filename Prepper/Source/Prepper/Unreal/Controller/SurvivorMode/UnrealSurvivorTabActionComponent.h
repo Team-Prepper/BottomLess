@@ -7,6 +7,8 @@
 #include "UnrealSurvivorTabActionComponent.generated.h"
 
 
+class UInventoryUI;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PREPPER_API UUnrealSurvivorTabActionComponent : public UUnrealTabActionComponent
 {

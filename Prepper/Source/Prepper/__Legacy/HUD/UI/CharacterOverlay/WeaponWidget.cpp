@@ -5,7 +5,7 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "Prepper/GamePlay/Character/BCombatComponent.h"
+#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 #include "Prepper/__Legacy/Equipment/EquipmentManager.h"
 
 void UWeaponWidget::Update(const GaugeValue<int>& NewData)
@@ -30,4 +30,5 @@ void UWeaponWidget::Update(const UBCombatComponent& NewData)
 	
 	const FString AmmoText = NewData.GetAmmoValue();
 	WeaponAmmoValue->SetText(FText::FromString(AmmoText));
+	
 }

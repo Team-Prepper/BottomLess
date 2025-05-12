@@ -44,9 +44,15 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	void JumpAct(bool IsTrigger);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAmmoBoxComponent> AmmoBox;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealPlayerInputComponent> InputConnector;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealTabActionComponent> TabAction;
+
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnRep_Pawn() override;
 
 protected:
 	virtual void SetupInputComponent() override;

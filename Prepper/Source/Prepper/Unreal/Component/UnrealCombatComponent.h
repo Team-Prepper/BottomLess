@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/GamePlay/Character/BCombatComponent.h"
+#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 #include "UnrealCombatComponent.generated.h"
 
 class ABCharacter;

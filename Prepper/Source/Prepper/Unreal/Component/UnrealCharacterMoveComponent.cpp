@@ -6,43 +6,49 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 
-
-void UUnrealCharacterMoveComponent::OnRep_Crouching()
+// Sets default values for this component's properties
+UUnrealCharacterMoveComponent::UUnrealCharacterMoveComponent()
 {
-	if (IsLocal) return;
-	CrouchingAct(IsCrouching);
+	PrimaryComponentTick.bCanEverTick = false;
+
+	IsSprint = false;
+	IsCrouching = false;
+	IsJump = false;
+	
+	IsSprintLocal = false;
+	IsAimingLocal = false;
+	IsCrouchingLocal = false;
+
+	IsLocal = false;
+
+	SetIsReplicated(true);
 }
 
 void UUnrealCharacterMoveComponent::OnRep_Sprint()
 {
 	if (IsLocal) return;
 	IsSprintLocal = IsSprint;
+	SetOwnerSpeed();
+}
+
+void UUnrealCharacterMoveComponent::OnRep_Aiming()
+{
+	if (IsLocal) return;
+	IsAimingLocal = IsAiming;
+	SetOwnerSpeed();
+}
+
+void UUnrealCharacterMoveComponent::OnRep_Crouching()
+{
+	if (IsLocal) return;
+	IsCrouchingLocal = IsCrouching;
+	CrouchingAct(IsCrouchingLocal);
 }
 
 void UUnrealCharacterMoveComponent::OnRep_Jump()
 {
 	if (IsLocal) return;
 	JumpAct(IsJump);
-}
-
-void UUnrealCharacterMoveComponent::OnRep_Aiming()
-{
-}
-
-// Sets default values for this component's properties
-UUnrealCharacterMoveComponent::UUnrealCharacterMoveComponent()
-{
-	PrimaryComponentTick.bCanEverTick = false;
-
-	IsCrouching = false;
-	IsSprint = false;
-	IsJump = false;
-	
-	IsCrouchingLocal = false;
-	IsAimingLocal = false;
-	IsSprintLocal = false;
-
-	IsLocal = false;
 }
 
 float UUnrealCharacterMoveComponent::GetSpeed() const
@@ -85,16 +91,18 @@ void UUnrealCharacterMoveComponent::JumpAct(const bool IsTrigger) const
 	Target->StopJumping();
 }
 
+void UUnrealCharacterMoveComponent::SetOwnerSpeed()
+{
+	GetOwner<ABCharacter>()->SetMaxSpeed(GetSpeed());
+}
+
 void UUnrealCharacterMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	if (!GetOwner()->GetInstigatorController()) return;
 	
-	if (GetOwner()->GetInstigatorController()->IsLocalController())
-	{
-		IsLocal = true;
-	}
+	IsLocal = GetOwner()->GetInstigatorController()->IsLocalController();
 }
 
 void UUnrealCharacterMoveComponent::CrouchToggle()
@@ -114,24 +122,39 @@ void UUnrealCharacterMoveComponent::SprintTrigger(bool IsTrigger)
 {
 	IsSprintLocal = IsTrigger;
 	ServerSprintTrigger(IsSprintLocal);
+	SetOwnerSpeed();
 }
 
 void UUnrealCharacterMoveComponent::SetAiming(bool IsTrigger)
 {
 	IsAimingLocal = IsTrigger;
-}
-
-void UUnrealCharacterMoveComponent::ServerCrouchTrigger_Implementation(bool IsTrigger)
-{
-	IsCrouching = IsTrigger;
+	ServerAimingTrigger(IsAimingLocal);
+	SetOwnerSpeed();
 }
 
 void UUnrealCharacterMoveComponent::ServerSprintTrigger_Implementation(bool IsTrigger)
 {
 	IsSprint = IsTrigger;
+	IsSprintLocal = IsSprint;
+	SetOwnerSpeed();
+}
+
+void UUnrealCharacterMoveComponent::ServerAimingTrigger_Implementation(bool IsTrigger)
+{
+	IsAiming = IsTrigger;
+	IsAimingLocal = IsAiming;
+	SetOwnerSpeed();
+}
+
+void UUnrealCharacterMoveComponent::ServerCrouchTrigger_Implementation(bool IsTrigger)
+{
+	IsCrouching = IsTrigger;
+	IsCrouchingLocal = IsCrouching;
+	CrouchingAct(IsCrouchingLocal);
 }
 
 void UUnrealCharacterMoveComponent::ServerJumpTrigger_Implementation(bool IsTrigger)
 {
 	IsJump = IsTrigger;
+	JumpAct(IsJump);
 }

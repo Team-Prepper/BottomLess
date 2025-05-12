@@ -4,10 +4,9 @@
 #include "UnrealInteractionComponent.h"
 
 #include "Prepper/Prepper.h"
+#include "Prepper/GamePlay/Interactable.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/Character/BCombatComponent.h"
-#include "Prepper/GamePlay/CharacterController/CharacterController.h"
-#include "Prepper/__Legacy/Interfaces/Interactable.h"
+#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 
 
 // Sets default values for this component's properties

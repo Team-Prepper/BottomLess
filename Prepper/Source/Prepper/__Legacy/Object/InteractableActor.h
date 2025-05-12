@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/__Legacy/Interfaces/Interactable.h"
+#include "Prepper/GamePlay/Interactable.h"
 #include "InteractableActor.generated.h"
 
 class IPlayerAbility;

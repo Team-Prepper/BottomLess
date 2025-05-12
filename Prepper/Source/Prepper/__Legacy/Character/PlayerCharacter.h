@@ -4,13 +4,14 @@
 #include "BaseCharacter.h"
 #include "PetCharacter.h"
 #include "Enums/CombatState.h"
-#include "Prepper/__Legacy/Component/CustomCameraComponent.h"
+#include "Prepper/GamePlay/PlayerAbility.h"
+#include "Prepper/GamePlay/Character/Component/CustomCameraComponent.h"
 #include "Prepper/__Legacy/ControlMapper/CharacterControlMapper.h"
 #include "Prepper/__Legacy/ControlMapper/Controllable.h"
 #include "Prepper/__Legacy/Interfaces/InteractWithCrosshairInterface.h"
-#include "Prepper/__Legacy/Interfaces/PlayerAbility.h"
 #include "PlayerCharacter.generated.h"
 
+class UInventoryComponent;
 class AEquipment;
 class UWidgetComponent;
 class UInteractionComponent;
@@ -19,7 +20,7 @@ class APrepperHUD;
 class UFlexibleSpringArmComponent;
 class UInputAction;
 class UCustomCameraComponent;
-class UMapInventory;
+class UUnrealInventoryComponent;
 class AWeapon;
 class UStatusEffectComponent;
 struct FInputActionValue;
@@ -65,7 +66,7 @@ public:
 // IPlayerAbility
 private:
 	UPROPERTY()
-	TObjectPtr<UMapInventory> Inventory;
+	TObjectPtr<UInventoryComponent> Inventory;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedBackpack)
 	TObjectPtr<AItemBackpack> EquippedBackpack;
@@ -74,7 +75,7 @@ private:
 	TObjectPtr<UStatusEffectComponent> StatusEffect;
 	
 public:
-	virtual UMapInventory* GetInventory() const;
+	virtual UInventoryComponent* GetInventory() const override;
 
 	virtual void AddItem(const FString& ItemCode, int Count = 1) override;
 	virtual void UseQuickSlotItem(int Idx) override;

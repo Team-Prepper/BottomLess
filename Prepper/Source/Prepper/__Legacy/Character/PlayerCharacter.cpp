@@ -17,14 +17,15 @@
 #include "Prepper/Prepper.h"
 #include "Prepper/__Legacy/GameMode/DeathMatchGameMode.h"
 #include "Prepper/__Legacy/PlayerState/DeathMatchPlayerState.h"
-#include "Prepper/__Legacy/Item/Object/ItemBackpack.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Enums/CombatState.h"
 #include "Enums/TurningInPlace.h"
+#include "Prepper/GamePlay/Interactable.h"
+#include "Prepper/GamePlay/Character/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
+#include "Prepper/GamePlay/Item/Object/ItemBackpack.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
-#include "Prepper/__Legacy/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
+#include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
 #include "Prepper/__Legacy/ControlMapper/CharacterControlMapper.h"
-#include "Prepper/__Legacy/Item/Inventory/MapInventory.h"
 #include "Prepper/__Legacy/PlayerController/BasePlayerController.h"
 
 // Actor
@@ -60,7 +61,7 @@ APlayerCharacter::APlayerCharacter()
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
 	InteractionComponent->SetIsReplicated(true);
 	
-	Inventory = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
+	Inventory = CreateDefaultSubobject<UUnrealInventoryComponent>(TEXT("Inventory"));
 	Inventory->SetOwner(this);
 	Inventory->SetIsReplicated(true);
 
@@ -175,7 +176,7 @@ void APlayerCharacter::Jump()
 }
 
 // IPlayerAbility
-UMapInventory* APlayerCharacter::GetInventory() const
+UInventoryComponent* APlayerCharacter::GetInventory() const
 {
 	return Inventory;
 }

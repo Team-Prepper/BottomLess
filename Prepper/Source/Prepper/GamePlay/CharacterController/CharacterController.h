@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Prepper/GamePlay/Weapon/AmmoBox.h"
 #include "UObject/Interface.h"
 #include "CharacterController.generated.h"
 
@@ -33,7 +34,7 @@ public:
 	virtual TObjectPtr<ABCharacter> GetTargetCharacter() PURE_VIRTUAL(ICharacterController::GetStatus, return nullptr; )
 	virtual TObjectPtr<UStatusComponent> GetStatus() PURE_VIRTUAL(ICharacterController::GetStatus, return nullptr; );
 	virtual TObjectPtr<UBCombatComponent> GetCombat() PURE_VIRTUAL(ICharacterController::GetCombat, return nullptr; );
-	virtual TObjectPtr<UAmmoBoxComponent> GetAmmoBox() PURE_VIRTUAL(ICharacterController::GetAmmoBox, return nullptr; );
+	virtual IAmmoBox* GetAmmoBox() PURE_VIRTUAL(ICharacterController::GetAmmoBox, return nullptr; );
 	
 	virtual void Move(const FInputActionValue& Value) PURE_VIRTUAL();
 	virtual void Look(const FInputActionValue& Value) PURE_VIRTUAL();

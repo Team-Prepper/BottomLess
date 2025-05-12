@@ -157,7 +157,7 @@ private:
 // Targeting
 protected:
 	UPROPERTY()
-	APrepperHUD* HUD;
+	class APrepperHUD* HUD;
 	
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 

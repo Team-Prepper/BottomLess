@@ -4,7 +4,9 @@
 #include "UnrealSurvivorTabActionComponent.h"
 
 #include "Blueprint/UserWidget.h"
-#include "Prepper/__Legacy/HUD/UI/Inventory/InventoryUI.h"
+#include "Prepper/GamePlay/Item/Inventory/UI/InventoryUI.h"
+#include "Prepper/Unreal/Controller/UnrealPlayerController.h"
+#include "Prepper/GamePlay/Character/BCharacter.h"
 
 
 // Sets default values for this component's properties
@@ -23,6 +25,7 @@ void UUnrealSurvivorTabActionComponent::TabPressed()
 	{
 		InventoryWidget = CreateWidget<UInventoryUI>(GetOwner<APlayerController>(), InventoryWidgetClass);
 		InventoryWidget->AddToViewport();
+		InventoryWidget->SetTargetPlayer(GetOwner<AUnrealPlayerController>()->GetTargetCharacter());
 	}
 	if (InventoryWidget == nullptr) return;
 	

@@ -8,13 +8,13 @@
 #include "QuickSlotWidget.generated.h"
 
 class UListView;
-class IInventory;
+class UInventoryComponent;
 class UTextBlock;
 /**
  * 
  */
 UCLASS()
-class PREPPER_API UQuickSlotUI : public UUserWidget, public IObserver<IInventory*>
+class PREPPER_API UQuickSlotUI : public UUserWidget, public IObserver<UInventoryComponent*>
 {
 	GENERATED_BODY()
 	
@@ -22,5 +22,5 @@ class PREPPER_API UQuickSlotUI : public UUserWidget, public IObserver<IInventory
 	TObjectPtr<UListView> QuickSlotView;
 	
 public:
-	virtual void Update(IInventory* const& NewData) override;
+	virtual void Update(UInventoryComponent* const& NewData) override;
 };

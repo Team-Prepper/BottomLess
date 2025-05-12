@@ -5,9 +5,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "UnrealPlayerInputComponent.h"
 #include "UnrealTabActionComponent.h"
+#include "AmmoBox/UnrealAmmoBoxComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/Character/BCombatComponent.h"
-#include "Prepper/GamePlay/Character/StatusComponent.h"
+#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
+#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
 #include "Prepper/GamePlay/UI/PlayerOverlay.h"
 #include "Prepper/__Legacy/HUD/UI/CharacterOverlay/WeaponWidget.h"
 
@@ -16,6 +17,7 @@ AUnrealPlayerController::AUnrealPlayerController()
 	InputConnector = CreateDefaultSubobject<UUnrealPlayerInputComponent>(TEXT("InputComponent"));
 	TabAction = CreateDefaultSubobject<UUnrealTabActionComponent>(TEXT("TabActionComponent"));
 	
+	AmmoBox = CreateDefaultSubobject<UUnrealAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
 }
 
 TObjectPtr<ABCharacter> AUnrealPlayerController::GetTargetCharacter()
@@ -23,7 +25,6 @@ TObjectPtr<ABCharacter> AUnrealPlayerController::GetTargetCharacter()
 	if (TargetCharacter == nullptr)
 	{
 		TargetCharacter = GetPawn<ABCharacter>();
-		TargetCharacter->SetTeamIdx(0);
 	}
 	return TargetCharacter;
 }
@@ -58,6 +59,26 @@ void AUnrealPlayerController::SprintAct(bool IsTrigger)
 	const TObjectPtr<ABCharacter> Target = GetTargetCharacter();
 	if (Target == nullptr) return;
 	Target->SprintTrigger(IsTrigger);
+}
+
+void AUnrealPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	if (GetTargetCharacter() == nullptr) return;
+	
+	GetTargetCharacter()->SetAmmoBox(AmmoBox);
+	TargetCharacter->SetTeamIdx(0);
+}
+
+void AUnrealPlayerController::OnRep_Pawn()
+{
+	Super::OnRep_Pawn();
+
+	if (GetTargetCharacter() == nullptr) return;
+	
+	GetTargetCharacter()->SetAmmoBox(AmmoBox);
+	TargetCharacter->SetTeamIdx(0);
 }
 
 void AUnrealPlayerController::SetupInputComponent()

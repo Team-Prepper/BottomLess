@@ -5,6 +5,8 @@
 
 #include "EnhancedInputComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
+#include "Prepper/GamePlay/Item/Inventory/UI/InventoryUI.h"
 #include "Prepper/__Legacy/Character/Component/StatusEffectComponent.h"
 #include "Prepper/__Legacy/Character/Component/Combat/CombatComponent.h"
 #include "Prepper/__Legacy/Equipment/EquipmentManager.h"
@@ -13,7 +15,6 @@
 #include "Prepper/__Legacy/GameSave/SurvivorServerSaveGame.h"
 #include "Prepper/__Legacy/HUD/PrepperHUD.h"
 #include "Prepper/__Legacy/HUD/UI/CharacterOverlay/StatusWidget.h"
-#include "Prepper/__Legacy/HUD/UI/Inventory/InventoryUI.h"
 #include "Prepper/__Legacy/HUD/UI/Survivor/QuickSlotWidget.h"
 
 void ASurvivorController::BeginWidget()
@@ -23,7 +24,6 @@ void ASurvivorController::BeginWidget()
 		StatusWidget = CreateWidget<UStatusWidget>(this, StatusWidgetClass);
 		StatusWidget->AddToViewport();
 	}
-
 	
 	if (QuickSlotWidgetClass && QuickSlotWidget == nullptr)
 	{
