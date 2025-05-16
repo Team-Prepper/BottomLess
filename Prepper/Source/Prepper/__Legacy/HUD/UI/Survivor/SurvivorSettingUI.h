@@ -22,6 +22,8 @@ public:
 	void NativeOnInitialized();
 
 	UFUNCTION()
+	void LegacyDataSave();
+	UFUNCTION()
 	void DataSave();
 	
 	

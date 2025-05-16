@@ -19,8 +19,20 @@ void UPlayerOverlay::Update(const UStatusComponent& NewData)
 	HealthText->SetText(FText::FromString(Text));
 }
 
+void UPlayerOverlay::SetHUD(TObjectPtr<APrepperHUD> HUD)
+{
+	TargetHUD = HUD;
+}
+
 void UPlayerOverlay::DrawCrosshair(const FHUDPackage& Crosshair)
 {
+
+	if (TargetHUD == nullptr) return;
+
+	TargetHUD->SetHUDPackage(Crosshair);
+	
+	return;
+
 	if(!GEngine) return;
 	
 	FVector2D ViewportSize;

@@ -10,6 +10,16 @@ UAmmoBoxComponent::UAmmoBoxComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UAmmoBoxComponent::SetAmmoMap(const TArray<FWeaponConvertData>& AmmoMap)
+{
+	CarriedAmmoMap.Empty();
+	
+	for (auto Value : AmmoMap)
+	{
+		CarriedAmmoMap.Add(Value.WeaponType, Value.Count);
+	}
+}
+
 void UAmmoBoxComponent::AddAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 {
 	if (!CarriedAmmoMap.Contains(WeaponType))

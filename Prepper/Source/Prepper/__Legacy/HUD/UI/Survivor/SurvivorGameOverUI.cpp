@@ -4,7 +4,7 @@
 #include "SurvivorGameOverUI.h"
 
 #include "Components/Button.h"
-#include "Prepper/__Legacy/GameMode/PrepperGameMode.h"
+#include "Prepper/GamePlay/GameMode/PrepperGameMode.h"
 #include "Prepper/__Legacy/PlayerController/SurvivorController.h"
 
 void USurvivorGameOverUI::NativeOnInitialized()

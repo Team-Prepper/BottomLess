@@ -7,6 +7,7 @@
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "UnrealPlayerController.generated.h"
 
+class UUnrealInitialSettingComponent;
 class UWeaponWidget;
 class UUnrealTabActionComponent;
 class UUnrealCombatComponent;
@@ -28,16 +29,6 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	GENERATED_BODY()
 
 	TObjectPtr<ABCharacter> TargetCharacter;
-	
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UPlayerOverlay>  PlayerOverlayClass;
-	UPROPERTY()
-	TObjectPtr<UPlayerOverlay> PlayerOverlay;
-	
-	UPROPERTY(EditAnywhere, Category="Widget")
-	TSubclassOf<UWeaponWidget> WeaponOverlayClass;
-	UPROPERTY()
-	TObjectPtr<UWeaponWidget> WeaponOverlay;
 
 	void CrouchingAct(bool IsTrigger);
 	void SprintAct(bool IsTrigger);
@@ -50,6 +41,8 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	TObjectPtr<UUnrealPlayerInputComponent> InputConnector;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealTabActionComponent> TabAction;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UUnrealInitialSettingComponent> InitialSetting;
 
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;
@@ -64,6 +57,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual TObjectPtr<ABCharacter> GetTargetCharacter();
+	TObjectPtr<UAmmoBoxComponent> GetAmmoBox() const { return AmmoBox; }
 	
 	virtual void TabButtonPressed();
 	virtual void TabButtonReleased();

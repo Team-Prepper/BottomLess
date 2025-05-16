@@ -3,8 +3,8 @@
 
 #include "ElectricSwitch.h"
 
+#include "Prepper/GamePlay/GameMode/SurvivorGameMode.h"
 #include "Prepper/__Legacy/Character/BombCharacter.h"
-#include "Prepper/__Legacy/GameMode/SurvivorGameMode.h"
 
 void AElectricSwitch::Interaction(APlayerCharacter* Target)
 {

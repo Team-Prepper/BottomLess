@@ -10,13 +10,14 @@
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Prepper/GamePlay/GameMode/PrepperGameMode.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
 #include "Prepper/__Legacy/ControlMapper/CarControlMapper.h"
-#include "Prepper/__Legacy/GameMode/PrepperGameMode.h"
 #include "Prepper/__Legacy/PlayerController/BasePlayerController.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
+class APrepperGameMode;
 DEFINE_LOG_CATEGORY(LogTemplateVehicle);
 
 ACarPawn::ACarPawn()

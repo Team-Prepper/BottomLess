@@ -27,6 +27,8 @@ public:
 	// Sets default values for this component's properties
 	UUnrealAmmoBoxComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void SetAmmoMap(const TArray<FWeaponConvertData>& AmmoMap) override;
 	virtual void AddAmmo(EWeaponType WeaponType, int32 AmmoAmount) override;
 	virtual int UseAmmo(EWeaponType WeaponType, int32 MaxUse) override;
 	

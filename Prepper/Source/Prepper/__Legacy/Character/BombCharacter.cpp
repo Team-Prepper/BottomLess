@@ -5,7 +5,6 @@
 
 #include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/__Legacy/GameMode/PrepperGameMode.h"
 #include "Prepper/__Legacy/Object/ElectricSwitch.h"
 
 

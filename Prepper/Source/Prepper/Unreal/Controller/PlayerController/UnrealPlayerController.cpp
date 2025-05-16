@@ -3,19 +3,17 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "UnrealInitialSettingComponent.h"
 #include "UnrealPlayerInputComponent.h"
 #include "UnrealTabActionComponent.h"
-#include "AmmoBox/UnrealAmmoBoxComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
-#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
-#include "Prepper/GamePlay/UI/PlayerOverlay.h"
-#include "Prepper/__Legacy/HUD/UI/CharacterOverlay/WeaponWidget.h"
+#include "Prepper/Unreal/Controller/AmmoBox/UnrealAmmoBoxComponent.h"
 
 AUnrealPlayerController::AUnrealPlayerController()
 {
 	InputConnector = CreateDefaultSubobject<UUnrealPlayerInputComponent>(TEXT("InputComponent"));
 	TabAction = CreateDefaultSubobject<UUnrealTabActionComponent>(TEXT("TabActionComponent"));
+	InitialSetting = CreateDefaultSubobject<UUnrealInitialSettingComponent>(TEXT("InitialSettingComponent"));
 	
 	AmmoBox = CreateDefaultSubobject<UUnrealAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
 }
@@ -67,6 +65,7 @@ void AUnrealPlayerController::OnPossess(APawn* InPawn)
 
 	if (GetTargetCharacter() == nullptr) return;
 	
+	InitialSetting->Initial(this);
 	GetTargetCharacter()->SetAmmoBox(AmmoBox);
 	TargetCharacter->SetTeamIdx(0);
 }
@@ -76,7 +75,8 @@ void AUnrealPlayerController::OnRep_Pawn()
 	Super::OnRep_Pawn();
 
 	if (GetTargetCharacter() == nullptr) return;
-	
+
+	InitialSetting->Initial(this);
 	GetTargetCharacter()->SetAmmoBox(AmmoBox);
 	TargetCharacter->SetTeamIdx(0);
 }
@@ -97,29 +97,14 @@ void AUnrealPlayerController::BeginPlay()
 	Super::BeginPlay();
 	
 	if (!IsLocalController()) return;
+
+	InitialSetting->WidgetSetting(this);
 	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
 		GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(InputConnector->GetMappingContext(), 0);
-	}
-	
-	if (PlayerOverlayClass)
-	{
-		PlayerOverlay = CreateWidget<UPlayerOverlay>(this, PlayerOverlayClass);
-		PlayerOverlay->AddToViewport();
-		
-		GetTargetCharacter()->GetStatus()->Attach(PlayerOverlay);
-		
-	}
-	
-	if (WeaponOverlayClass)
-	{
-		WeaponOverlay = CreateWidget<UWeaponWidget>(this, WeaponOverlayClass);
-		WeaponOverlay->AddToViewport();
-
-		GetTargetCharacter()->GetCombat()->Attach(WeaponOverlay);
 	}
 
 }

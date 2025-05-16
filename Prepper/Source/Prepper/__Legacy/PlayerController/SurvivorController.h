@@ -42,15 +42,13 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UItemCombinationUI> ItemCombinationClass;
 
-
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(const FString& ItemCode, int Count);
 	UFUNCTION(Server, Reliable)
 	void ServerSetAmmo(EWeaponType Type, int Count);
 	UFUNCTION(Server, Reliable)
 	void ServerEquipEquipment(const FString& EquipmentCode);
-	
-	
+
 public:
 	virtual void BeginPlay() override;
 	void LoadGame();

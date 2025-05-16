@@ -7,7 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
-#include "Prepper/__Legacy/GameMode/DeathMatchGameMode.h"
+#include "Prepper/GamePlay/GameMode/PrepperGameMode.h"
 #include "Prepper/__Legacy/PlayerController/BasePlayerController.h"
 #include "Prepper/_Base/Util/GaugeFloat.h"
 

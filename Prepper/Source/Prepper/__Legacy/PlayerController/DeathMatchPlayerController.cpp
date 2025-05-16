@@ -5,15 +5,14 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/GameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prepper/GamePlay/GameMode/DeathMatchGameMode.h"
+#include "Prepper/GamePlay/GameState/DeathMatchGameState.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
 #include "Prepper/__Legacy/Character/Component/Combat/CombatComponent.h"
-#include "Prepper/__Legacy/GameMode/DeathMatchGameMode.h"
-#include "Prepper/__Legacy/GameState/DeathMatchGameState.h"
 #include "Prepper/__Legacy/HUD/UI/Announcement.h"
 #include "Prepper/__Legacy/HUD/UI/CharacterOverlay/CharacterOverlay.h"
 #include "Prepper/__Legacy/HUD/UI/DeathMatch/ScoreBoard.h"
 #include "Prepper/__Legacy/HUD/UI/DeathMatch/DeathMatchWidget.h"
-#include "Prepper/__Legacy/PlayerState/DeathMatchPlayerState.h"
 
 void ADeathMatchPlayerController::BeginPlay()
 {
@@ -250,8 +249,8 @@ void ADeathMatchPlayerController::HandleCooldown()
 	AnnounceWidget->SetVisibility(ESlateVisibility::Visible);
 	AnnounceWidget->Announce(FString("New Match Starts In : "));
 
-	ADeathMatchGameState* DeathMatchGameState = Cast<
-		ADeathMatchGameState>(UGameplayStatics::GetGameState(this));
+	ADeathMatchGameState* DeathMatchGameState =
+		Cast<ADeathMatchGameState>(UGameplayStatics::GetGameState(this));
 	const ADeathMatchPlayerState* DeathMatchPlayerState = GetPlayerState<ADeathMatchPlayerState>();
 		
 	if (!DeathMatchGameState || !DeathMatchPlayerState) return;

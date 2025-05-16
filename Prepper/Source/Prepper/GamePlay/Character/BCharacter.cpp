@@ -56,6 +56,11 @@ TObjectPtr<UBCombatComponent> ABCharacter::GetCombat()
 	return Combat;
 }
 
+TObjectPtr<UUnrealCharacterMoveComponent> ABCharacter::GetMove()
+{
+	return CharacterMove;
+}
+
 IAmmoBox* ABCharacter::GetAmmoBox()
 {
 	return AmmoBox;

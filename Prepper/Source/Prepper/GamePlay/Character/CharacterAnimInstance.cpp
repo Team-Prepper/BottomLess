@@ -27,7 +27,7 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-
+	
 	if(PlayerCharacter == nullptr)
 	{
 		PlayerCharacter = Cast<ABCharacter>(TryGetPawnOwner());
@@ -40,19 +40,9 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	
 	Speed = Velocity.Size();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Speed: %f"), Speed);
+	//UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), PlayerCharacter->GetControlRotation().Yaw);
 	
-	bIsInAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
-
-	bIsAccelerating = PlayerCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
-	
-	bElimmed = false;
-	bUseAimOffsets = true;
-	bTransformRightHand = false;
-	
-	bUseFABRIK = false;
-	
-	if (!bRotateRootBone && Speed > 0)
+	if (Speed > 0)
 	{
 		// OFFSET YAW FOR STRAFING
 		const FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(
@@ -64,6 +54,18 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		//UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), YawOffset);
 		
 	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Speed: %f"), Speed);
+	
+	bIsInAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
+
+	bIsAccelerating = PlayerCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
+
+	bElimmed = false;
+	bUseAimOffsets = true;
+	bTransformRightHand = false;
+	
+	bUseFABRIK = false;
 
 	if (!bWeaponEquipped) return;
 	if (!PlayerCharacter->GetMesh()) return;
@@ -85,7 +87,6 @@ void UCharacterAnimInstance::SetEquippedWeaponType(const EWeaponType WeaponType)
 {
 	bWeaponEquipped = WeaponType != EWeaponType::EWT_MAX;
 	
-	bRotateRootBone = !bWeaponEquipped;
 	bEquippedMiniGun = WeaponType == EWeaponType::EWT_MiniGun;
 	bEquippedMeleeWeapon = WeaponType == EWeaponType::EWT_MeleeWeaponBlunt ||
 		WeaponType == EWeaponType::EWT_MeleeWeaponSword;

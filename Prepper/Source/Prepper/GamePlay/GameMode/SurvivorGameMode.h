@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "PrepperGameMode.h"
-#include "Prepper/__Legacy/GameSave/SurvivorServerSaveGame.h"
 #include "Prepper/__Legacy/Mission/Mission.h"
 #include "UObject/Object.h"
 #include "SurvivorGameMode.generated.h"
@@ -23,6 +22,9 @@ private:
 	int EnemyKillCount;
 	float PlayTime;
 	TMap<FString, bool> Achievement;
+
+protected:
+	virtual void BeginPlay() override;
 public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,

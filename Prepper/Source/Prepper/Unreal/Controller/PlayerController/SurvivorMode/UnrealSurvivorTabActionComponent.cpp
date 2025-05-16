@@ -5,10 +5,11 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Prepper/GamePlay/Item/Inventory/UI/InventoryUI.h"
-#include "Prepper/Unreal/Controller/UnrealPlayerController.h"
+#include "Prepper/Unreal/Controller/PlayerController/UnrealPlayerController.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 
 
+class AUnrealPlayerController;
 // Sets default values for this component's properties
 UUnrealSurvivorTabActionComponent::UUnrealSurvivorTabActionComponent()
 {

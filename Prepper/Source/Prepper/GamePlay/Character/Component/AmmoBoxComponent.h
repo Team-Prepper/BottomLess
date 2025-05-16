@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/GamePlay/Weapon/AmmoBox.h"
+#include "Prepper/__Legacy/Character/Component/Combat/CombatComponent.h"
 #include "AmmoBoxComponent.generated.h"
 
 
@@ -22,6 +23,9 @@ protected:
 public:
 	// Sets default values for this component's properties
 	UAmmoBoxComponent();
+	virtual void SetAmmoMap(const TArray<FWeaponConvertData>& AmmoMap);
+	TMap<EWeaponType, int32> GetAmmoMap() const { return CarriedAmmoMap; }
+	
 	virtual void AddAmmo(EWeaponType WeaponType, int32 AmmoAmount) override;
 	virtual int UseAmmo(EWeaponType WeaponType, int32 MaxUse) override;
 };

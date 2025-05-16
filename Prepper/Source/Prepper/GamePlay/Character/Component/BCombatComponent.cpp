@@ -10,6 +10,11 @@ UBCombatComponent::UBCombatComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UBCombatComponent::SetCrosshairOverlay(TObjectPtr<UPlayerOverlay> Overlay)
+{
+	TargetOverlay = Overlay;
+}
+
 void UBCombatComponent::SetTargetCharacter(TObjectPtr<ABCharacter> Character)
 {
 

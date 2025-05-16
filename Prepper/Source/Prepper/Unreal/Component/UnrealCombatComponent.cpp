@@ -4,6 +4,7 @@
 
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
+#include "Prepper/GamePlay/UI/PlayerOverlay.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
 
 // Sets default values for this component's properties
@@ -48,6 +49,12 @@ void UUnrealCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                            FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (TargetOverlay == nullptr) return;
+	if (EquippedWeapon == nullptr) return;
+	
+	FHUDPackage HUDPackage;
+	EquippedWeapon->GetCrosshair(DeltaTime, IsAimingLocal, HUDPackage);
+	TargetOverlay->DrawCrosshair(HUDPackage);
 }
 
 void UUnrealCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

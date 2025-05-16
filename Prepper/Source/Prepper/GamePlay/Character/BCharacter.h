@@ -60,6 +60,7 @@ public:
 	ABCharacter();
 	virtual TObjectPtr<UStatusComponent> GetStatus() override;
 	virtual TObjectPtr<UBCombatComponent> GetCombat() override;
+	virtual TObjectPtr<UUnrealCharacterMoveComponent> GetMove();
 	virtual IAmmoBox* GetAmmoBox() override;
 	void SetAmmoBox(TObjectPtr<UAmmoBoxComponent> NewAmmoBox);
 	

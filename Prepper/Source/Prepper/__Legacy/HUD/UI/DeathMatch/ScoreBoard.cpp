@@ -6,8 +6,8 @@
 #include "ScoreBoardUnitData.h"
 #include "Components/ListView.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/__Legacy/GameState/DeathMatchGameState.h"
-#include "Prepper/__Legacy/PlayerState/DeathMatchPlayerState.h"
+#include "Prepper/GamePlay/GameState/DeathMatchGameState.h"
+#include "Prepper/GamePlay/PlayerState/DeathMatchPlayerState.h"
 
 void UScoreBoard::SetVisibility(ESlateVisibility InVisibility)
 {

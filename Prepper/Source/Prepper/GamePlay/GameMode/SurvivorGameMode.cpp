@@ -3,10 +3,30 @@
 
 #include "SurvivorGameMode.h"
 
-#include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Prepper/GamePlay/GameSave/SurvivorServerSaveGame.h"
+
+void ASurvivorGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	USurvivorServerSaveGame* LoadGameInstance =
+		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("%s-%s"), *GetWorld()->GetMapName(), *FString("Server")), 0));
+
+	if (!LoadGameInstance) return;
+
+	if (ASurvivorGameMode* GM = GetWorld()->GetAuthGameMode<ASurvivorGameMode>())
+	{
+		GM->SetPlayTime(LoadGameInstance->PlayTime);
+		for (auto Str : LoadGameInstance->Achievement)
+		{
+			GM->AddAchievement(Str.Key, Str.Value);
+		}
+	}
+}
 
 void ASurvivorGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABasePlayerController* VictimController,
-	ABasePlayerController* AttackerController)
+                                         ABasePlayerController* AttackerController)
 {
 	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
 }

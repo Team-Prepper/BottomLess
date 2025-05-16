@@ -3,8 +3,8 @@
 
 #include "ExitDoor.h"
 
+#include "Prepper/GamePlay/GameMode/SurvivorGameMode.h"
 #include "Prepper/__Legacy/Character/PlayerCharacter.h"
-#include "Prepper/__Legacy/GameMode/SurvivorGameMode.h"
 #include "Prepper/__Legacy/PlayerController/SurvivorController.h"
 
 

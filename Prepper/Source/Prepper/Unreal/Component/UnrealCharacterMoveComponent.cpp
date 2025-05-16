@@ -11,9 +11,9 @@ UUnrealCharacterMoveComponent::UUnrealCharacterMoveComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	IsSprint = false;
-	IsCrouching = false;
-	IsJump = false;
+	IsSprintNetwork = false;
+	IsCrouchingNetwork = false;
+	IsJumpNetwork = false;
 	
 	IsSprintLocal = false;
 	IsAimingLocal = false;
@@ -27,44 +27,44 @@ UUnrealCharacterMoveComponent::UUnrealCharacterMoveComponent()
 void UUnrealCharacterMoveComponent::OnRep_Sprint()
 {
 	if (IsLocal) return;
-	IsSprintLocal = IsSprint;
+	IsSprintLocal = IsSprintNetwork;
 	SetOwnerSpeed();
 }
 
 void UUnrealCharacterMoveComponent::OnRep_Aiming()
 {
 	if (IsLocal) return;
-	IsAimingLocal = IsAiming;
+	IsAimingLocal = IsAimingNetwork;
 	SetOwnerSpeed();
 }
 
 void UUnrealCharacterMoveComponent::OnRep_Crouching()
 {
 	if (IsLocal) return;
-	IsCrouchingLocal = IsCrouching;
+	IsCrouchingLocal = IsCrouchingNetwork;
 	CrouchingAct(IsCrouchingLocal);
 }
 
 void UUnrealCharacterMoveComponent::OnRep_Jump()
 {
 	if (IsLocal) return;
-	JumpAct(IsJump);
+	JumpAct(IsJumpNetwork);
 }
 
 float UUnrealCharacterMoveComponent::GetSpeed() const
 {
-	if (IsAimingLocal) return AimMovementSpeed;
-	if (IsSprintLocal) return SprintSpeed;
-	return WalkSpeed;
+	if (IsAimingLocal) return AimMovementSpeed * CoefficientMovementSpeed;
+	if (IsSprintLocal) return SprintSpeed * CoefficientMovementSpeed;
+	return WalkSpeed * CoefficientMovementSpeed;
 }
 
 void UUnrealCharacterMoveComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsCrouching);
-	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsSprint);
-	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsJump);
+	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsCrouchingNetwork);
+	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsSprintNetwork);
+	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsJumpNetwork);
 }
 
 void UUnrealCharacterMoveComponent::CrouchingAct(const bool IsTrigger) const
@@ -134,27 +134,27 @@ void UUnrealCharacterMoveComponent::SetAiming(bool IsTrigger)
 
 void UUnrealCharacterMoveComponent::ServerSprintTrigger_Implementation(bool IsTrigger)
 {
-	IsSprint = IsTrigger;
-	IsSprintLocal = IsSprint;
+	IsSprintNetwork = IsTrigger;
+	IsSprintLocal = IsSprintNetwork;
 	SetOwnerSpeed();
 }
 
 void UUnrealCharacterMoveComponent::ServerAimingTrigger_Implementation(bool IsTrigger)
 {
-	IsAiming = IsTrigger;
-	IsAimingLocal = IsAiming;
+	IsAimingNetwork = IsTrigger;
+	IsAimingLocal = IsAimingNetwork;
 	SetOwnerSpeed();
 }
 
 void UUnrealCharacterMoveComponent::ServerCrouchTrigger_Implementation(bool IsTrigger)
 {
-	IsCrouching = IsTrigger;
-	IsCrouchingLocal = IsCrouching;
+	IsCrouchingNetwork = IsTrigger;
+	IsCrouchingLocal = IsCrouchingNetwork;
 	CrouchingAct(IsCrouchingLocal);
 }
 
 void UUnrealCharacterMoveComponent::ServerJumpTrigger_Implementation(bool IsTrigger)
 {
-	IsJump = IsTrigger;
-	JumpAct(IsJump);
+	IsJumpNetwork = IsTrigger;
+	JumpAct(IsJumpNetwork);
 }

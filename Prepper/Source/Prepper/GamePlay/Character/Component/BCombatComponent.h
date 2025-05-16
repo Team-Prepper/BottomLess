@@ -8,6 +8,7 @@
 #include "BCombatComponent.generated.h"
 
 
+class UPlayerOverlay;
 class ABCharacter;
 class AWeapon;
 
@@ -19,11 +20,14 @@ class PREPPER_API UBCombatComponent : public UActorComponent, public ISubject<UB
 protected:
 	UPROPERTY()
 	TObjectPtr<ABCharacter> TargetCharacter;
+	UPROPERTY()
+	TObjectPtr<UPlayerOverlay> TargetOverlay;
 	
 public:
 	// Sets default values for this component's properties
 	UBCombatComponent();
 
+	void SetCrosshairOverlay(TObjectPtr<UPlayerOverlay> Overlay);
 	void SetTargetCharacter(TObjectPtr<ABCharacter> Character);
 	
 	virtual void EquipWeapon(AWeapon* Weapon) {}

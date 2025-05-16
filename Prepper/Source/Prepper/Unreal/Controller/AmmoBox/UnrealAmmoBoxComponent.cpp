@@ -20,6 +20,12 @@ void UUnrealAmmoBoxComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(UUnrealAmmoBoxComponent, ReplicatedWeaponAmmoData);
 }
 
+void UUnrealAmmoBoxComponent::SetAmmoMap(const TArray<FWeaponConvertData>& AmmoMap)
+{
+	Super::SetAmmoMap(AmmoMap);
+	ConvertMapToArray();
+}
+
 void UUnrealAmmoBoxComponent::AddAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 {
 	Super::AddAmmo(WeaponType, AmmoAmount);

@@ -5,7 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "MissionChecker/DefaultMissionChecker.h"
-#include "Prepper/__Legacy/GameMode/SurvivorGameMode.h"
+#include "Prepper/GamePlay/GameMode/SurvivorGameMode.h"
 
 TArray<FString> UMission::SplitString(const FString& Str)
 {

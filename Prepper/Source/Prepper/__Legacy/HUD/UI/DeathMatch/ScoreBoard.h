@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Prepper/__Legacy/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/_Base/ObserverPattern/Observer.h"
 #include "UObject/Object.h"
 #include "ScoreBoard.generated.h"
 
+class ADeathMatchPlayerState;
 class UListView;
 /**
  * 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
 #include "UnrealCharacterMoveComponent.generated.h"
 
 
@@ -20,13 +21,13 @@ class PREPPER_API UUnrealCharacterMoveComponent : public UActorComponent
 	float AimMovementSpeed = 400.f;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Sprint)
-	bool IsSprint;
+	bool IsSprintNetwork;
 	UPROPERTY(ReplicatedUsing=OnRep_Aiming)
-	bool IsAiming;
+	bool IsAimingNetwork;
 	UPROPERTY(ReplicatedUsing=OnRep_Crouching)
-	bool IsCrouching;
+	bool IsCrouchingNetwork;
 	UPROPERTY(ReplicatedUsing=OnRep_Jump)
-	bool IsJump;
+	bool IsJumpNetwork;
 
 	UFUNCTION()
 	void OnRep_Sprint();
@@ -53,6 +54,7 @@ public:
 	// Sets default values for this component's properties
 	UUnrealCharacterMoveComponent();
 
+	float CoefficientMovementSpeed;
 	float GetSpeed() const;
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -61,6 +63,9 @@ public:
 	void JumpTrigger(bool IsTrigger);
 	void SprintTrigger(bool IsTrigger);
 	void SetAiming(bool IsTrigger);
+
+	bool IsSprint() const { return IsSprintLocal; }
+	bool IsAiming() const { return IsAimingLocal; }
 	
 	UFUNCTION(Server, Reliable)
 	void ServerSprintTrigger(bool IsTrigger);

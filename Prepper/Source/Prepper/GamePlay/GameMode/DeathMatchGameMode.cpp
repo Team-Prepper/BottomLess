@@ -1,12 +1,10 @@
 #include "DeathMatchGameMode.h"
 
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
-#include "GameFramework/PlayerStart.h"
+#include "Prepper/GamePlay/GameState/DeathMatchGameState.h"
+#include "Prepper/GamePlay/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/__Legacy/Character/BaseCharacter.h"
-#include "Prepper/__Legacy/GameState/DeathMatchGameState.h"
 #include "Prepper/__Legacy/PlayerController/DeathMatchPlayerController.h"
-#include "Prepper/__Legacy/PlayerState/DeathMatchPlayerState.h"
 
 namespace MatchState
 {

@@ -11,13 +11,19 @@ void USurvivorSettingUI::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	SaveButton->OnClicked.
+		AddDynamic(this, &USurvivorSettingUI::LegacyDataSave);
+	SaveButton->OnClicked.
 			AddDynamic(this, &USurvivorSettingUI::DataSave);
 }
 
-void USurvivorSettingUI::DataSave()
+void USurvivorSettingUI::LegacyDataSave()
 {
 	const TObjectPtr<ASurvivorController> PC = GetWorld()->GetFirstPlayerController<ASurvivorController>();
 	if (PC == nullptr) return;
 
 	PC->SaveGame();
+}
+
+void USurvivorSettingUI::DataSave()
+{
 }

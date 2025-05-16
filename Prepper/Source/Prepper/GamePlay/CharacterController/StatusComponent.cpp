@@ -3,6 +3,11 @@
 
 #include "StatusComponent.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Prepper/Unreal/Component/UnrealCharacterMoveComponent.h"
+#include "Prepper/__Legacy/Character/Enums/StatusEffect.h"
+
 
 // Sets default values for this component's properties
 UStatusComponent::UStatusComponent()
@@ -12,6 +17,94 @@ UStatusComponent::UStatusComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
+}
+
+void UStatusComponent::StatusTimerStart(TObjectPtr<UUnrealCharacterMoveComponent> Target)
+{
+	TargetMove = Target;
+	UE_LOG(LogTemp, Warning, TEXT("StatusEffectReady"));
+	StatusFlags.ClearAllEffects();
+	
+	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, 100);
+	StateEffectMap.Emplace(EStatusEffect::ESE_THIRSTY, 100);
+	StateEffectMap.Emplace(EStatusEffect::ESE_INFECTED, 0);
+
+	GetWorld()->GetTimerManager().SetTimer(
+		StatusTimerHandle,
+		this,
+		&UStatusComponent::StatusTimerFinish,
+		1.0f,
+		true);
+
+	Notify();
+}
+
+void UStatusComponent::StatusTimerFinish()
+{
+
+	StateEffectMap[EStatusEffect::ESE_HUNGRY] -= StatusEffectTickValue[0];
+	StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
+	
+	if (TargetMove->IsSprint() || TargetMove->IsAiming())
+	{
+		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
+	}
+	
+	for (const auto& EffectThreshold : EffectThresholds)
+	{
+		const bool HasEffect = StatusFlags.HasEffect(EffectThreshold.Effect);
+		const float EffectValue = StateEffectMap[EffectThreshold.Effect];
+
+		if (!HasEffect && EffectValue <= EffectThreshold.Threshold)
+		{
+			StatusFlags.AddEffect(EffectThreshold.Effect);
+		}
+		else if (HasEffect && EffectValue > EffectThreshold.Threshold)
+		{
+			StatusFlags.RemoveEffect(EffectThreshold.Effect);
+		}
+	}
+
+	if (StatusFlags.HasEffect(EStatusEffect::ESE_HUNGRY))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HUNGRY"));
+		UGameplayStatics::ApplyDamage(
+			GetOwner(),
+			EffectThresholds[0].DebuffValue,
+			GetOwner<AActor>()->GetInstigatorController(),
+			GetOwner(),
+			UDamageType::StaticClass()
+		);
+	}
+
+	if (StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("THIRSTY"));
+		TargetMove->CoefficientMovementSpeed = EffectThresholds[1].DebuffValue;
+	}
+	else
+	{
+		TargetMove->CoefficientMovementSpeed = 1.0f;
+	}
+}
+
+State UStatusComponent::GetState()
+{
+	return State(FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
+					   FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
+					   FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100));
+}
+
+void UStatusComponent::AddHungry(float Amount)
+{
+	StateEffectMap[EStatusEffect::ESE_HUNGRY] += Amount;
+	Notify();
+}
+
+void UStatusComponent::AddThirsty(float Amount)
+{
+	StateEffectMap[EStatusEffect::ESE_THIRSTY] += Amount;
+	Notify();
 }
 
 void UStatusComponent::Attach(IObserver<UStatusComponent>* Observer)
@@ -28,4 +121,5 @@ void UStatusComponent::Detach(IObserver<UStatusComponent>* Observer)
 
 void UStatusComponent::Notify()
 {
+	
 }

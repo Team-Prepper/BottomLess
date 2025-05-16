@@ -5,14 +5,41 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
+#include "Prepper/__Legacy/Character/Component/State.h"
+#include "Prepper/__Legacy/Character/Enums/StatusEffect.h"
 #include "StatusComponent.generated.h"
 
+
+class UUnrealCharacterMoveComponent;
+enum class EStatusEffect : uint8;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PREPPER_API UStatusComponent : public UActorComponent, public ISubject<UStatusComponent>
 {
 	GENERATED_BODY()
 
+	TObjectPtr<UUnrealCharacterMoveComponent> TargetMove;
+	
+	TMap<EStatusEffect, float> StateEffectMap;
+	FTimerHandle StatusTimerHandle;
+	FStatusEffect StatusFlags; // 현재 상태 이상 플래그
+
+	struct StatusEffectThreshold
+	{
+		EStatusEffect Effect;
+		float Threshold;
+		FString EffectName;
+		float DebuffValue;
+	};
+	
+	// 상태 효과와 임계값 배열
+	const StatusEffectThreshold EffectThresholds[3] = {
+		{ EStatusEffect::ESE_HUNGRY, 20.0f, "Hungry", 0.3f }, 
+		{ EStatusEffect::ESE_THIRSTY, 30.0f, "Thirsty", 0.3f},
+		{ EStatusEffect::ESE_INFECTED, 20.0f, "Infected", 1.0f }, 
+	};
+	
+	const float StatusEffectTickValue[3] = { 0.2f, 0.3f, 0.5f };
 public:
 	// Sets default values for this component's properties
 	UStatusComponent();
@@ -20,7 +47,13 @@ public:
 	virtual int GetMaxHealth() const { return 0; }
 	virtual int GetCurHealth() const { return 0; }
 	virtual void TakeDamage(int Amount) { }
+
+	void StatusTimerStart(TObjectPtr<UUnrealCharacterMoveComponent> Target);
+	void StatusTimerFinish();
 	
+	State GetState();
+	void AddHungry(float Amount);
+	void AddThirsty(float Amount);
 private:
 	TSet<IObserver<UStatusComponent>*> Observers;
 public:
