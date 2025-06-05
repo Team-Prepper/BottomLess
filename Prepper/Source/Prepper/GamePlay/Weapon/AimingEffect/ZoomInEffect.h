@@ -7,8 +7,6 @@
 #include "UObject/Object.h"
 #include "ZoomInEffect.generated.h"
 
-class APlayerCharacter;
-class ABCharacter;
 /**
  * 
  */

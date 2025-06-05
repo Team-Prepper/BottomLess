@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "CharacterController.generated.h"
 
+class ACarPawn;
 class UAmmoBoxComponent;
 class UBCombatComponent;
 class UStatusComponent;
@@ -35,6 +36,8 @@ public:
 	virtual TObjectPtr<UStatusComponent> GetStatus() PURE_VIRTUAL(ICharacterController::GetStatus, return nullptr; );
 	virtual TObjectPtr<UBCombatComponent> GetCombat() PURE_VIRTUAL(ICharacterController::GetCombat, return nullptr; );
 	virtual IAmmoBox* GetAmmoBox() PURE_VIRTUAL(ICharacterController::GetAmmoBox, return nullptr; );
+
+	virtual void Boarding(TObjectPtr<ACarPawn> Vehicle) PURE_VIRTUAL();
 	
 	virtual void Move(const FInputActionValue& Value) PURE_VIRTUAL();
 	virtual void Look(const FInputActionValue& Value) PURE_VIRTUAL();

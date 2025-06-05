@@ -1,12 +1,12 @@
 #pragma once
 
 #include "WeaponTypes.h"
-#include "Prepper/__Legacy/Equipment/Equipment.h"
-#include "Prepper/__Legacy/HUD/PrepperHUD.h"
-#include "Prepper/__Legacy/Object/InteractableActor.h"
+#include "Prepper/GamePlay/Equipment/Equipment.h"
+#include "Prepper/___Legacy/Object/InteractableActor.h"
 #include "Weapon.generated.h"
 
 
+struct FHUDPackage;
 class IAmmoBox;
 class ABCharacter;
 class UWeaponMagazine;

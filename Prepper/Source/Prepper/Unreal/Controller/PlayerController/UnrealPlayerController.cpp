@@ -3,17 +3,17 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "UnrealInitialSettingComponent.h"
 #include "UnrealPlayerInputComponent.h"
-#include "UnrealTabActionComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
+#include "Prepper/GamePlay/CharacterController/InitialSettingComponent.h"
+#include "Prepper/GamePlay/CharacterController/TabActionComponent.h"
 #include "Prepper/Unreal/Controller/AmmoBox/UnrealAmmoBoxComponent.h"
 
 AUnrealPlayerController::AUnrealPlayerController()
 {
 	InputConnector = CreateDefaultSubobject<UUnrealPlayerInputComponent>(TEXT("InputComponent"));
-	TabAction = CreateDefaultSubobject<UUnrealTabActionComponent>(TEXT("TabActionComponent"));
-	InitialSetting = CreateDefaultSubobject<UUnrealInitialSettingComponent>(TEXT("InitialSettingComponent"));
+	TabAction = CreateDefaultSubobject<UTabActionComponent>(TEXT("TabActionComponent"));
+	InitialSetting = CreateDefaultSubobject<UInitialSettingComponent>(TEXT("InitialSettingComponent"));
 	
 	AmmoBox = CreateDefaultSubobject<UUnrealAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
 }

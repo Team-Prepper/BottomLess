@@ -4,7 +4,7 @@
 #include "UnrealAmmoBoxComponent.h"
 
 #include "Net/UnrealNetwork.h"
-#include "Prepper/__Legacy/Character/Component/Combat/CombatComponent.h"
+#include "Prepper/___Legacy/Character/Component/Combat/CombatComponent.h"
 
 
 // Sets default values for this component's properties

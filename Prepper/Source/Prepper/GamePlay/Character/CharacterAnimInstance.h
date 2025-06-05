@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "Prepper/__Legacy/PlayerController/SurvivorController.h"
+#include "Prepper/___Legacy/PlayerController/SurvivorController.h"
 #include "CharacterAnimInstance.generated.h"
 
 enum class ETurningInPlace : uint8;

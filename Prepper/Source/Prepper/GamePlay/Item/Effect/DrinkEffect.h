@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "ItemEffect.h"
+#include "Prepper/GamePlay/PlayerAbility.h"
 
 class DrinkEffect : public IItemEffect
 {

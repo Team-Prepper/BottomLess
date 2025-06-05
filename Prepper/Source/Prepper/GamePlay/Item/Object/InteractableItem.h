@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/__Legacy/Interfaces/IDetectable.h"
-#include "Prepper/__Legacy/Object/InteractableActor.h"
+#include "Prepper/___Legacy/Interfaces/IDetectable.h"
+#include "Prepper/___Legacy/Object/InteractableActor.h"
 #include "InteractableItem.generated.h"
 
 UCLASS()

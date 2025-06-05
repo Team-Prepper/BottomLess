@@ -65,7 +65,8 @@ public:
 	void SetAmmoBox(TObjectPtr<UAmmoBoxComponent> NewAmmoBox);
 	
 	void PlayAnim(const FString& String);
-	
+
+	virtual void Boarding(TObjectPtr<ACarPawn> Vehicle) override;
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 	
@@ -95,7 +96,8 @@ public:
 	virtual UInventoryComponent* GetInventory() const override;
 	
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-
+	void ElimCharacter();
+	
 	void SetTeamIdx(int Idx);
 	int GetTeam() const { return TeamIdx; }
 	TObjectPtr<UPawnSensingComponent> GetPawnSensing() const;

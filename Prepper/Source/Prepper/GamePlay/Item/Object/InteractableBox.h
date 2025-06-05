@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/__Legacy/Object/InteractableActor.h"
+#include "Prepper/___Legacy/Object/InteractableActor.h"
 #include "InteractableBox.generated.h"
 
 UCLASS()

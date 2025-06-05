@@ -5,7 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
 
 void USniperWidgetEffect::PlayerAimingStart(TObjectPtr<APlayerCharacter> Player)
 {

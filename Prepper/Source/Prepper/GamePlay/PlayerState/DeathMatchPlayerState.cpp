@@ -3,8 +3,8 @@
 
 #include "DeathMatchPlayerState.h"
 
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
-#include "Prepper/__Legacy/PlayerController/DeathMatchPlayerController.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/PlayerController/DeathMatchPlayerController.h"
 #include "Net/UnrealNetwork.h"
 
 void ADeathMatchPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

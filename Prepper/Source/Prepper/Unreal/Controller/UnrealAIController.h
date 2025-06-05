@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
-#include "Prepper/__Legacy/Character/EnemyBaseCharacter.h"
+#include "Prepper/___Legacy/Character/EnemyBaseCharacter.h"
 #include "UnrealAIController.generated.h"
 
 class UUnrealCombatComponent;
@@ -39,7 +39,8 @@ public:
 	AUnrealAIController();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	bool InTargetRange(TObjectPtr<AActor> Target, float Radius);
+	virtual void OnPossess(APawn* InPawn) override;
+	float LocationSqrDiff(const FVector& Location) const;
 	virtual TObjectPtr<ABCharacter> GetTargetCharacter();
 	
 	UFUNCTION()

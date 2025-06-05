@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/_Base/ObserverPattern/Subject.h"
+#include "Prepper/__Base/ObserverPattern/Subject.h"
 #include "BCombatComponent.generated.h"
 
 

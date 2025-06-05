@@ -7,9 +7,9 @@
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "UnrealPlayerController.generated.h"
 
-class UUnrealInitialSettingComponent;
+class UInitialSettingComponent;
 class UWeaponWidget;
-class UUnrealTabActionComponent;
+class UTabActionComponent;
 class UUnrealCombatComponent;
 class UUnrealStatusComponent;
 class UUnrealPlayerInputComponent;
@@ -40,9 +40,9 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealPlayerInputComponent> InputConnector;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealTabActionComponent> TabAction;
+	TObjectPtr<UTabActionComponent> TabAction;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealInitialSettingComponent> InitialSetting;
+	TObjectPtr<UInitialSettingComponent> InitialSetting;
 
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;

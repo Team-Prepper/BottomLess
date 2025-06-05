@@ -7,7 +7,6 @@
 #include "UObject/Object.h"
 #include "SniperWidgetEffect.generated.h"
 
-class ABCharacter;
 /**
  * 
  */

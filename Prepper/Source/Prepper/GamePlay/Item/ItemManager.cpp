@@ -3,7 +3,8 @@
 
 #include "UObject/ConstructorHelpers.h"
 #include "ItemData/ItemData.h"
-#include "Prepper/_Base/DataTableGetter.h"
+#include "Object/InventoryInteractableItem.h"
+#include "Prepper/__Base/DataTableGetter.h"
 
 FString ItemManager::ItemCombineCode(const FString& Code1, const FString& Code2)
 {

@@ -5,12 +5,14 @@
 
 #include "AmmoBox/UnrealAIAmmoBoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 
 AUnrealAIController::AUnrealAIController()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	EnemyState = EEnemyState::EES_Patrolling;
 	
 	AmmoBox = CreateDefaultSubobject<UUnrealAIAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
@@ -18,8 +20,57 @@ AUnrealAIController::AUnrealAIController()
 
 void AUnrealAIController::BeginPlay()
 {
+	Super::BeginPlay();
+	
+}
+
+void AUnrealAIController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	if (GetTargetCharacter() == nullptr) return;
+
+	if (PatrolTarget == nullptr)
+	{
+		return;
+	}
+
+	const float PatrolTargetSqrDiff = LocationSqrDiff(PatrolTarget->GetActorLocation());
+	
+	if (PatrolTargetSqrDiff < AttackRadius * AttackRadius)
+	{
+		EnemyState = EEnemyState::EES_Attacking;
+		
+		GetTargetCharacter()->GetCharacterMovement()->StopMovementImmediately();
+		
+		GetTargetCharacter()->GetCombat()->AttackTrigger(true);
+		GetTargetCharacter()->GetCombat()->AttackTrigger(false);
+		
+		return;
+	}
+
+	if (PatrolTargetSqrDiff <= CombatRadius * CombatRadius)
+	{
+		EnemyState = EEnemyState::EES_Chasing;
+		GetTargetCharacter()->SprintTrigger(true);
+		return;
+	}
+
+	EnemyState = EEnemyState::EES_Patrolling;
+	GetTargetCharacter()->SprintTrigger(false);
+	
+}
+
+void AUnrealAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
 	
 	if (!HasAuthority()) return;
+	if (GetTargetCharacter() == nullptr) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("OnPossess: %s"), *GetTargetCharacter()->GetName());
+	
+	GetTargetCharacter()->SetAmmoBox(AmmoBox);
 	
 	GetTargetCharacter()->GetPawnSensing()->SetComponentTickEnabled(true);
 	GetTargetCharacter()->GetPawnSensing()->SightRadius = 4000.f;
@@ -29,49 +80,10 @@ void AUnrealAIController::BeginPlay()
 	GetTargetCharacter()->GetPawnSensing()->OnHearNoise.AddDynamic(this, &AUnrealAIController::PawnSensingHeard);
 }
 
-void AUnrealAIController::Tick(float DeltaSeconds)
+float AUnrealAIController::LocationSqrDiff(const FVector& Location) const
 {
-	Super::Tick(DeltaSeconds);
-	
-	// 공격사거리 안에서 공격이 아닐떄 -> 공격!
-	if (InTargetRange(PatrolTarget, AttackRadius))
-	{
-		GetTargetCharacter()->GetCharacterMovement()->StopMovementImmediately();
-		//UE_LOG(LogTemp, Warning, TEXT("CODE : zombie Attack"));
-		GetTargetCharacter()->GetCombat()->AttackTrigger(true);
-
-		//UE_LOG(LogTemp, Warning, TEXT("%hs"), CombatComp == nullptr ? "True":"False");
-		return;
-	}
-	
-	GetTargetCharacter()->GetCombat()->AttackTrigger(false);
-
-	if (InTargetRange(PatrolTarget, CombatRadius))
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
-		EnemyState = EEnemyState::EES_Chasing;
-		GetTargetCharacter()->SprintTrigger(true);
-		MoveToActor(PatrolTarget);
-		return;
-	}
-
-	if (PatrolTarget != nullptr)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
-		EnemyState = EEnemyState::EES_Patrolling;
-		GetTargetCharacter()->SprintTrigger(false);
-		MoveToActor(PatrolTarget);
-	}
+	return (Location - GetPawn()->GetActorLocation()).SizeSquared();
 }
-
-bool AUnrealAIController::InTargetRange(const TObjectPtr<AActor> Target, const float Radius)
-{
-	if (Target == nullptr) return false;
-
-	const float DistanceToTarget = (Target->GetActorLocation() - GetTargetCharacter()->GetActorLocation()).SizeSquared();
-	return DistanceToTarget <= Radius * Radius;
-}
-
 
 TObjectPtr<ABCharacter> AUnrealAIController::GetTargetCharacter()
 {
@@ -84,37 +96,36 @@ TObjectPtr<ABCharacter> AUnrealAIController::GetTargetCharacter()
 
 void AUnrealAIController::PawnSensingSeen(APawn* SeenPawn)
 {
+	if (EnemyState == EEnemyState::EES_Attacking) return;
+	
 	const TObjectPtr<ABCharacter> SeenCharacter = Cast<ABCharacter>(SeenPawn);
+	
+	if (SeenCharacter == nullptr) return;
+	if (SeenCharacter->GetTeam() != 0) return;
+	if (SeenCharacter == PatrolTarget) return;
 
-	if (SeenCharacter == nullptr || SeenCharacter->GetTeam() != 0) return;
+	UE_LOG(LogTemp, Display, TEXT("CODE : zombie See"));
 	
 	PatrolTarget = SeenPawn;
 	
-	if (EnemyState != EEnemyState::EES_Attacking)
-	{
-		EnemyState = EEnemyState::EES_Chasing;
-		FVector TargetLocation = PatrolTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
-		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
-	}
+	EnemyState = EEnemyState::EES_Chasing;
+	MoveToActor(PatrolTarget, 1.5f);
+	UE_LOG(LogTemp, Display, TEXT("%s"), *PatrolTarget->GetName());
 	
 }
 
 void AUnrealAIController::PawnSensingHeard(APawn* HeardPawn, const FVector& Location, float Volume)
 {
-	if (EnemyState == EEnemyState::EES_Chasing) return;
-
+	if (PatrolTarget != nullptr) return;
+	if (EnemyState == EEnemyState::EES_Attacking) return;
+	
 	const TObjectPtr<ABCharacter> HeardCharacter = Cast<ABCharacter>(HeardPawn);
-
-	if (HeardCharacter == nullptr || HeardCharacter->GetTeam() != 0) return;
+	
+	if (HeardCharacter == nullptr) return;
+	if (HeardCharacter->GetTeam() != 0) return;
 	
 	UE_LOG(LogTemp, Display, TEXT("CODE : zombie HEAR"));
 	
-	PatrolTarget = HeardPawn;
-	
-	if (EnemyState != EEnemyState::EES_Attacking)
-	{
-		EnemyState = EEnemyState::EES_Chasing;
-		FVector TargetLocation = PatrolTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
-		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
-	}
+	EnemyState = EEnemyState::EES_Chasing;
+	MoveToLocation(PatrolTarget->GetActorLocation(), 1.5f); // 플레이어 위치로 이동
 }

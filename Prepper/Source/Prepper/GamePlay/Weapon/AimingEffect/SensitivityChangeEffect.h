@@ -6,7 +6,6 @@
 #include "PlayerAimingEffect.h"
 #include "SensitivityChangeEffect.generated.h"
 
-class ABCharacter;
 /**
  * 
  */

@@ -6,8 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
-#include "Prepper/__Legacy/Object/OpenedInventory.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/Object/OpenedInventory.h"
 #include "Sound/SoundCue.h"
 
 

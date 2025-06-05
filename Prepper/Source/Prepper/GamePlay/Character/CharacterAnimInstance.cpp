@@ -9,7 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
-#include "Prepper/__Legacy/Character/Enums/TurningInPlace.h"
+#include "Prepper/___Legacy/Character/Enums/TurningInPlace.h"
 
 void UCharacterAnimInstance::NativeInitializeAnimation()
 {

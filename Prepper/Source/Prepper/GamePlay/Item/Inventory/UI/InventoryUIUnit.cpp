@@ -10,7 +10,7 @@
 #include "Components/TextBlock.h"
 #include "Prepper/GamePlay/Item/ItemManager.h"
 #include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
 
 void UInventoryUIUnit::SetVisibility(ESlateVisibility InVisibility)
 {

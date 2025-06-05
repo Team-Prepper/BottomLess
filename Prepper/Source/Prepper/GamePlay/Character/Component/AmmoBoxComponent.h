@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/GamePlay/Weapon/AmmoBox.h"
-#include "Prepper/__Legacy/Character/Component/Combat/CombatComponent.h"
+#include "Prepper/___Legacy/Character/Component/Combat/CombatComponent.h"
 #include "AmmoBoxComponent.generated.h"
 
 

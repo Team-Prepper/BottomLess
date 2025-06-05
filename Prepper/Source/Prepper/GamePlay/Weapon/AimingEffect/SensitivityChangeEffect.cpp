@@ -3,7 +3,8 @@
 
 #include "SensitivityChangeEffect.h"
 
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
+#include "Prepper/GamePlay/Character/BCharacter.h"
 
 void USensitivityChangeEffect::PlayerAimingStart(const TObjectPtr<APlayerCharacter> PlayerCharacter)
 {

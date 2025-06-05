@@ -7,6 +7,7 @@
 #include "PlayerAimingEffect.generated.h"
 
 class APlayerCharacter;
+class ABCharacter;
 
 UCLASS(Abstract, BlueprintType)
 class PREPPER_API UPlayerAimingEffect : public UObject

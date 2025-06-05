@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/_Base/ObserverPattern/Subject.h"
-#include "Prepper/__Legacy/Character/Component/State.h"
-#include "Prepper/__Legacy/Character/Enums/StatusEffect.h"
+#include "Prepper/__Base/ObserverPattern/Subject.h"
+#include "Prepper/___Legacy/Character/Component/State.h"
+#include "Prepper/___Legacy/Character/Enums/StatusEffect.h"
 #include "StatusComponent.generated.h"
 
 
@@ -40,18 +40,26 @@ class PREPPER_API UStatusComponent : public UActorComponent, public ISubject<USt
 	};
 	
 	const float StatusEffectTickValue[3] = { 0.2f, 0.3f, 0.5f };
+protected:
+	
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float CurrentHealth = 100.f;
+	
 public:
 	// Sets default values for this component's properties
 	UStatusComponent();
 	
-	virtual int GetMaxHealth() const { return 0; }
-	virtual int GetCurHealth() const { return 0; }
-	virtual void TakeDamage(int Amount) { }
+	virtual int GetMaxHealth() const { return MaxHealth; }
+	virtual int GetCurHealth() const { return CurrentHealth; }
+	virtual void TakeDamage(int Amount);
 
 	void StatusTimerStart(TObjectPtr<UUnrealCharacterMoveComponent> Target);
 	void StatusTimerFinish();
 	
 	State GetState();
+	virtual void AddHP(float Amount);
 	void AddHungry(float Amount);
 	void AddThirsty(float Amount);
 private:

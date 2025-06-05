@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Prepper/_Base/ObserverPattern/Observer.h"
+#include "Prepper/__Base/ObserverPattern/Observer.h"
 #include "InventoryUI.generated.h"
 
 class IPlayerAbility;

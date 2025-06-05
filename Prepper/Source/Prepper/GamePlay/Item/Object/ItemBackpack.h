@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/__Legacy/Equipment/Equipment.h"
-#include "Prepper/__Legacy/Object/InteractableActor.h"
+#include "Prepper/GamePlay/Equipment/Equipment.h"
+#include "Prepper/___Legacy/Object/InteractableActor.h"
 #include "ItemBackpack.generated.h"
 
 

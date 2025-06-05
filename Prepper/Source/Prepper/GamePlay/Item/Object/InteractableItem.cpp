@@ -3,7 +3,7 @@
 #include "Prepper/Prepper.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
 #include "Sound/SoundCue.h"

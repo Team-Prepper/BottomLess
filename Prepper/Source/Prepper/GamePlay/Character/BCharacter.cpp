@@ -7,17 +7,21 @@
 #include "InputActionValue.h"
 #include "Component/CustomCameraComponent.h"
 #include "Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Prepper/GamePlay/PrepperGameMode.h"
 #include "Prepper/GamePlay/Character/Component/AmmoBoxComponent.h"
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
-#include "Prepper/Unreal/Component/UnrealCharacterMoveComponent.h"
-#include "Prepper/Unreal/Component/UnrealCombatComponent.h"
-#include "Prepper/Unreal/Component/UnrealInteractionComponent.h"
-#include "Prepper/Unreal/Component/UnrealStatusComponent.h"
+#include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
+#include "Prepper/Unreal/CharacterComponent/UnrealCombatComponent.h"
+#include "Prepper/Unreal/CharacterComponent/UnrealInteractionComponent.h"
+#include "Prepper/Unreal/CharacterComponent/UnrealStatusComponent.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
+#include "Prepper/___Legacy/Car/CarPawn.h"
+#include "Prepper/___Legacy/Character/Component/ElimDissolveComponent.h"
 
 // Sets default values
 ABCharacter::ABCharacter()
@@ -35,7 +39,7 @@ ABCharacter::ABCharacter()
 
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SetComponentTickEnabled(false);
-	
+
 	Status = CreateDefaultSubobject<UUnrealStatusComponent>(TEXT("StatusComponent"));
 	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
 	Inventory = CreateDefaultSubobject<UUnrealInventoryComponent>(TEXT("Inventory"));
@@ -43,7 +47,6 @@ ABCharacter::ABCharacter()
 	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
 	CharacterMove = CreateDefaultSubobject<UUnrealCharacterMoveComponent>(TEXT("CharacterMoveComponent"));
 	
-	bUseControllerRotationYaw = false;
 }
 
 TObjectPtr<UStatusComponent> ABCharacter::GetStatus()
@@ -73,6 +76,11 @@ void ABCharacter::SetAmmoBox(const TObjectPtr<UAmmoBoxComponent> NewAmmoBox)
 
 void ABCharacter::PlayAnim(const FString& String)
 {
+}
+
+void ABCharacter::Boarding(const TObjectPtr<ACarPawn> Vehicle)
+{
+	Controller->Possess(Vehicle);
 }
 
 void ABCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
@@ -136,17 +144,19 @@ void ABCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 
 void ABCharacter::Heal(float Amount)
 {
-
+	GetStatus()->AddHP(Amount);
 }
 
 void ABCharacter::Eat(float Amount)
 {
 
+	GetStatus()->AddHP(Amount);
 }
 
 void ABCharacter::Drink(float Amount)
 {
 
+	GetStatus()->AddHP(Amount);
 }
 
 UInventoryComponent* ABCharacter::GetInventory() const
@@ -160,17 +170,32 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 	
 	if (GetStatus()->GetCurHealth() > 0) return;
 
-	/*
-	// 해당 캐릭터가 사망했다면 
 	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
 	
 	if(PrepperGameMode == nullptr) return;
 	
-	ABasePlayerController* PrepperPlayerController = Cast<ABasePlayerController>(Controller);
+	ABasePlayerController* PrepperPlayerController = GetController<ABasePlayerController>();
 	ABasePlayerController* AttackerController = Cast<ABasePlayerController>(InstigatorController);
 	
-	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);*/
+	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 
+}
+
+void ABCharacter::ElimCharacter()
+{
+	//PlayAnim(ElimMontage);
+	//ElimDissolve->TargetElim();
+
+	// Disable Movement
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	
+	// Disable Collision
+	SetActorEnableCollision(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	Destroy();
 }
 
 void ABCharacter::SetTeamIdx(int Idx)

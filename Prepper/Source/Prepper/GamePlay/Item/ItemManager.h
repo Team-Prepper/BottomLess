@@ -3,7 +3,7 @@
 #include "Item.h"
 #include "ItemCombination/ItemCombinationData.h"
 #include "ItemData/ItemMeta.h"
-#include "Prepper/_Base/Singleton.h"
+#include "Prepper/__Base/Singleton.h"
 
 class ItemManager : public Singleton<ItemManager>
 {

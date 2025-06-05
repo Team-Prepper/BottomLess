@@ -3,10 +3,11 @@
 
 #include "StatusComponent.h"
 
+#include "AnimNodes/AnimNode_RandomPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/Unreal/Component/UnrealCharacterMoveComponent.h"
-#include "Prepper/__Legacy/Character/Enums/StatusEffect.h"
+#include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
+#include "Prepper/___Legacy/Character/Enums/StatusEffect.h"
 
 
 // Sets default values for this component's properties
@@ -17,6 +18,17 @@ UStatusComponent::UStatusComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
+}
+
+void UStatusComponent::TakeDamage(int Amount)
+{
+	CurrentHealth -= Amount;
+
+	if (CurrentHealth < 0) CurrentHealth = 0;
+
+	Notify();
+	
+	if(CurrentHealth != 0.f) return;
 }
 
 void UStatusComponent::StatusTimerStart(TObjectPtr<UUnrealCharacterMoveComponent> Target)
@@ -95,6 +107,14 @@ State UStatusComponent::GetState()
 					   FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100));
 }
 
+void UStatusComponent::AddHP(float Amount)
+{
+	CurrentHealth += Amount;
+	if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+
+	Notify();
+}
+
 void UStatusComponent::AddHungry(float Amount)
 {
 	StateEffectMap[EStatusEffect::ESE_HUNGRY] += Amount;
@@ -121,5 +141,8 @@ void UStatusComponent::Detach(IObserver<UStatusComponent>* Observer)
 
 void UStatusComponent::Notify()
 {
-	
+	for(const auto Observer : Observers)
+	{
+		Observer->Update(*this);
+	}
 }

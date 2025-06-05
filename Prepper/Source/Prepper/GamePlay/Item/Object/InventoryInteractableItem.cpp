@@ -5,8 +5,8 @@
 #include "Components/WidgetComponent.h"
 #include "Prepper/GamePlay/Item/ItemManager.h"
 #include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
-#include "Prepper/__Legacy/HUD/UI/InventoryInteractionUI.h"
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/HUD/UI/InventoryInteractionUI.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
 
 AInventoryInteractableItem::AInventoryInteractableItem()
 {

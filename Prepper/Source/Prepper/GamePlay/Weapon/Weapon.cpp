@@ -13,9 +13,9 @@
 #include "Prepper/GamePlay/Weapon/Ammo/WeaponMagazine.h"
 #include "Prepper/GamePlay/Weapon/Attack/WeaponAttacking.h"
 #include "Prepper/GamePlay/Weapon/Targeting/WeaponTargeting.h"
-#include "Prepper/__Legacy/Character/PlayerCharacter.h"
-#include "Prepper/__Legacy/HUD/PrepperHUD.h"
-#include "Prepper/__Legacy/PlayerController/BasePlayerController.h"
+#include "Prepper/___Legacy/Character/PlayerCharacter.h"
+#include "Prepper/___Legacy/HUD/PrepperHUD.h"
+#include "Prepper/___Legacy/PlayerController/BasePlayerController.h"
 #include "Sound/SoundCue.h"
 
 AWeapon::AWeapon()
@@ -245,12 +245,12 @@ void AWeapon::OnWeaponStateSet()
 void AWeapon::OnEquipped(const TObjectPtr<ABCharacter> TargetCharacter)
 {
 	ShowPickUpWidget(false);
-	WeaponPhysicsActive(false);;
+	WeaponPhysicsActive(false);
 
 	if (!TargetCharacter) return;
 	
-	TargetCharacter->AttachActorAtSocket(WeaponSocketName, this);
 	TargetCharacter->SetEquippedWeaponType(WeaponType);
+	TargetCharacter->AttachActorAtSocket(WeaponSocketName, this);
 	
 	PlayEquipWeaponSound(TargetCharacter);
 }
