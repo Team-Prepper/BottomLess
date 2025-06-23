@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "CarPawn.h"
+#include "LegacyCarPawn.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -19,9 +19,8 @@
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
 class APrepperGameMode;
-DEFINE_LOG_CATEGORY(LogTemplateVehicle);
 
-ACarPawn::ACarPawn()
+ALegacyCarPawn::ALegacyCarPawn()
 {
 	// construct the front camera boom
 	FrontSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Front Spring Arm"));
@@ -67,29 +66,29 @@ ACarPawn::ACarPawn()
 
 }
 
-void ACarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void ALegacyCarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		//EnhancedInputComponent->BindAction(SteeringAction, ETriggerEvent::Completed, this, &ACarPawn::Move);
-		EnhancedInputComponent->BindAction(BrakeAction, ETriggerEvent::Started, this, &ACarPawn::StartBrake);
-		EnhancedInputComponent->BindAction(BrakeAction, ETriggerEvent::Completed, this, &ACarPawn::StopBrake);
+		EnhancedInputComponent->BindAction(BrakeAction, ETriggerEvent::Started, this, &ALegacyCarPawn::StartBrake);
+		EnhancedInputComponent->BindAction(BrakeAction, ETriggerEvent::Completed, this, &ALegacyCarPawn::StopBrake);
 
 		// handbrake 
-		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Started, this, &ACarPawn::StartHandbrake);
-		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Completed, this, &ACarPawn::StopHandbrake);
+		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Started, this, &ALegacyCarPawn::StartHandbrake);
+		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Completed, this, &ALegacyCarPawn::StopHandbrake);
 
 		// reset the vehicle 
-		EnhancedInputComponent->BindAction(ResetVehicleAction, ETriggerEvent::Triggered, this, &ACarPawn::ResetVehicle);
+		EnhancedInputComponent->BindAction(ResetVehicleAction, ETriggerEvent::Triggered, this, &ALegacyCarPawn::ResetVehicle);
 	}
 	else
 	{
-		UE_LOG(LogTemplateVehicle, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
-void ACarPawn::BeginPlay()
+void ALegacyCarPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -99,7 +98,7 @@ void ACarPawn::BeginPlay()
 	
 }
 
-void ACarPawn::Tick(float Delta)
+void ALegacyCarPawn::Tick(float Delta)
 {
 	Super::Tick(Delta);
 
@@ -114,7 +113,7 @@ void ACarPawn::Tick(float Delta)
 	BackSpringArm->SetRelativeRotation(FRotator(0.0f, CameraYaw, 0.0f));
 }
 
-void ACarPawn::Move(const FInputActionValue& Value)
+void ALegacyCarPawn::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -124,7 +123,7 @@ void ACarPawn::Move(const FInputActionValue& Value)
 	
 	ChaosVehicleMovement->SetBrakeInput(-MovementVector.Y);
 }
-void ACarPawn::Look(const FInputActionValue& Value)
+void ALegacyCarPawn::Look(const FInputActionValue& Value)
 {
 	// get the flat angle value for the input 
 	float LookValue = Value.Get<float>();
@@ -135,7 +134,7 @@ void ACarPawn::Look(const FInputActionValue& Value)
 	
 }
 
-void ACarPawn::InteractionAct()
+void ALegacyCarPawn::InteractionAct()
 {
 	Controller->Possess(Driver);
 	
@@ -147,7 +146,7 @@ void ACarPawn::InteractionAct()
 	Driver = nullptr;
 }
 
-void ACarPawn::ChangeCam()
+void ALegacyCarPawn::ChangeCam()
 {
 	// toggle the active camera flag
 	bFrontCameraActive = !bFrontCameraActive;
@@ -156,12 +155,12 @@ void ACarPawn::ChangeCam()
 	BackCamera->SetActive(!bFrontCameraActive);
 }
 
-UCameraComponent* ACarPawn::GetFollowCamera()
+UCameraComponent* ALegacyCarPawn::GetFollowCamera()
 {
 	return bFrontCameraActive ? FrontCamera : BackCamera;
 }
 
-IControlMapper* ACarPawn::GetControlMapper()
+IControlMapper* ALegacyCarPawn::GetControlMapper()
 {
 	if (!CarControlMapper)
 	{
@@ -172,7 +171,7 @@ IControlMapper* ACarPawn::GetControlMapper()
 	return CarControlMapper;
 }
 
-void ACarPawn::Interaction(APlayerCharacter* Target)
+void ALegacyCarPawn::Interaction(APlayerCharacter* Target)
 {
 	if (Driver) return;
 	
@@ -184,35 +183,35 @@ void ACarPawn::Interaction(APlayerCharacter* Target)
 	MulticastInteraction(Target);
 }
 
-void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
+void ALegacyCarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
 {
 	Driver = Target;
 	Target->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 }
 
-void ACarPawn::Interaction(ICharacterController* Target)
-{
-	Target->Boarding(this);
-}
-
-void ACarPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ACarPawn, CurrentHealth);
-}
-
-void ACarPawn::ShowPickUpWidget(bool bShowWidget)
+void ALegacyCarPawn::Interaction(ICharacterController* Target)
 {
 	
 }
 
-void ACarPawn::StartBrake(const FInputActionValue& Value)
+void ALegacyCarPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ALegacyCarPawn, CurrentHealth);
+}
+
+void ALegacyCarPawn::ShowPickUpWidget(bool bShowWidget)
+{
+	
+}
+
+void ALegacyCarPawn::StartBrake(const FInputActionValue& Value)
 {
 	// call the Blueprint hook for the break lights
 	BrakeLights(true);
 }
 
-void ACarPawn::StopBrake(const FInputActionValue& Value)
+void ALegacyCarPawn::StopBrake(const FInputActionValue& Value)
 {
 	// call the Blueprint hook for the break lights
 	BrakeLights(false);
@@ -221,7 +220,7 @@ void ACarPawn::StopBrake(const FInputActionValue& Value)
 	ChaosVehicleMovement->SetBrakeInput(0.0f);
 }
 
-void ACarPawn::StartHandbrake(const FInputActionValue& Value)
+void ALegacyCarPawn::StartHandbrake(const FInputActionValue& Value)
 {
 	// add the input
 	ChaosVehicleMovement->SetHandbrakeInput(true);
@@ -230,7 +229,7 @@ void ACarPawn::StartHandbrake(const FInputActionValue& Value)
 	BrakeLights(true);
 }
 
-void ACarPawn::StopHandbrake(const FInputActionValue& Value)
+void ALegacyCarPawn::StopHandbrake(const FInputActionValue& Value)
 {
 	// add the input
 	ChaosVehicleMovement->SetHandbrakeInput(false);
@@ -239,7 +238,7 @@ void ACarPawn::StopHandbrake(const FInputActionValue& Value)
 	BrakeLights(false);
 }
 
-void ACarPawn::ResetVehicle(const FInputActionValue& Value)
+void ALegacyCarPawn::ResetVehicle(const FInputActionValue& Value)
 {
 	// reset to a location slightly above our current one
 	FVector ResetLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f);
@@ -254,12 +253,10 @@ void ACarPawn::ResetVehicle(const FInputActionValue& Value)
 
 	GetMesh()->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
-	GetMovementComponent()->ResetMoveState();
-
 	UE_LOG(LogTemp, Error, TEXT("Reset Vehicle"));
 }
 
-void ACarPawn::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
+void ALegacyCarPawn::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 

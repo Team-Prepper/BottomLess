@@ -13,14 +13,16 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/GamePlay/PrepperGameMode.h"
+#include "Prepper/GamePlay/Car/Car.h"
 #include "Prepper/GamePlay/Character/Component/AmmoBoxComponent.h"
+#include "Prepper/GamePlay/Weapon/Weapon.h"
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCombatComponent.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealInteractionComponent.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealStatusComponent.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
-#include "Prepper/___Legacy/Car/CarPawn.h"
+#include "Prepper/___Legacy/Car/LegacyCarPawn.h"
 #include "Prepper/___Legacy/Character/Component/ElimDissolveComponent.h"
 
 // Sets default values
@@ -46,7 +48,13 @@ ABCharacter::ABCharacter()
 	
 	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
 	CharacterMove = CreateDefaultSubobject<UUnrealCharacterMoveComponent>(TEXT("CharacterMoveComponent"));
+	ElimDissolve = CreateDefaultSubobject<UElimDissolveComponent>(TEXT("ElimDessolveComponent"));
 	
+}
+
+TObjectPtr<APawn> ABCharacter::GetPawn()
+{
+	return this;
 }
 
 TObjectPtr<UStatusComponent> ABCharacter::GetStatus()
@@ -59,7 +67,7 @@ TObjectPtr<UBCombatComponent> ABCharacter::GetCombat()
 	return Combat;
 }
 
-TObjectPtr<UUnrealCharacterMoveComponent> ABCharacter::GetMove()
+TObjectPtr<UCharacterMoveComponent> ABCharacter::GetMove()
 {
 	return CharacterMove;
 }
@@ -78,9 +86,15 @@ void ABCharacter::PlayAnim(const FString& String)
 {
 }
 
-void ABCharacter::Boarding(const TObjectPtr<ACarPawn> Vehicle)
+void ABCharacter::Boarding(TObjectPtr<ACar> Vehicle)
 {
-	Controller->Possess(Vehicle);
+	CharacterMove->SetCar(Vehicle);
+}
+
+void ABCharacter::GetOff()
+{
+	CharacterMove->SetCar(nullptr);
+	//GetController<APlayerController>()->SetViewTarget(this);
 }
 
 void ABCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
@@ -184,7 +198,7 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 void ABCharacter::ElimCharacter()
 {
 	//PlayAnim(ElimMontage);
-	//ElimDissolve->TargetElim();
+	ElimDissolve->TargetElim();
 
 	// Disable Movement
 	GetCharacterMovement()->DisableMovement();
@@ -195,7 +209,6 @@ void ABCharacter::ElimCharacter()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
-	Destroy();
 }
 
 void ABCharacter::SetTeamIdx(int Idx)
@@ -215,11 +228,35 @@ void ABCharacter::BeginPlay()
 	Combat->SetTargetCharacter(this);
 	Interaction->SetTargetCharacter(this);
 	Inventory->SetOwner(this);
+	ElimDissolve->SetCharacter(this);
+}
+
+void ABCharacter::SpawnWeaponActor()
+{
+	if(!HasAuthority()) return;
+	if (WeaponActorClass == nullptr) return;
+	
+	UWorld* World = GetWorld();
+	if (World == nullptr) return;
+
+	const FVector Location = GetActorLocation();
+	const FRotator Rotation = GetActorRotation();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this; // Setting the owner
+
+	const TObjectPtr<AWeapon> EquippedWeapon =
+		World->SpawnActor<AWeapon>(WeaponActorClass, Location, Rotation, SpawnParams);
+
+	if (!EquippedWeapon) return;
+
+	EquippedWeapon->Interaction(this);
 }
 
 void ABCharacter::Move(const FInputActionValue& Value)
 {
 	if (Controller == nullptr) return;
+	
+	if (CharacterMove->GetTargetCar() != nullptr) return;
 	
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 	
@@ -238,6 +275,12 @@ void ABCharacter::Look(const FInputActionValue& Value)
 {
 	if (Controller == nullptr) return;
 	
+	if (CharacterMove->GetTargetCar() != nullptr)
+	{
+		CharacterMove->GetTargetCar()->Look(Value);
+		return;
+	}
+	
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
 	
 	AddControllerYawInput(LookAxisVector.X);
@@ -247,11 +290,17 @@ void ABCharacter::Look(const FInputActionValue& Value)
 
 void ABCharacter::CrouchToggle()
 {
+	if (CharacterMove->GetTargetCar() != nullptr)
+	{
+		CharacterMove->GetTargetCar()->ChangeCam();
+		return;
+	}
 	CharacterMove->CrouchToggle();
 }
 
 void ABCharacter::JumpTrigger(bool IsTrigger)
 {
+	if (CharacterMove->GetTargetCar() != nullptr) return;
 	CharacterMove->JumpTrigger(IsTrigger);
 }
 
@@ -274,11 +323,17 @@ void ABCharacter::UnCrouch(bool bClientSimulation)
 
 void ABCharacter::SprintTrigger(bool IsTrigger)
 {
+	if (CharacterMove->GetTargetCar() != nullptr) return;
 	CharacterMove->SprintTrigger(IsTrigger);
 }
 
 void ABCharacter::EquipButtonPressed()
 {
+	if (CharacterMove->GetTargetCar() != nullptr)
+	{
+		CharacterMove->GetTargetCar()->InteractionAct(this);
+		return;
+	}
 	Interaction->Interaction();
 }
 

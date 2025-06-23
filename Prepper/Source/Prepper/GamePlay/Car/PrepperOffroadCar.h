@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CarPawn.h"
+#include "Prepper/GamePlay/Car/Car.h"
 #include "PrepperOffroadCar.generated.h"
 
 /**
  *  Offroad car wheeled vehicle implementation
  */
 UCLASS(abstract)
-class PREPPER_API APrepperOffroadCar : public ACarPawn
+class PREPPER_API APrepperOffroadCar : public ACar
 {
 	GENERATED_BODY()
 	
@@ -35,6 +35,5 @@ class PREPPER_API APrepperOffroadCar : public ACarPawn
 	UStaticMeshComponent* TireRearRight;
 
 public:
-
 	APrepperOffroadCar();
 };

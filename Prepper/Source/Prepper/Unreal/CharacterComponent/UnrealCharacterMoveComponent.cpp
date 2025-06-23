@@ -4,7 +4,6 @@
 #include "UnrealCharacterMoveComponent.h"
 
 #include "Net/UnrealNetwork.h"
-#include "Prepper/GamePlay/Character/BCharacter.h"
 
 // Sets default values for this component's properties
 UUnrealCharacterMoveComponent::UUnrealCharacterMoveComponent()
@@ -14,10 +13,6 @@ UUnrealCharacterMoveComponent::UUnrealCharacterMoveComponent()
 	IsSprintNetwork = false;
 	IsCrouchingNetwork = false;
 	IsJumpNetwork = false;
-	
-	IsSprintLocal = false;
-	IsAimingLocal = false;
-	IsCrouchingLocal = false;
 
 	IsLocal = false;
 
@@ -51,11 +46,9 @@ void UUnrealCharacterMoveComponent::OnRep_Jump()
 	JumpAct(IsJumpNetwork);
 }
 
-float UUnrealCharacterMoveComponent::GetSpeed() const
+void UUnrealCharacterMoveComponent::OnRep_Car()
 {
-	if (IsAimingLocal) return AimMovementSpeed * CoefficientMovementSpeed;
-	if (IsSprintLocal) return SprintSpeed * CoefficientMovementSpeed;
-	return WalkSpeed * CoefficientMovementSpeed;
+	Super::SetCar(TargetCarNetwork);
 }
 
 void UUnrealCharacterMoveComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -65,35 +58,7 @@ void UUnrealCharacterMoveComponent::GetLifetimeReplicatedProps(TArray<FLifetimeP
 	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsCrouchingNetwork);
 	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsSprintNetwork);
 	DOREPLIFETIME(UUnrealCharacterMoveComponent, IsJumpNetwork);
-}
-
-void UUnrealCharacterMoveComponent::CrouchingAct(const bool IsTrigger) const
-{
-	const TObjectPtr<ABCharacter> Target = GetOwner<ABCharacter>();
-	if (Target == nullptr) return;
-	if (IsTrigger)
-	{
-		Target->Crouch();
-		return;
-	}
-	Target->UnCrouch();
-}
-
-void UUnrealCharacterMoveComponent::JumpAct(const bool IsTrigger) const
-{
-	const TObjectPtr<ABCharacter> Target = GetOwner<ABCharacter>();
-	if (Target == nullptr) return;
-	if (IsTrigger)
-	{
-		Target->Jump();
-		return;
-	}
-	Target->StopJumping();
-}
-
-void UUnrealCharacterMoveComponent::SetOwnerSpeed()
-{
-	GetOwner<ABCharacter>()->SetMaxSpeed(GetSpeed());
+	DOREPLIFETIME(UUnrealCharacterMoveComponent, TargetCarNetwork);
 }
 
 void UUnrealCharacterMoveComponent::BeginPlay()
@@ -107,34 +72,42 @@ void UUnrealCharacterMoveComponent::BeginPlay()
 
 void UUnrealCharacterMoveComponent::CrouchToggle()
 {
-	IsCrouchingLocal = !IsCrouchingLocal;
+	Super::CrouchToggle();
 	ServerCrouchTrigger(IsCrouchingLocal);
 	CrouchingAct(IsCrouchingLocal);
 }
 
 void UUnrealCharacterMoveComponent::JumpTrigger(bool IsTrigger)
 {
-	if (IsCrouchingLocal)
-	{
-		CrouchToggle();
-		return;
-	}
+	Super::JumpTrigger(IsTrigger);
 	ServerJumpTrigger(IsTrigger);
-	JumpAct(IsTrigger);
 }
 
 void UUnrealCharacterMoveComponent::SprintTrigger(bool IsTrigger)
 {
-	IsSprintLocal = IsTrigger;
+	Super::SprintTrigger(IsTrigger);
 	ServerSprintTrigger(IsSprintLocal);
-	SetOwnerSpeed();
 }
 
 void UUnrealCharacterMoveComponent::SetAiming(bool IsTrigger)
 {
-	IsAimingLocal = IsTrigger;
+	Super::SetAiming(IsTrigger);
 	ServerAimingTrigger(IsAimingLocal);
-	SetOwnerSpeed();
+}
+
+void UUnrealCharacterMoveComponent::SetCar(TObjectPtr<ACar> Vehicle)
+{
+	TargetCarNetwork = Vehicle;
+	if (GetOwner()->HasAuthority()) return;
+	Super::SetCar(Vehicle);
+	return;
+	ServerSetCar(Vehicle);
+}
+
+void UUnrealCharacterMoveComponent::ServerSetCar_Implementation(ACar* Vehicle)
+{
+	TargetCarNetwork = Vehicle;
+	Super::SetCar(Vehicle);
 }
 
 void UUnrealCharacterMoveComponent::ServerSprintTrigger_Implementation(bool IsTrigger)

@@ -43,3 +43,9 @@ void AInteractableObject::Interaction(APlayerCharacter* Target)
 	InteractAction();
 	UE_LOG(LogTemp, Warning, TEXT("Interaction Object : Interaction"));
 }
+
+void AInteractableObject::Interaction(ICharacterController* Target)
+{
+	InteractAction();
+	UE_LOG(LogTemp, Warning, TEXT("Interaction Object : Interaction"));
+}

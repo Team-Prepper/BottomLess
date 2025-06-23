@@ -31,7 +31,7 @@ void UStatusComponent::TakeDamage(int Amount)
 	if(CurrentHealth != 0.f) return;
 }
 
-void UStatusComponent::StatusTimerStart(TObjectPtr<UUnrealCharacterMoveComponent> Target)
+void UStatusComponent::StatusTimerStart(TObjectPtr<UCharacterMoveComponent> Target)
 {
 	TargetMove = Target;
 	UE_LOG(LogTemp, Warning, TEXT("StatusEffectReady"));

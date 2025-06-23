@@ -1,7 +1,7 @@
 ﻿#include "CarControlMapper.h"
 
 #include "Blueprint/UserWidget.h"
-#include "Prepper/___Legacy/Car/CarPawn.h"
+#include "Prepper/___Legacy/Car/LegacyCarPawn.h"
 
 void UCarControlMapper::Connect(APlayerController* TargetController)
 {

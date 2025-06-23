@@ -14,7 +14,7 @@ class PREPPER_API UElimDissolveComponent : public UCharacterComponent
 	
 private:
 	UPROPERTY()
-	ABaseCharacter* TargetCharacter;
+	TObjectPtr<ACharacter> TargetCharacter;
 	
 	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* DissolveTimeline;
@@ -38,6 +38,7 @@ public:
 	UElimDissolveComponent();
 	
 	virtual void SetCharacter(ABaseCharacter* Target) override;
+	void SetCharacter(TObjectPtr<ACharacter> Target);
 	virtual void TargetElim() override;
 
 	UFUNCTION()

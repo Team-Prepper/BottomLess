@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PrepperWheelRear.h"
+#include "Prepper/___Legacy/Car/PrepperWheelRear.h"
 #include "PrepperOffroadWheelRear.generated.h"
 
 /**

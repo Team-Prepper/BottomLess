@@ -3,7 +3,9 @@
 
 #include "UnrealPlayerInputComponent.h"
 #include "EnhancedInputComponent.h"
+#include "SNegativeActionButton.h"
 #include "UnrealPlayerController.h"
+#include "Prepper/GamePlay/Car/Car.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 
@@ -37,24 +39,41 @@ UUnrealPlayerInputComponent::UUnrealPlayerInputComponent()
 void UUnrealPlayerInputComponent::Move(const FInputActionValue& Value)
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCar() != nullptr)
+	{
+		CC->GetTargetCar()->Move(Value, CC->GetTargetCharacter());
+		return;
+	}
 	CC->GetTargetCharacter()->Move(Value);
 }
 
 void UUnrealPlayerInputComponent::Look(const FInputActionValue& Value)
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCar() != nullptr)
+	{
+		CC->GetTargetCar()->Look(Value);
+		return;
+	}
 	CC->GetTargetCharacter()->Look(Value);
 }
 
 void UUnrealPlayerInputComponent::JumpButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCar() != nullptr)
+	{
+		CC->GetTargetCar()->ChangeCam();
+		return;
+	}
+	
 	CC->GetTargetCharacter()->JumpTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::JumpButtonReleased()
 {
 	if (CC == nullptr) return;
+	
 	CC->GetTargetCharacter()->JumpTrigger(false);
 }
 
@@ -121,6 +140,11 @@ void UUnrealPlayerInputComponent::SprintButtonReleased()
 void UUnrealPlayerInputComponent::EquipButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCar() != nullptr)
+	{
+		CC->GetTargetCar()->InteractionAct(CC->GetTargetCharacter());
+		return;
+	}
 	CC->GetTargetCharacter()->EquipButtonPressed();
 }
 

@@ -49,6 +49,8 @@ void AUnrealAIController::Tick(float DeltaSeconds)
 		return;
 	}
 
+	MoveToActor(PatrolTarget, 1.5f);
+	
 	if (PatrolTargetSqrDiff <= CombatRadius * CombatRadius)
 	{
 		EnemyState = EEnemyState::EES_Chasing;

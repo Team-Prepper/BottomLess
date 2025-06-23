@@ -6,7 +6,7 @@
 #include "ControlMapper.h"
 #include "CarControlMapper.generated.h"
 
-class ACarPawn;
+class ALegacyCarPawn;
 class UUserWidget;
 
 UCLASS(hidecategories = Object, Blueprintable, BlueprintType)
@@ -26,7 +26,7 @@ public:
 		CarOverlay(nullptr), TargetCar(nullptr) { } ;
 	
 	UPROPERTY()
-	ACarPawn* TargetCar;
+	ALegacyCarPawn* TargetCar;
 
 	virtual void Connect(APlayerController* TargetController) override;
 	virtual void Disconnect() override;

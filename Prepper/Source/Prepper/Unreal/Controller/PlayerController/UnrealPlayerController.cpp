@@ -27,55 +27,61 @@ TObjectPtr<ABCharacter> AUnrealPlayerController::GetTargetCharacter()
 	return TargetCharacter;
 }
 
-void AUnrealPlayerController::CrouchingAct(bool IsTrigger)
+TObjectPtr<ACar> AUnrealPlayerController::GetTargetCar()
 {
-	const TObjectPtr<ABCharacter> Target = GetTargetCharacter();
-	if (Target == nullptr) return;
-	if (IsTrigger)
-	{
-		Target->Crouch();
-		return;
-	}
-	Target->UnCrouch();
-}
-
-void AUnrealPlayerController::JumpAct(bool IsTrigger)
-{
-	const TObjectPtr<ABCharacter> Target = GetTargetCharacter();
-	if (Target == nullptr) return;
-	if (IsTrigger)
-	{
-		Target->Jump();
-		return;
-	}
-	Target->StopJumping();
-}
-
-
-void AUnrealPlayerController::SprintAct(bool IsTrigger)
-{
-	const TObjectPtr<ABCharacter> Target = GetTargetCharacter();
-	if (Target == nullptr) return;
-	Target->SprintTrigger(IsTrigger);
+	return TargetCar;
 }
 
 void AUnrealPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	
+	SetViewTarget(InPawn);
 
-	if (GetTargetCharacter() == nullptr) return;
+	if (GetPawn<ACar>() != nullptr)
+	{
+		TargetCar = GetPawn<ACar>();
+		return;
+	}
+	
+	TargetCar = nullptr;
+	
+	if (GetPawn() == nullptr)
+	{
+		TargetCharacter = nullptr;
+		return;
+	}
+	
+	if (TargetCharacter == GetPawn()) return;
 	
 	InitialSetting->Initial(this);
 	GetTargetCharacter()->SetAmmoBox(AmmoBox);
 	TargetCharacter->SetTeamIdx(0);
+	
 }
 
 void AUnrealPlayerController::OnRep_Pawn()
 {
 	Super::OnRep_Pawn();
+	
+	SetViewTarget(GetPawn());
+	
+	if (GetPawn<ACar>() != nullptr)
+	{
+		TargetCar = GetPawn<ACar>();
+		return;
+	}
 
-	if (GetTargetCharacter() == nullptr) return;
+	TargetCar = nullptr;
 
+	if (GetPawn() == nullptr)
+	{
+		TargetCharacter = nullptr;
+		return;
+	}
+
+	if (TargetCharacter == GetPawn()) return;
+	
 	InitialSetting->Initial(this);
 	GetTargetCharacter()->SetAmmoBox(AmmoBox);
 	TargetCharacter->SetTeamIdx(0);
@@ -107,11 +113,6 @@ void AUnrealPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(InputConnector->GetMappingContext(), 0);
 	}
 
-}
-
-void AUnrealPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void AUnrealPlayerController::Tick(float DeltaTime)

@@ -8,7 +8,7 @@
 #include "Prepper/GamePlay/Interactable.h"
 #include "Prepper/___Legacy/Character/PlayerCharacter.h"
 
-#include "CarPawn.generated.h"
+#include "LegacyCarPawn.generated.h"
 
 class UCarControlMapper;
 class UCameraComponent;
@@ -17,10 +17,8 @@ class UInputAction;
 class UChaosWheeledVehicleMovementComponent;
 struct FInputActionValue;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogTemplateVehicle, Log, All);
-
 UCLASS(abstract)
-class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IInteractable, public IDamageable
+class ALegacyCarPawn : public AWheeledVehiclePawn, public IControllable, public IInteractable, public IDamageable
 {
 	GENERATED_BODY()
 	/** Spring Arm for the front camera */
@@ -97,7 +95,7 @@ protected:
 	float CurrentHealth = 100.f;
 
 public:
-	ACarPawn();
+	ALegacyCarPawn();
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	virtual void Tick(float Delta) override;

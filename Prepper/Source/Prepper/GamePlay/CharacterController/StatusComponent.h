@@ -10,6 +10,7 @@
 #include "StatusComponent.generated.h"
 
 
+class UCharacterMoveComponent;
 class UUnrealCharacterMoveComponent;
 enum class EStatusEffect : uint8;
 
@@ -18,7 +19,7 @@ class PREPPER_API UStatusComponent : public UActorComponent, public ISubject<USt
 {
 	GENERATED_BODY()
 
-	TObjectPtr<UUnrealCharacterMoveComponent> TargetMove;
+	TObjectPtr<UCharacterMoveComponent> TargetMove;
 	
 	TMap<EStatusEffect, float> StateEffectMap;
 	FTimerHandle StatusTimerHandle;
@@ -55,7 +56,7 @@ public:
 	virtual int GetCurHealth() const { return CurrentHealth; }
 	virtual void TakeDamage(int Amount);
 
-	void StatusTimerStart(TObjectPtr<UUnrealCharacterMoveComponent> Target);
+	void StatusTimerStart(TObjectPtr<UCharacterMoveComponent> Target);
 	void StatusTimerFinish();
 	
 	State GetState();

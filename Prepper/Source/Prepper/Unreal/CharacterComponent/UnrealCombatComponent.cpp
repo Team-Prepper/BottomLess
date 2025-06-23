@@ -6,6 +6,7 @@
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/UI/PlayerOverlay.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
+#include "Prepper/___Legacy/HUD/PrepperHUD.h"
 
 // Sets default values for this component's properties
 UUnrealCombatComponent::UUnrealCombatComponent()

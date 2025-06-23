@@ -74,6 +74,7 @@ void UInitialSettingComponent::WidgetSetting(TObjectPtr<AUnrealPlayerController>
 
 void UInitialSettingComponent::Initial(TObjectPtr<AUnrealPlayerController> Target)
 {
+	
 	if (TargetCC != nullptr)
 	{
 		Detach();

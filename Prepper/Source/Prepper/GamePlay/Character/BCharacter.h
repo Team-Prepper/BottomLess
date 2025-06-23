@@ -12,18 +12,21 @@
 #include "BCharacter.generated.h"
 
 enum class EWeaponType : uint8;
+
+class ICombat;
+class IStatus;
+
 class UAmmoBoxComponent;
 class UStatusComponent;
 class UBCombatComponent;
-class UUnrealCharacterMoveComponent;
+class UCharacterMoveComponent;
+
 class UUnrealInteractionComponent;
-class UUnrealCombatComponent;
-class UUnrealStatusComponent;
-class ICombat;
-class IStatus;
+
 class UPawnSensingComponent;
 class UCustomCameraComponent;
 class UFlexibleSpringArmComponent;
+class UElimDissolveComponent;
 
 UCLASS()
 class PREPPER_API ABCharacter : public ACharacter, public ICharacterController, public IPlayerAbility, public IDamageable
@@ -45,12 +48,17 @@ class PREPPER_API ABCharacter : public ACharacter, public ICharacterController, 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUnrealInteractionComponent> Interaction;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealCharacterMoveComponent> CharacterMove;
+	TObjectPtr<UCharacterMoveComponent> CharacterMove;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UElimDissolveComponent> ElimDissolve;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UCustomCameraComponent> FollowCamera;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
+	
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<AWeapon> WeaponActorClass;
 	
 	UPROPERTY(EditAnywhere, Category = "Player Default Team Idx")
 	int TeamIdx = 1;
@@ -58,15 +66,18 @@ class PREPPER_API ABCharacter : public ACharacter, public ICharacterController, 
 public:
 	// Sets default values for this actor's properties
 	ABCharacter();
+	virtual TObjectPtr<APawn> GetPawn() override;
 	virtual TObjectPtr<UStatusComponent> GetStatus() override;
 	virtual TObjectPtr<UBCombatComponent> GetCombat() override;
-	virtual TObjectPtr<UUnrealCharacterMoveComponent> GetMove();
+	virtual TObjectPtr<UCharacterMoveComponent> GetMove();
 	virtual IAmmoBox* GetAmmoBox() override;
 	void SetAmmoBox(TObjectPtr<UAmmoBoxComponent> NewAmmoBox);
 	
 	void PlayAnim(const FString& String);
 
-	virtual void Boarding(TObjectPtr<ACarPawn> Vehicle) override;
+	virtual void Boarding(TObjectPtr<ACar> Vehicle) override;
+	virtual void GetOff() override;
+	
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 	
@@ -105,6 +116,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void SpawnWeaponActor();
 
 public:
 	// Called every frame

@@ -18,6 +18,7 @@ public:
 	AInteractableObject();
 
 	virtual void Interaction(APlayerCharacter *Target) override;
+	virtual void Interaction(ICharacterController* Target) override;
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void InteractAction();

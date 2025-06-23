@@ -3,7 +3,6 @@
 
 #include "ElimDissolveComponent.h"
 #include "GameFramework/Character.h"
-#include "Prepper/___Legacy/Character/BaseCharacter.h"
 
 
 // Sets default values
@@ -14,6 +13,7 @@ UElimDissolveComponent::UElimDissolveComponent()
 
 void UElimDissolveComponent::TargetElim()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Elim Dissolve Start"));
 	// Start Dissolve Effect
 	if (DissolveMaterialInstance)
 	{
@@ -48,7 +48,7 @@ void UElimDissolveComponent::TargetElim()
 	if (TargetCharacter)
 	{
 		FTimerHandle TimerHandle;
-		FTimerDelegate TimerDelegate;
+		const FTimerDelegate TimerDelegate;
         
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, DestroyDelayTime, false);
 	}
@@ -60,6 +60,11 @@ void UElimDissolveComponent::RemoveCharacter()
 }
 
 void UElimDissolveComponent::SetCharacter(ABaseCharacter* Target)
+{
+	SetCharacter(Target);
+}
+
+void UElimDissolveComponent::SetCharacter(const TObjectPtr<ACharacter> Target)
 {
 	TargetCharacter = Target;
 }

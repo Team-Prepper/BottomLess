@@ -16,7 +16,7 @@ class UUnrealPlayerInputComponent;
 class UUnrealInteractionComponent;
 class IControllerMapper;
 class ABCharacter;
-
+class ACar;
 /**
  * 
  */
@@ -27,12 +27,6 @@ UCLASS()
 class PREPPER_API AUnrealPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-
-	TObjectPtr<ABCharacter> TargetCharacter;
-
-	void CrouchingAct(bool IsTrigger);
-	void SprintAct(bool IsTrigger);
-	void JumpAct(bool IsTrigger);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAmmoBoxComponent> AmmoBox;
@@ -44,6 +38,9 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInitialSettingComponent> InitialSetting;
 
+	TObjectPtr<ACar> TargetCar;
+	TObjectPtr<ABCharacter> TargetCharacter;
+	
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;
 
@@ -53,10 +50,11 @@ protected:
 	
 public:
 	AUnrealPlayerController();
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual TObjectPtr<ABCharacter> GetTargetCharacter();
+	virtual TObjectPtr<ACar> GetTargetCar();
+	
 	TObjectPtr<UAmmoBoxComponent> GetAmmoBox() const { return AmmoBox; }
 	
 	virtual void TabButtonPressed();

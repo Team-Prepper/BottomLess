@@ -4,21 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/GamePlay/Character/Component/CharacterMoveComponent.h"
 #include "Prepper/GamePlay/CharacterController/StatusComponent.h"
 #include "UnrealCharacterMoveComponent.generated.h"
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PREPPER_API UUnrealCharacterMoveComponent : public UActorComponent
+class PREPPER_API UUnrealCharacterMoveComponent : public UCharacterMoveComponent
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float WalkSpeed = 600;
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float SprintSpeed = 900;
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float AimMovementSpeed = 400.f;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Sprint)
 	bool IsSprintNetwork;
@@ -28,6 +22,8 @@ class PREPPER_API UUnrealCharacterMoveComponent : public UActorComponent
 	bool IsCrouchingNetwork;
 	UPROPERTY(ReplicatedUsing=OnRep_Jump)
 	bool IsJumpNetwork;
+	UPROPERTY(ReplicatedUsing=OnRep_Car)
+	ACar* TargetCarNetwork;
 
 	UFUNCTION()
 	void OnRep_Sprint();
@@ -37,35 +33,24 @@ class PREPPER_API UUnrealCharacterMoveComponent : public UActorComponent
 	void OnRep_Crouching();
 	UFUNCTION()
 	void OnRep_Jump();
-	
-	bool IsAimingLocal;
-	bool IsSprintLocal;
-	bool IsCrouchingLocal;
+	UFUNCTION()
+	void OnRep_Car();
 
 	bool IsLocal;
-
-	void CrouchingAct(bool IsTrigger) const;
-	void JumpAct(bool IsTrigger) const;
-	void SetOwnerSpeed();
 
 protected:
 	virtual void BeginPlay() override;
 public:
 	// Sets default values for this component's properties
 	UUnrealCharacterMoveComponent();
-
-	float CoefficientMovementSpeed = 1;
-	float GetSpeed() const;
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void CrouchToggle();
-	void JumpTrigger(bool IsTrigger);
-	void SprintTrigger(bool IsTrigger);
-	void SetAiming(bool IsTrigger);
-
-	bool IsSprint() const { return IsSprintLocal; }
-	bool IsAiming() const { return IsAimingLocal; }
+	virtual void CrouchToggle() override;
+	virtual void JumpTrigger(bool IsTrigger) override;
+	virtual void SprintTrigger(bool IsTrigger) override;
+	virtual void SetAiming(bool IsTrigger) override;
+	virtual void SetCar(TObjectPtr<ACar> Vehicle) override;
 	
 	UFUNCTION(Server, Reliable)
 	void ServerSprintTrigger(bool IsTrigger);
@@ -75,5 +60,7 @@ public:
 	void ServerJumpTrigger(bool IsTrigger);
 	UFUNCTION(Server, Reliable)
 	void ServerCrouchTrigger(bool IsTrigger);
+	UFUNCTION(Server, Reliable)
+	void ServerSetCar(ACar* Vehicle);
 	
 };
