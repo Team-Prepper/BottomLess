@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
+#include "Prepper/GamePlay/Character/Component/Status/StatusComponent.h"
 #include "UnrealStatusComponent.generated.h"
 
 

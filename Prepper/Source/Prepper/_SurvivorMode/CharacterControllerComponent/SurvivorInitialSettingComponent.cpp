@@ -7,14 +7,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/Character/Component/AmmoBoxComponent.h"
-#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
+#include "Prepper/GamePlay/Character/Component/Status/StatusComponent.h"
 #include "Prepper/GamePlay/Equipment/EquipmentManager.h"
 #include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
 #include "Prepper/Unreal/Controller/PlayerController/UnrealPlayerController.h"
 #include "Prepper/_SurvivorMode/SurvivorGameMode.h"
 #include "Prepper/_SurvivorMode/GameSave/SurvivorSaveGame.h"
 #include "Prepper/_SurvivorMode/GameSave/SurvivorServerSaveGame.h"
-#include "Prepper/___Legacy/HUD/UI/CharacterOverlay/StatusWidget.h"
+#include "Prepper/_SurvivorMode/UI/StatusWidget.h"
 #include "Prepper/_SurvivorMode/UI/QuickSlotWidget.h"
 
 void USurvivorInitialSettingComponent::Attach()
@@ -23,7 +23,7 @@ void USurvivorInitialSettingComponent::Attach()
 	
 	if (StatusWidget != nullptr)
 	{
-		//TargetCC->GetTargetCharacter()->GetStatus()->Attach(StatusWidget);
+		TargetCC->GetTargetCharacter()->GetStatus()->Attach(StatusWidget);
 	}
 
 	if (QuickSlotWidget != nullptr)
@@ -99,7 +99,6 @@ void USurvivorInitialSettingComponent::ServerSetAmmo_Implementation(
 void USurvivorInitialSettingComponent::ServerEquipEquipment_Implementation(ABCharacter* Target,
 	const FString& EquipmentCode)
 {
-	return;
 	AEquipment* SpawnEquipment =
 		EquipmentManager::GetInstance()->SpawnEquipment<AEquipment>(GetWorld(), EquipmentCode);
 
@@ -171,7 +170,7 @@ void USurvivorInitialSettingComponent::SaveClientData()
 
 	if (SaveGameInstance)
 	{
-		//SaveGameInstance->Equipments = GetOwner<AUnrealPlayerController>()->GetTargetCharacter()->GetEquipmentCodes();
+		SaveGameInstance->Equipments = GetOwner<AUnrealPlayerController>()->GetTargetCharacter()->GetEquzipmentCodes();
 		
 		SaveGameInstance->CarriedAmmoMap = TargetCC->GetAmmoBox()->GetAmmoMap();
 

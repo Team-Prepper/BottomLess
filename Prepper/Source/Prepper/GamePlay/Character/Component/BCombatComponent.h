@@ -22,6 +22,9 @@ protected:
 	TObjectPtr<ABCharacter> TargetCharacter;
 	UPROPERTY()
 	TObjectPtr<UPlayerOverlay> TargetOverlay;
+
+	TObjectPtr<AWeapon> EquippedWeapon;
+	TObjectPtr<AWeapon> SecondaryWeapon;
 	
 public:
 	// Sets default values for this component's properties
@@ -37,7 +40,9 @@ public:
 
 	virtual void Swap() PURE_VIRTUAL();
 	
-	virtual FString GetEquippedWeaponCode() const { return FString(); }
+	virtual TObjectPtr<AWeapon> GetEquippedWeapon() const { return EquippedWeapon; }
+	virtual TObjectPtr<AWeapon> GetSecondaryWeapon() const { return SecondaryWeapon; }
+	
 	virtual FString GetAmmoValue() const { return FString(); }
 
 private:

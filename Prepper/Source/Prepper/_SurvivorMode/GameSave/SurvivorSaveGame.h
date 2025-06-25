@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "SurvivorSaveGame.generated.h"
+
 
 /**
  * 

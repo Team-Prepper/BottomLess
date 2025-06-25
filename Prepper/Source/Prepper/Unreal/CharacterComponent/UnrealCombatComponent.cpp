@@ -15,7 +15,10 @@ UUnrealCombatComponent::UUnrealCombatComponent()
 	SetIsReplicated(true);
 
 	TargetCharacter = nullptr;
-	EquippedWeapon = nullptr;
+	NetworkEquippedWeapon = nullptr;
+	NetworkSecondaryWeapon = nullptr;
+	NetworkDroppedWeapon = nullptr;
+	
 	EquippedAmmo = 0;
 
 	IsAiming = false;
@@ -28,13 +31,18 @@ UUnrealCombatComponent::UUnrealCombatComponent()
 
 void UUnrealCombatComponent::Swap()
 {
-	if (SecondaryWeapon == nullptr) return;
+	if (NetworkSecondaryWeapon == nullptr) return;
+	
 	const TObjectPtr<AWeapon> Temp = EquippedWeapon;
+	
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = Temp;
-
+	
 	EquippedWeapon->OnEquipped(TargetCharacter);
 	SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
+
+	NetworkEquippedWeapon = EquippedWeapon;
+	NetworkSecondaryWeapon = SecondaryWeapon;
 	
 	Notify();
 }
@@ -50,6 +58,7 @@ void UUnrealCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                            FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
 	if (TargetOverlay == nullptr) return;
 	if (EquippedWeapon == nullptr) return;
 	
@@ -62,10 +71,10 @@ void UUnrealCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UUnrealCombatComponent, IsAiming);
-	DOREPLIFETIME(UUnrealCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UUnrealCombatComponent, NetworkEquippedWeapon);
 	DOREPLIFETIME(UUnrealCombatComponent, EquippedAmmo);
-	DOREPLIFETIME(UUnrealCombatComponent, SecondaryWeapon);
-	DOREPLIFETIME(UUnrealCombatComponent, DroppedWeapon);
+	DOREPLIFETIME(UUnrealCombatComponent, NetworkSecondaryWeapon);
+	DOREPLIFETIME(UUnrealCombatComponent, NetworkDroppedWeapon);
 }
 
 void UUnrealCombatComponent::EquipWeapon(AWeapon* Weapon)
@@ -74,18 +83,21 @@ void UUnrealCombatComponent::EquipWeapon(AWeapon* Weapon)
 	{
 		SecondaryWeapon = Weapon;
 		SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
+		NetworkSecondaryWeapon = SecondaryWeapon;
 		return;
 	}
 	
-	DroppedWeapon = EquippedWeapon;
+	NetworkDroppedWeapon = EquippedWeapon;
 	
-	if (DroppedWeapon != nullptr)
+	if (NetworkDroppedWeapon != nullptr)
 	{
-		DroppedWeapon->OnDropped(TargetCharacter);
+		NetworkDroppedWeapon->OnDropped(TargetCharacter);
 	}
 	
 	EquippedWeapon = Weapon;
 	EquippedWeapon->OnEquipped(TargetCharacter);
+	NetworkEquippedWeapon = EquippedWeapon;
+	
 	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
 
 	Notify();
@@ -110,28 +122,31 @@ void UUnrealCombatComponent::OnRep_Ammo()
 
 void UUnrealCombatComponent::OnRep_EquippedWeapon()
 {
+	EquippedWeapon = NetworkEquippedWeapon;
+	
 	if (!EquippedWeapon) return;
-
 	EquippedWeapon->OnEquipped(TargetCharacter);
 	Notify();
 }
 
 void UUnrealCombatComponent::OnRep_SecondaryWeapon()
 {
+	SecondaryWeapon = NetworkSecondaryWeapon;
+	
 	if (!SecondaryWeapon) return;
 	SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
 }
 
 void UUnrealCombatComponent::OnRep_DroppedWeapon()
 {
-	if (!DroppedWeapon) return;
-	DroppedWeapon->OnDropped(TargetCharacter);
+	if (!NetworkDroppedWeapon) return;
+	NetworkDroppedWeapon->OnDropped(TargetCharacter);
 }
 
 void UUnrealCombatComponent::MulticastAttackWeapon_Implementation(
 	const TArray<FVector_NetQuantize>& TraceHitTargets) const
 {
-	EquippedWeapon->Fire(TraceHitTargets, GetOwner()->GetInstigatorController(), !GetOwner()->HasAuthority());
+	NetworkEquippedWeapon->Fire(TraceHitTargets, GetOwner()->GetInstigatorController(), !GetOwner()->HasAuthority());
 }
 
 void UUnrealCombatComponent::AimingAct(const bool IsTrigger) const
@@ -144,7 +159,7 @@ void UUnrealCombatComponent::AimingAct(const bool IsTrigger) const
 
 void UUnrealCombatComponent::FinishAttack()
 {
-	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
+	EquippedAmmo = NetworkEquippedWeapon->GetLeftAmmo();
 	Notify();
 	IsAttackNow = false;
 	TryAttack();
@@ -252,12 +267,6 @@ void UUnrealCombatComponent::AttackTrigger(bool IsTrigger)
 void UUnrealCombatComponent::Reload()
 {
 	ServerReload();
-}
-
-FString UUnrealCombatComponent::GetEquippedWeaponCode() const
-{
-	if (EquippedWeapon == nullptr) return FString();
-	return EquippedWeapon->GetCode();
 }
 
 FString UUnrealCombatComponent::GetAmmoValue() const

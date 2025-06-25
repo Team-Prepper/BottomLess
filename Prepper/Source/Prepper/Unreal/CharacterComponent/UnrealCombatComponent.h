@@ -18,11 +18,11 @@ class PREPPER_API UUnrealCombatComponent : public UBCombatComponent
 	GENERATED_BODY()
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	TObjectPtr<AWeapon> EquippedWeapon;
+	TObjectPtr<AWeapon> NetworkEquippedWeapon;
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
-	TObjectPtr<AWeapon> SecondaryWeapon;
+	TObjectPtr<AWeapon> NetworkSecondaryWeapon;
 	UPROPERTY(ReplicatedUsing = OnRep_DroppedWeapon)
-	TObjectPtr<AWeapon> DroppedWeapon;
+	TObjectPtr<AWeapon> NetworkDroppedWeapon;
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TObjectPtr<UAnimMontage> ReloadMontage;
@@ -81,7 +81,6 @@ public:
 	virtual void AttackTrigger(bool IsTrigger) override;
 	virtual void Reload() override;
 	
-	virtual FString GetEquippedWeaponCode() const override;
 	virtual FString GetAmmoValue() const override;
 	
 	UFUNCTION(Server, Reliable)

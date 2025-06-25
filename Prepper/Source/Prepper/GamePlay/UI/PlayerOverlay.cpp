@@ -4,7 +4,7 @@
 #include "PlayerOverlay.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
+#include "Prepper/GamePlay/Character/Component/Status/StatusComponent.h"
 #include "Prepper/___Legacy/HUD/PrepperHUD.h"
 
 void UPlayerOverlay::Update(const UStatusComponent& NewData)

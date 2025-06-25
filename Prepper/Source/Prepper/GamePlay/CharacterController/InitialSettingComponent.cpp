@@ -6,12 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
-#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
+#include "Prepper/GamePlay/Character/Component/Status/StatusComponent.h"
 #include "Prepper/GamePlay/UI/PlayerOverlay.h"
+#include "Prepper/GamePlay/UI/WeaponWidget.h"
 #include "Prepper/Unreal/Controller/PlayerController/UnrealPlayerController.h"
 #include "Prepper/___Legacy/HUD/PrepperHUD.h"
-#include "Prepper/___Legacy/HUD/UI/CharacterOverlay/WeaponWidget.h"
-
 
 // Sets default values for this component's properties
 UInitialSettingComponent::UInitialSettingComponent()
@@ -25,7 +24,6 @@ UInitialSettingComponent::UInitialSettingComponent()
 
 void UInitialSettingComponent::Attach()
 {
-	UE_LOG(LogTemp, Warning, TEXT("WidgetAttach"));
 	if (PlayerOverlay != nullptr)
 	{
 		PlayerOverlay->SetHUD(TargetCC->GetHUD<APrepperHUD>());
@@ -57,7 +55,6 @@ void UInitialSettingComponent::WidgetSetting(TObjectPtr<AUnrealPlayerController>
 	{
 		PlayerOverlay = CreateWidget<UPlayerOverlay>(Target, PlayerOverlayClass);
 		PlayerOverlay->AddToViewport();
-		
 	}
 	
 	if (WeaponOverlayClass)

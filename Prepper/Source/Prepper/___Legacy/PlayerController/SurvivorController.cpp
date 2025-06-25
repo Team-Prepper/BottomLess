@@ -13,10 +13,10 @@
 #include "Prepper/_SurvivorMode/GameSave/SurvivorSaveGame.h"
 #include "Prepper/_SurvivorMode/GameSave/SurvivorServerSaveGame.h"
 #include "Prepper/_SurvivorMode/UI/QuickSlotWidget.h"
+#include "Prepper/_SurvivorMode/UI/StatusWidget.h"
 #include "Prepper/___Legacy/Character/Component/StatusEffectComponent.h"
 #include "Prepper/___Legacy/Character/Component/Combat/CombatComponent.h"
 #include "Prepper/___Legacy/HUD/PrepperHUD.h"
-#include "Prepper/___Legacy/HUD/UI/CharacterOverlay/StatusWidget.h"
 
 void ASurvivorController::BeginWidget()
 {

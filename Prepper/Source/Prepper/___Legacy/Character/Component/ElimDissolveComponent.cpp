@@ -31,6 +31,8 @@ void UElimDissolveComponent::TargetElim(const bool IsNetworkElim)
 	TargetCharacter->SetActorEnableCollision(false);
 	TargetCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TargetCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	UE_LOG(LogTemp, Warning, TEXT("Elim Dissolve Start"));
 	
 	// Start Dissolve Effect
 	if (DissolveMaterialInstance)
