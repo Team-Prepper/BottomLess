@@ -84,10 +84,6 @@ void ABCharacter::SetAmmoBox(const TObjectPtr<UAmmoBoxComponent> NewAmmoBox)
 	AmmoBox = NewAmmoBox;
 }
 
-void ABCharacter::PlayAnim(const FString& String)
-{
-}
-
 void ABCharacter::Boarding(TObjectPtr<ACar> Vehicle)
 {
 	CharacterMove->SetCar(Vehicle);
@@ -167,13 +163,11 @@ void ABCharacter::Heal(float Amount)
 
 void ABCharacter::Eat(float Amount)
 {
-
 	GetStatus()->AddHP(Amount);
 }
 
 void ABCharacter::Drink(float Amount)
 {
-
 	GetStatus()->AddHP(Amount);
 }
 
@@ -196,12 +190,12 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 	ABasePlayerController* AttackerController = Cast<ABasePlayerController>(InstigatorController);
 	
 	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
-
+	
 }
 
 void ABCharacter::ElimCharacter()
 {
-	//PlayAnim(ElimMontage);
+	PlayAnim(ElimMontage);
 	ElimDissolve->TargetElim();
 
 	// Disable Movement
@@ -223,6 +217,27 @@ void ABCharacter::SetTeamIdx(int Idx)
 TObjectPtr<UPawnSensingComponent> ABCharacter::GetPawnSensing() const
 {
 	return PawnSensing;
+}
+
+TArray<FString> ABCharacter::GetEquzipmentCodes()
+{
+	TArray<FString> Retval;
+
+	if (Combat->GetEquippedWeapon() != nullptr)
+	{
+		Retval.Add(Combat->GetEquippedWeapon()->GetCode());
+	}
+	if (Combat->GetSecondaryWeapon() != nullptr)
+	{
+		Retval.Add(Combat->GetSecondaryWeapon()->GetCode());
+	}
+	/*
+	if (EquippedBackpack != nullptr)
+	{
+		Retval.Add(EquippedBackpack->GetCode());
+	}*/
+
+	return Retval;
 }
 
 void ABCharacter::BeginPlay()

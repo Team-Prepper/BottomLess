@@ -5,14 +5,13 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/__Base/ObserverPattern/Subject.h"
-#include "Prepper/___Legacy/Character/Component/State.h"
 #include "Prepper/___Legacy/Character/Enums/StatusEffect.h"
 #include "StatusComponent.generated.h"
-
 
 class UCharacterMoveComponent;
 class UUnrealCharacterMoveComponent;
 enum class EStatusEffect : uint8;
+class State;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PREPPER_API UStatusComponent : public UActorComponent, public ISubject<UStatusComponent>
@@ -60,9 +59,16 @@ public:
 	void StatusTimerFinish();
 	
 	State GetState();
+	
 	virtual void AddHP(float Amount);
+	
 	void AddHungry(float Amount);
 	void AddThirsty(float Amount);
+
+	float GetHungryRatio() const;
+	float GetThirstyRatio() const;
+	float GetInfectedRatio() const;
+	
 private:
 	TSet<IObserver<UStatusComponent>*> Observers;
 public:

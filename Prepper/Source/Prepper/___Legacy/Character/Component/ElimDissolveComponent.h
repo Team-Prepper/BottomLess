@@ -17,15 +17,15 @@ private:
 	TObjectPtr<ACharacter> TargetCharacter;
 	
 	UPROPERTY(VisibleAnywhere)
-	UTimelineComponent* DissolveTimeline;
+	TObjectPtr<UTimelineComponent> DissolveTimeline;
 	UPROPERTY(EditAnywhere)
-	UCurveFloat* DissolveCurve;
+	TObjectPtr<UCurveFloat> DissolveCurve;
 	
 	UPROPERTY(VisibleAnywhere, Category = Elim)
-	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;
+	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
 	// 블루 프린트에 세팅
 	UPROPERTY(EditAnywhere, Category = Elim)
-	UMaterialInstance* DissolveMaterialInstance;
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
 	
 	FOnTimelineFloat DissolveTrack;
 	// DissolveMaterialInstance로 부터 동적 생성

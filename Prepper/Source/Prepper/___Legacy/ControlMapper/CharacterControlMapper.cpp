@@ -4,7 +4,7 @@
 #include "Prepper/___Legacy/Character/BaseCharacter.h"
 #include "Prepper/___Legacy/Character/PlayerCharacter.h"
 #include "Prepper/___Legacy/Character/Component/Combat/BaseCombatComponent.h"
-#include "Prepper/___Legacy/HUD/UI/CharacterOverlay/WeaponWidget.h"
+#include "Prepper/GamePlay/UI/WeaponWidget.h"
 
 void UCharacterControlMapper::Connect(APlayerController* TargetController)
 {

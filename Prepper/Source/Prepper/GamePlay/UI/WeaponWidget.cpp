@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 #include "Prepper/GamePlay/Equipment/EquipmentManager.h"
+#include "Prepper/GamePlay/Weapon/Weapon.h"
 
 void UWeaponWidget::Update(const GaugeValue<int>& NewData)
 {
@@ -25,10 +26,16 @@ void UWeaponWidget::Update(const FString& NewData)
 
 void UWeaponWidget::Update(const UBCombatComponent& NewData)
 {
-	WeaponIcon->SetBrushFromTexture(EquipmentManager::GetInstance()
-		->GetEquipmentIcon(NewData.GetEquippedWeaponCode()));
+	if (NewData.GetEquippedWeapon() == nullptr)
+	{
+		WeaponIcon->SetBrushFromTexture(EquipmentManager::GetInstance()->GetEquipmentIcon(FString()));
+		WeaponAmmoValue->SetText(FText::FromString("- / -"));
+		return;
+	}
 	
-	const FString AmmoText = NewData.GetAmmoValue();
-	WeaponAmmoValue->SetText(FText::FromString(AmmoText));
+	WeaponIcon->SetBrushFromTexture(EquipmentManager::GetInstance()
+		->GetEquipmentIcon(NewData.GetEquippedWeapon()->GetCode()));
+	
+	WeaponAmmoValue->SetText(FText::FromString(NewData.GetAmmoValue()));
 	
 }

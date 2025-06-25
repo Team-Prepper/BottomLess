@@ -3,11 +3,10 @@
 
 #include "StatusComponent.h"
 
-#include "AnimNodes/AnimNode_RandomPlayer.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
-#include "Prepper/___Legacy/Character/Enums/StatusEffect.h"
+#include "Prepper/__Base/Util/GaugeFloat.h"
+#include "Prepper/___Legacy/Character/Component/State.h"
 
 
 // Sets default values for this component's properties
@@ -125,6 +124,21 @@ void UStatusComponent::AddThirsty(float Amount)
 {
 	StateEffectMap[EStatusEffect::ESE_THIRSTY] += Amount;
 	Notify();
+}
+
+float UStatusComponent::GetHungryRatio() const
+{
+	return FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100).GetRatio();
+}
+
+float UStatusComponent::GetThirstyRatio() const
+{
+	return FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100).GetRatio();
+}
+
+float UStatusComponent::GetInfectedRatio() const
+{
+	return FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100).GetRatio();
 }
 
 void UStatusComponent::Attach(IObserver<UStatusComponent>* Observer)

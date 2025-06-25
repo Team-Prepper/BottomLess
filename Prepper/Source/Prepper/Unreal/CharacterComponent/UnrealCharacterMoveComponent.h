@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/GamePlay/Character/Component/CharacterMoveComponent.h"
-#include "Prepper/GamePlay/CharacterController/StatusComponent.h"
 #include "UnrealCharacterMoveComponent.generated.h"
 
 

@@ -14,6 +14,7 @@ UElimDissolveComponent::UElimDissolveComponent()
 void UElimDissolveComponent::TargetElim()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Elim Dissolve Start"));
+	
 	// Start Dissolve Effect
 	if (DissolveMaterialInstance)
 	{

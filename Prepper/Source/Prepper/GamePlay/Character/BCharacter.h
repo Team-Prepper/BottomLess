@@ -57,6 +57,9 @@ class PREPPER_API ABCharacter : public ACharacter, public ICharacterController, 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UPawnSensingComponent> PawnSensing;
 	
+	UPROPERTY(EditAnywhere, Category = Anim)
+	TObjectPtr<UAnimMontage> ElimMontage;
+	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeapon> WeaponActorClass;
 	
@@ -71,9 +74,8 @@ public:
 	virtual TObjectPtr<UBCombatComponent> GetCombat() override;
 	virtual TObjectPtr<UCharacterMoveComponent> GetMove();
 	virtual IAmmoBox* GetAmmoBox() override;
-	void SetAmmoBox(TObjectPtr<UAmmoBoxComponent> NewAmmoBox);
 	
-	void PlayAnim(const FString& String);
+	void SetAmmoBox(TObjectPtr<UAmmoBoxComponent> NewAmmoBox);
 
 	virtual void Boarding(TObjectPtr<ACar> Vehicle) override;
 	virtual void GetOff() override;
@@ -112,6 +114,7 @@ public:
 	void SetTeamIdx(int Idx);
 	int GetTeam() const { return TeamIdx; }
 	TObjectPtr<UPawnSensingComponent> GetPawnSensing() const;
+	TArray<FString> GetEquzipmentCodes();
 
 protected:
 	// Called when the game starts or when spawned
