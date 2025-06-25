@@ -202,16 +202,7 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 void ABCharacter::ElimCharacter()
 {
 	//PlayAnim(ElimMontage);
-	ElimDissolve->TargetElim();
-
-	// Disable Movement
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->StopMovementImmediately();
-	
-	// Disable Collision
-	SetActorEnableCollision(false);
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ElimDissolve->TargetElim(true);
 	
 }
 
@@ -232,7 +223,7 @@ void ABCharacter::BeginPlay()
 	Combat->SetTargetCharacter(this);
 	Interaction->SetTargetCharacter(this);
 	Inventory->SetOwner(this);
-	ElimDissolve->SetCharacter(this);
+	ElimDissolve->SetTargetCharacter(this);
 }
 
 void ABCharacter::SpawnWeaponActor()

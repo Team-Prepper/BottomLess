@@ -2,7 +2,11 @@
 
 
 #include "ElimDissolveComponent.h"
+
+#include "Components/CapsuleComponent.h"
+#include "Prepper/___Legacy/Character/BaseCharacter.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -11,9 +15,23 @@ UElimDissolveComponent::UElimDissolveComponent()
 	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
-void UElimDissolveComponent::TargetElim()
+void UElimDissolveComponent::TargetElim(const bool IsNetworkElim)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Elim Dissolve Start"));
+	if (IsNetworkElim)
+	{
+		MulticastTargetElim();
+		return;
+	}
+
+	// Disable Movement
+	TargetCharacter->GetCharacterMovement()->DisableMovement();
+	TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
+	
+	// Disable Collision
+	TargetCharacter->SetActorEnableCollision(false);
+	TargetCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	TargetCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	// Start Dissolve Effect
 	if (DissolveMaterialInstance)
 	{
@@ -54,6 +72,11 @@ void UElimDissolveComponent::TargetElim()
 	}
 }
 
+void UElimDissolveComponent::MulticastTargetElim_Implementation()
+{
+	TargetElim(false);
+}
+
 void UElimDissolveComponent::RemoveCharacter()
 {
 	TargetCharacter->Destroy();
@@ -61,12 +84,17 @@ void UElimDissolveComponent::RemoveCharacter()
 
 void UElimDissolveComponent::SetCharacter(ABaseCharacter* Target)
 {
-	SetCharacter(Target);
+	SetTargetCharacter(Target);
 }
 
-void UElimDissolveComponent::SetCharacter(const TObjectPtr<ACharacter> Target)
+void UElimDissolveComponent::SetTargetCharacter(const TObjectPtr<ACharacter> Target)
 {
 	TargetCharacter = Target;
+}
+
+void UElimDissolveComponent::TargetElim()
+{
+	TargetElim(false);
 }
 
 void UElimDissolveComponent::UpdateDissolveMaterial(const float DissolveValue)

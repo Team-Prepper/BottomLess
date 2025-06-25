@@ -24,9 +24,6 @@ public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastElimCharacter(ABCharacter* ElimmedCharacter);
 	
 	virtual void PlayerEliminated(ABCharacter* ElimmedCharacter);
 	virtual void PlayerEliminated(ABCharacter* ElimmedCharacter,

@@ -17,16 +17,11 @@ void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABaseP
 	if (VictimController) VictimController->Elim();
 }
 
-void APrepperGameMode::MulticastElimCharacter_Implementation(ABCharacter* ElimmedCharacter)
-{
-	ElimmedCharacter->ElimCharacter();
-}
-
 void APrepperGameMode::PlayerEliminated(ABCharacter* ElimmedCharacter)
 {
 	if (ElimmedCharacter)
 	{
-		MulticastElimCharacter(ElimmedCharacter);
+		ElimmedCharacter->ElimCharacter();
 	}
 }
 

@@ -38,8 +38,13 @@ public:
 	UElimDissolveComponent();
 	
 	virtual void SetCharacter(ABaseCharacter* Target) override;
-	void SetCharacter(TObjectPtr<ACharacter> Target);
+	void SetTargetCharacter(TObjectPtr<ACharacter> Target);
+
 	virtual void TargetElim() override;
+	virtual void TargetElim(bool IsNetworkElim);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastTargetElim();
 
 	UFUNCTION()
 	void UpdateDissolveMaterial(const float DissolveValue);
