@@ -101,6 +101,8 @@ void AUnrealPlayerController::SetupInputComponent()
 void AUnrealPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InputConnector->SetCC(this);
 	
 	if (!IsLocalController()) return;
 
@@ -112,7 +114,7 @@ void AUnrealPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(InputConnector->GetMappingContext(), 0);
 	}
-
+	
 }
 
 void AUnrealPlayerController::Tick(float DeltaTime)

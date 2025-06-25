@@ -40,6 +40,4 @@ public:
 	void SetItemInteractable(TScriptInterface<IInteractable> InteractableItem);
 
 	void Interaction();
-	UFUNCTION(Server, Reliable)
-	void ServerEquipButtonPressed();
 };

@@ -89,7 +89,15 @@ void UCharacterMoveComponent::SetCar(const TObjectPtr<ACar> Vehicle)
 
 	SetOwnerSpeed();
 	
-	if (TargetCar == nullptr) return;
+	if (TargetCar == nullptr)
+	{
+		GetOwner()->SetActorEnableCollision(true);
+		GetOwner()->SetActorHiddenInGame(false);
+		return;
+	}
+	
+	GetOwner()->SetActorEnableCollision(false);
+	GetOwner()->SetActorHiddenInGame(true);
 
 	const TObjectPtr<APlayerController> Controller = GetOwner<APawn>()->GetController<APlayerController>();
 

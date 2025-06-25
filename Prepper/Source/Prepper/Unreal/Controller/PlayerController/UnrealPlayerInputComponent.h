@@ -23,6 +23,7 @@ class PREPPER_API UUnrealPlayerInputComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UUnrealPlayerInputComponent();
+	void SetCC(TObjectPtr<AUnrealPlayerController> TargetCC);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
@@ -68,6 +69,9 @@ protected:
 	void SprintButtonPressed();
 	void SprintButtonReleased();
 	void EquipButtonPressed();
+	
+	UFUNCTION(Server, Reliable)
+	void ServerEquipButtonPressed();
 
 public:
 	virtual void SetInput(TObjectPtr<AUnrealPlayerController> cc, UEnhancedInputComponent* Input);

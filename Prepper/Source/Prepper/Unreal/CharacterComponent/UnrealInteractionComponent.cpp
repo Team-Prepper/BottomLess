@@ -96,11 +96,6 @@ void UUnrealInteractionComponent::SetItemInteractable(const TScriptInterface<IIn
 
 void UUnrealInteractionComponent::Interaction()
 {
-	ServerEquipButtonPressed();
-}
-
-void UUnrealInteractionComponent::ServerEquipButtonPressed_Implementation()
-{
 	const TScriptInterface<IInteractable> Target = GetInteractable();
 	
 	if (Target == nullptr)

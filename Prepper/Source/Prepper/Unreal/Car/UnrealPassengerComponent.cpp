@@ -34,8 +34,12 @@ void UUnrealPassengerComponent::OnRep_Passenger()
 
 void UUnrealPassengerComponent::AddPassenger(TObjectPtr<APawn> NewPassenger)
 {
+	if (!GetOwner()->HasAuthority()) return;
+	
 	ReplicatedPassengerList.Add(NewPassenger);
 	PassengerList.Add(NewPassenger);
+
+	NewPassenger->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 	
 	if (IsDriver(NewPassenger))
 	{
@@ -46,15 +50,14 @@ void UUnrealPassengerComponent::AddPassenger(TObjectPtr<APawn> NewPassenger)
 
 void UUnrealPassengerComponent::RemovePassenger(TObjectPtr<APawn> TargetPassenger)
 {
-	ServerRemovePassenger(TargetPassenger);
-}
-
-void UUnrealPassengerComponent::ServerRemovePassenger_Implementation(APawn* TargetPassenger)
-{
+	if (!GetOwner()->HasAuthority()) return;
+	
 	const bool WasDriver = IsDriver(TargetPassenger);
 	
 	ReplicatedPassengerList.Remove(TargetPassenger);
 	PassengerList.Remove(TargetPassenger);
+	
+	TargetPassenger->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	
 	if (!WasDriver) return;
 	
@@ -65,5 +68,4 @@ void UUnrealPassengerComponent::ServerRemovePassenger_Implementation(APawn* Targ
 	if (PassengerList.Num() < 1) return;
 	
 	PassengerList[0]->GetController()->Possess(Owner);
-	
 }

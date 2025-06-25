@@ -3,7 +3,6 @@
 
 #include "UnrealPlayerInputComponent.h"
 #include "EnhancedInputComponent.h"
-#include "SNegativeActionButton.h"
 #include "UnrealPlayerController.h"
 #include "Prepper/GamePlay/Car/Car.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
@@ -34,6 +33,11 @@ UUnrealPlayerInputComponent::UUnrealPlayerInputComponent()
 	OpenInventory = nullptr;
 	OpenSetting = nullptr;
 
+}
+
+void UUnrealPlayerInputComponent::SetCC(const TObjectPtr<AUnrealPlayerController> TargetCC)
+{
+	CC = TargetCC;
 }
 
 void UUnrealPlayerInputComponent::Move(const FInputActionValue& Value)
@@ -139,7 +143,16 @@ void UUnrealPlayerInputComponent::SprintButtonReleased()
 
 void UUnrealPlayerInputComponent::EquipButtonPressed()
 {
-	if (CC == nullptr) return;
+	ServerEquipButtonPressed();
+}
+
+void UUnrealPlayerInputComponent::ServerEquipButtonPressed_Implementation()
+{
+	if (CC == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CC Null"));
+		return;
+	}
 	if (CC->GetTargetCar() != nullptr)
 	{
 		CC->GetTargetCar()->InteractionAct(CC->GetTargetCharacter());
@@ -148,6 +161,7 @@ void UUnrealPlayerInputComponent::EquipButtonPressed()
 	CC->GetTargetCharacter()->EquipButtonPressed();
 }
 
+
 TObjectPtr<UInputMappingContext> UUnrealPlayerInputComponent::GetMappingContext()
 {
 	return PlayerMappingContext;
@@ -155,8 +169,6 @@ TObjectPtr<UInputMappingContext> UUnrealPlayerInputComponent::GetMappingContext(
 
 void UUnrealPlayerInputComponent::SetInput(TObjectPtr<AUnrealPlayerController> cc, UEnhancedInputComponent* Input)
 {
-	CC = cc;
-
 	// Moving
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered,
 	                  this, &UUnrealPlayerInputComponent::Move);

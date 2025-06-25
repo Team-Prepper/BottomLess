@@ -98,15 +98,6 @@ void UUnrealCharacterMoveComponent::SetAiming(bool IsTrigger)
 void UUnrealCharacterMoveComponent::SetCar(TObjectPtr<ACar> Vehicle)
 {
 	TargetCarNetwork = Vehicle;
-	if (GetOwner()->HasAuthority()) return;
-	Super::SetCar(Vehicle);
-	return;
-	ServerSetCar(Vehicle);
-}
-
-void UUnrealCharacterMoveComponent::ServerSetCar_Implementation(ACar* Vehicle)
-{
-	TargetCarNetwork = Vehicle;
 	Super::SetCar(Vehicle);
 }
 

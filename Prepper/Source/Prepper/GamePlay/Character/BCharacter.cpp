@@ -49,7 +49,9 @@ ABCharacter::ABCharacter()
 	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
 	CharacterMove = CreateDefaultSubobject<UUnrealCharacterMoveComponent>(TEXT("CharacterMoveComponent"));
 	ElimDissolve = CreateDefaultSubobject<UElimDissolveComponent>(TEXT("ElimDessolveComponent"));
-	
+
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 TObjectPtr<APawn> ABCharacter::GetPawn()
@@ -127,12 +129,14 @@ void ABCharacter::AttachActorAtSocket(FName SocketName, AActor* TargetActor) con
 		//AttachedActor.Add(TargetActor);
 		TargetSocket->AttachActor(TargetActor, GetMesh());
 	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
 void ABCharacter::SetEquippedWeaponType(const EWeaponType WeaponType)
 {
 	bUseControllerRotationYaw = WeaponType != EWeaponType::EWT_MAX;
+	GetCharacterMovement()->bOrientRotationToMovement = !bUseControllerRotationYaw;
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetEquippedWeaponType(WeaponType);
 }
 

@@ -66,6 +66,7 @@ AWeapon::AWeapon()
 
 void AWeapon::WeaponPhysicsActive(bool bActive)
 {
+	UE_LOG(LogTemp, Warning, TEXT("WeaponPhysicsChanged"));
 	SetActorEnableCollision(bActive);
 
 	WeaponMesh->SetSimulatePhysics(bActive);

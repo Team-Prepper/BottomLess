@@ -24,7 +24,5 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void AddPassenger(TObjectPtr<APawn> NewPassenger) override;
 	virtual void RemovePassenger(TObjectPtr<APawn> TargetPassenger) override;
-
-	UFUNCTION(Server, Reliable)
-	void ServerRemovePassenger(APawn* TargetPassenger);
+	
 };

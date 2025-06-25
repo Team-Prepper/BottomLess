@@ -60,7 +60,5 @@ public:
 	void ServerJumpTrigger(bool IsTrigger);
 	UFUNCTION(Server, Reliable)
 	void ServerCrouchTrigger(bool IsTrigger);
-	UFUNCTION(Server, Reliable)
-	void ServerSetCar(ACar* Vehicle);
 	
 };
