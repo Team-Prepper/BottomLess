@@ -72,6 +72,7 @@ public:
 	virtual TObjectPtr<APawn> GetPawn() override;
 	virtual TObjectPtr<UStatusComponent> GetStatus() override;
 	virtual TObjectPtr<UBCombatComponent> GetCombat() override;
+	virtual TObjectPtr<UInventoryComponent> GetInventory() override;
 	virtual TObjectPtr<UCharacterMoveComponent> GetMove();
 	virtual IAmmoBox* GetAmmoBox() override;
 	
@@ -79,6 +80,8 @@ public:
 
 	virtual void Boarding(TObjectPtr<ACar> Vehicle) override;
 	virtual void GetOff() override;
+	
+	virtual void EquipBackpack(TObjectPtr<AItemBackpack> Backpack) override;
 	
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
@@ -90,7 +93,7 @@ public:
 	
 	virtual void EquipButtonPressed() override;
 
-	void SetMaxSpeed(float MaxSpeed);
+	void SetMaxSpeed(float MaxSpeed) const;
 	
 	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
 	void GetLookDirection(FVector& Start, FVector& Forward) const;
@@ -109,12 +112,12 @@ public:
 	virtual UInventoryComponent* GetInventory() const override;
 	
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-	void ElimCharacter();
+	void ElimCharacter() const;
 	
 	void SetTeamIdx(int Idx);
 	int GetTeam() const { return TeamIdx; }
 	TObjectPtr<UPawnSensingComponent> GetPawnSensing() const;
-	TArray<FString> GetEquzipmentCodes();
+	TArray<FString> GetEquipmentCodes() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -128,6 +131,6 @@ public:
 	virtual void Crouch(bool bClientSimulation = false) override;
 	virtual void UnCrouch(bool bClientSimulation = false) override;
 
-	void AimTrigger(bool IsTrigger);
+	void AimTrigger(bool IsTrigger) const;
 	
 };

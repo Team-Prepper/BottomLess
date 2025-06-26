@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Prepper/___Legacy/Interfaces/IDetectable.h"
-#include "Prepper/___Legacy/Object/InteractableActor.h"
+#include "Prepper/GamePlay/Object/InteractableActor.h"
 #include "InteractableItem.generated.h"
 
 UCLASS()
@@ -14,7 +14,6 @@ class PREPPER_API AInteractableItem : public AInteractableActor, public IDetecta
 public:	
 	AInteractableItem();
 	virtual void Tick(float DeltaTime) override;
-	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void Destroyed() override;
 
 	virtual FString GetDetectableDescription() const override
@@ -38,9 +37,6 @@ protected:
 	FString ItemCode;
 
 	UPROPERTY(EditAnywhere)
-	class USoundCue* PickupSound;
+	USoundCue* PickupSound;
 	
-	void DestroyInteractionItem();
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastDestroyInteractionItem();
 };

@@ -7,6 +7,7 @@
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "UnrealPlayerController.generated.h"
 
+class UEscapeActionComponent;
 class UInitialSettingComponent;
 class UWeaponWidget;
 class UTabActionComponent;
@@ -37,6 +38,8 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	TObjectPtr<UTabActionComponent> TabAction;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInitialSettingComponent> InitialSetting;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UEscapeActionComponent> EscapeAction;
 
 	TObjectPtr<ACar> TargetCar;
 	TObjectPtr<ABCharacter> TargetCharacter;
@@ -57,6 +60,8 @@ public:
 	
 	TObjectPtr<UAmmoBoxComponent> GetAmmoBox() const { return AmmoBox; }
 	
-	virtual void TabButtonPressed();
-	virtual void TabButtonReleased();
+	void TabButtonPressed() const;
+	void TabButtonReleased() const;
+	
+	void EscapeButtonPressed() const;
 };

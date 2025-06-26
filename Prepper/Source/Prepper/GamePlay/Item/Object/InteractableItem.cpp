@@ -3,10 +3,7 @@
 #include "Prepper/Prepper.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Prepper/___Legacy/Character/PlayerCharacter.h"
-#include "Kismet/GameplayStatics.h"
-#include "Prepper/GamePlay/Item/Inventory/InventoryComponent.h"
-#include "Sound/SoundCue.h"
+#include "Prepper/GamePlay/InteractionEventComponent/InteractionItemAddEventComponent.h"
 
 AInteractableItem::AInteractableItem()
 {
@@ -31,6 +28,8 @@ AInteractableItem::AInteractableItem()
 
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
+
+	InteractionEvent = CreateDefaultSubobject<UInteractionItemAddEventComponent>(TEXT("AddItem"));
 }
 
 void AInteractableItem::Tick(float DeltaTime)
@@ -52,41 +51,10 @@ void AInteractableItem::BeginPlay()
 	}
 }
 
-
-void AInteractableItem::Interaction(APlayerCharacter* Target)
-{
-	if (!Target->GetInventory()->TryAddItem(ItemCode, 1))
-	{
-		return;
-	}
-	DestroyInteractionItem();
-}
-
-void AInteractableItem::DestroyInteractionItem()
-{
-	if(HasAuthority())
-	{
-		MulticastDestroyInteractionItem();
-	}
-}
-
-void AInteractableItem::MulticastDestroyInteractionItem_Implementation()
-{
-	Destroy();
-}
-
 void AInteractableItem::Destroyed()
 {
 	Super::Destroyed();
 
-	if (PickupSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			PickupSound,
-			GetActorLocation()
-		);
-	}
 }
 
 

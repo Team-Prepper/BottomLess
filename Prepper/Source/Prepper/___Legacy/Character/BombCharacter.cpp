@@ -5,7 +5,7 @@
 
 #include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/___Legacy/Object/ElectricSwitch.h"
+#include "Prepper/GamePlay/Object/ElectricSwitch.h"
 
 
 void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

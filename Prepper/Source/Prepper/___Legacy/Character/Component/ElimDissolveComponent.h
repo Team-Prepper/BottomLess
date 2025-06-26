@@ -41,10 +41,6 @@ public:
 	void SetTargetCharacter(TObjectPtr<ACharacter> Target);
 
 	virtual void TargetElim() override;
-	virtual void TargetElim(bool IsNetworkElim);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastTargetElim();
 
 	UFUNCTION()
 	void UpdateDissolveMaterial(const float DissolveValue);

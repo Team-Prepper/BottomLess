@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/___Legacy/Object/DamageableObject.h"
+#include "Prepper/GamePlay/Object/DamageableObject.h"
 #include "BombCharacter.generated.h"
 
 class AElectricSwitch;
@@ -39,5 +39,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void Bomb();
 	void SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch);
-	virtual void RemoveAction() override;
+	virtual void RemoveAction();
 };

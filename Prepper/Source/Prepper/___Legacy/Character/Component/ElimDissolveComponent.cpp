@@ -15,14 +15,8 @@ UElimDissolveComponent::UElimDissolveComponent()
 	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
-void UElimDissolveComponent::TargetElim(const bool IsNetworkElim)
+void UElimDissolveComponent::TargetElim()
 {
-	if (IsNetworkElim)
-	{
-		MulticastTargetElim();
-		return;
-	}
-
 	// Disable Movement
 	TargetCharacter->GetCharacterMovement()->DisableMovement();
 	TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
@@ -74,11 +68,6 @@ void UElimDissolveComponent::TargetElim(const bool IsNetworkElim)
 	}
 }
 
-void UElimDissolveComponent::MulticastTargetElim_Implementation()
-{
-	TargetElim(false);
-}
-
 void UElimDissolveComponent::RemoveCharacter()
 {
 	TargetCharacter->Destroy();
@@ -92,11 +81,6 @@ void UElimDissolveComponent::SetCharacter(ABaseCharacter* Target)
 void UElimDissolveComponent::SetTargetCharacter(const TObjectPtr<ACharacter> Target)
 {
 	TargetCharacter = Target;
-}
-
-void UElimDissolveComponent::TargetElim()
-{
-	TargetElim(false);
 }
 
 void UElimDissolveComponent::UpdateDissolveMaterial(const float DissolveValue)

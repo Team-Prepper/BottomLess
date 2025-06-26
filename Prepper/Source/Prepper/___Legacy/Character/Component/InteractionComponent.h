@@ -8,6 +8,8 @@
 #include "InteractionComponent.generated.h"
 
 
+class IInteractable;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UInteractionComponent : public UCharacterComponent
 {

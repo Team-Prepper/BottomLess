@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "UnrealPlayerInputComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
+#include "Prepper/GamePlay/CharacterController/EscapeActionComponent.h"
 #include "Prepper/GamePlay/CharacterController/InitialSettingComponent.h"
 #include "Prepper/GamePlay/CharacterController/TabActionComponent.h"
 #include "Prepper/Unreal/Controller/AmmoBox/UnrealAmmoBoxComponent.h"
@@ -14,6 +15,7 @@ AUnrealPlayerController::AUnrealPlayerController()
 	InputConnector = CreateDefaultSubobject<UUnrealPlayerInputComponent>(TEXT("InputComponent"));
 	TabAction = CreateDefaultSubobject<UTabActionComponent>(TEXT("TabActionComponent"));
 	InitialSetting = CreateDefaultSubobject<UInitialSettingComponent>(TEXT("InitialSettingComponent"));
+	EscapeAction = CreateDefaultSubobject<UEscapeActionComponent>(TEXT("EscapeActionComponent"));
 	
 	AmmoBox = CreateDefaultSubobject<UUnrealAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
 }
@@ -123,12 +125,17 @@ void AUnrealPlayerController::Tick(float DeltaTime)
 	//PlayerOverlay->DrawCrosshair();
 }
 
-void AUnrealPlayerController::TabButtonPressed()
+void AUnrealPlayerController::TabButtonPressed() const
 {
 	TabAction->TabPressed();
 }
 
-void AUnrealPlayerController::TabButtonReleased()
+void AUnrealPlayerController::TabButtonReleased() const
 {
 	TabAction->TabReleased();
+}
+
+void AUnrealPlayerController::EscapeButtonPressed() const
+{
+	EscapeAction->EscapePressed();
 }

@@ -26,7 +26,7 @@ void UItemCombinationUI::SetVisibility(ESlateVisibility InVisibility)
 {
 	Super::SetVisibility(InVisibility);
 
-	if (TargetPlayer == nullptr) return;
+	if (TargetInventory == nullptr) return;
 
 	const TObjectPtr<APlayerController> PC =
 		UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -37,7 +37,7 @@ void UItemCombinationUI::SetVisibility(ESlateVisibility InVisibility)
 	{
 		PC->SetInputMode(FInputModeGameAndUI());
 		PC->SetShowMouseCursor(true);
-		TargetPlayer->GetInventory()->Attach(this);
+		TargetInventory->Attach(this);
 		SetFocus();
 		
 		return;
@@ -45,7 +45,7 @@ void UItemCombinationUI::SetVisibility(ESlateVisibility InVisibility)
 	
 	PC->SetInputMode(FInputModeGameOnly());
 	PC->SetShowMouseCursor(false);
-	TargetPlayer->GetInventory()->Detach(this);
+	TargetInventory->Detach(this);
 	
 }
 
@@ -54,9 +54,9 @@ void UItemCombinationUI::Update(UInventoryComponent* const& newData)
 	CntSet(newData);
 }
 
-void UItemCombinationUI::SetTargetPlayer(TObjectPtr<APlayerCharacter> Target)
+void UItemCombinationUI::SetTargetInventory(TObjectPtr<UInventoryComponent> Target)
 {
-	TargetPlayer = Target;
+	TargetInventory = Target;
 	Cnt = 0;
 }
 
@@ -82,7 +82,7 @@ void UItemCombinationUI::SetCombinationTarget(const FString& CombinationTarget)
 	
 	SourceIcon2->SetBrushFromTexture(Img);
 
-	Update(TargetPlayer->GetInventory());
+	Update(TargetInventory);
 	
 }
  
@@ -99,23 +99,23 @@ void UItemCombinationUI::Combination()
 {
 	if (Cnt < 1) return;
 	
-	bool b = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem1) >= Cnt1 * Cnt
-			&& TargetPlayer->GetInventory()->TryGetItemCount(SourceItem2) >= Cnt2 * Cnt;
+	bool b = TargetInventory->TryGetItemCount(SourceItem1) >= Cnt1 * Cnt
+			&& TargetInventory->TryGetItemCount(SourceItem2) >= Cnt2 * Cnt;
 
 	if (!b) return;
 
-	TargetPlayer->GetInventory()->TryUseItem(SourceItem1, Cnt1 * Cnt);
-	TargetPlayer->GetInventory()->TryUseItem(SourceItem2, Cnt2 * Cnt);
+	TargetInventory->TryUseItem(SourceItem1, Cnt1 * Cnt);
+	TargetInventory->TryUseItem(SourceItem2, Cnt2 * Cnt);
 	
-	TargetPlayer->GetInventory()->TryAddItem(TargetItem, Cnt);
+	TargetInventory->TryAddItem(TargetItem, Cnt);
 	
-	int AMax = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem1) / Cnt1;
-	int BMax = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem2) / Cnt2;
+	int AMax = TargetInventory->TryGetItemCount(SourceItem1) / Cnt1;
+	int BMax = TargetInventory->TryGetItemCount(SourceItem2) / Cnt2;
 	
 	if (AMax < BMax) BMax = AMax;
 	if (BMax < Cnt) Cnt = BMax;
 
-	CntSet(TargetPlayer->GetInventory());
+	CntSet(TargetInventory);
 }
 
 void UItemCombinationUI::Close()
@@ -129,19 +129,19 @@ void UItemCombinationUI::Close()
 
 void UItemCombinationUI::CntUpAction()
 {
-	bool b = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem1) >= Cnt1 * (1 + Cnt)
-			&& TargetPlayer->GetInventory()->TryGetItemCount(SourceItem2) >= Cnt2 * (1 + Cnt);
+	bool b = TargetInventory->TryGetItemCount(SourceItem1) >= Cnt1 * (1 + Cnt)
+			&& TargetInventory->TryGetItemCount(SourceItem2) >= Cnt2 * (1 + Cnt);
 
 	if (!b) return;
 	Cnt++;
-	CntSet(TargetPlayer->GetInventory());
+	CntSet(TargetInventory);
 }
 
 void UItemCombinationUI::CntDownAction()
 {
 	if (Cnt < 1) return;
 	Cnt--;
-	CntSet(TargetPlayer->GetInventory());
+	CntSet(TargetInventory);
 }
 
 void UItemCombinationUI::CntSet(UInventoryComponent* Inventory)

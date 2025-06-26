@@ -7,6 +7,7 @@
 #include "Prepper/__Base/ObserverPattern/Observer.h"
 #include "ItemCombinationUI.generated.h"
 
+class UInventoryComponent;
 class UTextBlock;
 class APlayerCharacter;
 class UItemCombinationSelectUI;
@@ -51,7 +52,7 @@ private:
  	TObjectPtr<UItemCombinationSelectUI> SelectWidget;
 
 	UPROPERTY()
-	TObjectPtr<APlayerCharacter> TargetPlayer;
+	TObjectPtr<UInventoryComponent> TargetInventory;
 	FString TargetItem;
 	FString SourceItem1;
 	FString SourceItem2;
@@ -65,7 +66,7 @@ public:
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 	virtual void Update(UInventoryComponent* const& newData) override;
 
-	void SetTargetPlayer(TObjectPtr<APlayerCharacter> Target);
+	void SetTargetInventory(TObjectPtr<UInventoryComponent> Target);
 	
 	void SetCombinationTarget(const FString& CombinationTarget);
 	UFUNCTION()

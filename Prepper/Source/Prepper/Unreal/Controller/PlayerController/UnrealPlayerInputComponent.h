@@ -65,6 +65,8 @@ protected:
 
 	void TabButtonPressed();
 	void TabButtonReleased();
+
+	void EscapeButtonPressed();
 	
 	void SprintButtonPressed();
 	void SprintButtonReleased();
@@ -76,4 +78,5 @@ protected:
 public:
 	virtual void SetInput(TObjectPtr<AUnrealPlayerController> cc, UEnhancedInputComponent* Input);
 	TObjectPtr<UInputMappingContext> GetMappingContext();
+	
 };

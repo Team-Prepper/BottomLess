@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Prepper/GamePlay/Equipment/Equipment.h"
-#include "Prepper/___Legacy/Object/InteractableActor.h"
+#include "Prepper/GamePlay/Object/InteractableActor.h"
 #include "ItemBackpack.generated.h"
 
 
@@ -26,6 +26,7 @@ class PREPPER_API AItemBackpack : public AEquipment
 public:
 	AItemBackpack();
 	virtual void Interaction(APlayerCharacter* Target) override;
+	virtual void Interaction(ICharacterController* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void Equip();

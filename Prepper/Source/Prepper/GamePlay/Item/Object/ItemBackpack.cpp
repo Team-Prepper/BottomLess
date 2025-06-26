@@ -5,9 +5,10 @@
 #include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Prepper/GamePlay/CharacterController/CharacterController.h"
+#include "Prepper/GamePlay/Object/OpenedInventory.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
 #include "Prepper/___Legacy/Character/PlayerCharacter.h"
-#include "Prepper/___Legacy/Object/OpenedInventory.h"
 #include "Sound/SoundCue.h"
 
 
@@ -77,6 +78,12 @@ void AItemBackpack::Interaction(APlayerCharacter* Target)
 		EquipSound,
 		GetActorLocation()
 	);
+}
+
+void AItemBackpack::Interaction(ICharacterController* Target)
+{
+	if(!Target) return;
+	Target->EquipBackpack(this);
 }
 
 void AItemBackpack::Equip()

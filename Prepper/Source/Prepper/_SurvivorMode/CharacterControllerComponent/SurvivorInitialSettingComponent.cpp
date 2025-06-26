@@ -170,7 +170,7 @@ void USurvivorInitialSettingComponent::SaveClientData()
 
 	if (SaveGameInstance)
 	{
-		SaveGameInstance->Equipments = GetOwner<AUnrealPlayerController>()->GetTargetCharacter()->GetEquzipmentCodes();
+		SaveGameInstance->Equipments = GetOwner<AUnrealPlayerController>()->GetTargetCharacter()->GetEquipmentCodes();
 		
 		SaveGameInstance->CarriedAmmoMap = TargetCC->GetAmmoBox()->GetAmmoMap();
 

@@ -7,7 +7,6 @@
 #include "InputActionValue.h"
 #include "Component/CustomCameraComponent.h"
 #include "Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -15,6 +14,7 @@
 #include "Prepper/GamePlay/PrepperGameMode.h"
 #include "Prepper/GamePlay/Car/Car.h"
 #include "Prepper/GamePlay/Character/Component/AmmoBoxComponent.h"
+#include "Prepper/GamePlay/Item/Object/ItemBackpack.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
@@ -69,6 +69,11 @@ TObjectPtr<UBCombatComponent> ABCharacter::GetCombat()
 	return Combat;
 }
 
+TObjectPtr<UInventoryComponent> ABCharacter::GetInventory()
+{
+	return Inventory;
+}
+
 TObjectPtr<UCharacterMoveComponent> ABCharacter::GetMove()
 {
 	return CharacterMove;
@@ -93,6 +98,12 @@ void ABCharacter::GetOff()
 {
 	CharacterMove->SetCar(nullptr);
 	//GetController<APlayerController>()->SetViewTarget(this);
+}
+
+void ABCharacter::EquipBackpack(TObjectPtr<AItemBackpack> Backpack)
+{
+	AttachActorAtSocket(FName("BackpackSocket"), Backpack);
+	Inventory->ChangingInventory(Backpack->GetInventory());
 }
 
 void ABCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
@@ -193,10 +204,10 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 	
 }
 
-void ABCharacter::ElimCharacter()
-{\
+void ABCharacter::ElimCharacter() const
+{
 	//PlayAnim(ElimMontage);
-	ElimDissolve->TargetElim(true);\
+	ElimDissolve->TargetElim();
 	
 }
 
@@ -210,7 +221,7 @@ TObjectPtr<UPawnSensingComponent> ABCharacter::GetPawnSensing() const
 	return PawnSensing;
 }
 
-TArray<FString> ABCharacter::GetEquzipmentCodes()
+TArray<FString> ABCharacter::GetEquipmentCodes() const
 {
 	TArray<FString> Retval;
 
@@ -347,12 +358,12 @@ void ABCharacter::EquipButtonPressed()
 	Interaction->Interaction();
 }
 
-void ABCharacter::SetMaxSpeed(float MaxSpeed)
+void ABCharacter::SetMaxSpeed(const float MaxSpeed) const
 {
 	GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
 }
 
-void ABCharacter::AimTrigger(bool IsTrigger)
+void ABCharacter::AimTrigger(const bool IsTrigger) const
 {
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetAiming(IsTrigger);
 	CharacterMove->SetAiming(IsTrigger);

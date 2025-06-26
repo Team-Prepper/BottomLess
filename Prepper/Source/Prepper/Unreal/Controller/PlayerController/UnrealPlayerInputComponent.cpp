@@ -16,11 +16,11 @@ UUnrealPlayerInputComponent::UUnrealPlayerInputComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	
+
 	CC = nullptr;
-	
+
 	PlayerMappingContext = nullptr;
-	
+
 	MoveAction = nullptr;
 	JumpAction = nullptr;
 	LookAction = nullptr;
@@ -32,7 +32,6 @@ UUnrealPlayerInputComponent::UUnrealPlayerInputComponent()
 	FireAction = nullptr;
 	OpenInventory = nullptr;
 	OpenSetting = nullptr;
-
 }
 
 void UUnrealPlayerInputComponent::SetCC(const TObjectPtr<AUnrealPlayerController> TargetCC)
@@ -70,14 +69,14 @@ void UUnrealPlayerInputComponent::JumpButtonPressed()
 		CC->GetTargetCar()->ChangeCam();
 		return;
 	}
-	
+
 	CC->GetTargetCharacter()->JumpTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::JumpButtonReleased()
 {
 	if (CC == nullptr) return;
-	
+
 	CC->GetTargetCharacter()->JumpTrigger(false);
 }
 
@@ -127,6 +126,12 @@ void UUnrealPlayerInputComponent::TabButtonReleased()
 {
 	if (CC == nullptr) return;
 	CC->TabButtonReleased();
+}
+
+void UUnrealPlayerInputComponent::EscapeButtonPressed()
+{
+	if (CC == nullptr) return;
+	CC->EscapeButtonPressed();
 }
 
 void UUnrealPlayerInputComponent::SprintButtonPressed()
@@ -215,7 +220,11 @@ void UUnrealPlayerInputComponent::SetInput(TObjectPtr<AUnrealPlayerController> c
 	Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this,
 	                  &UUnrealPlayerInputComponent::ReloadButtonPressed);
 
-	Input->BindAction(OpenInventory, ETriggerEvent::Started, this, &UUnrealPlayerInputComponent::TabButtonPressed);
-	Input->BindAction(OpenInventory, ETriggerEvent::Completed, this, &UUnrealPlayerInputComponent::TabButtonReleased);
+	Input->BindAction(OpenInventory, ETriggerEvent::Started, this,
+	                  &UUnrealPlayerInputComponent::TabButtonPressed);
+	Input->BindAction(OpenInventory, ETriggerEvent::Completed, this,
+	                  &UUnrealPlayerInputComponent::TabButtonReleased);
 
+	Input->BindAction(OpenSetting, ETriggerEvent::Started, this,
+	                  &UUnrealPlayerInputComponent::EscapeButtonPressed);
 }

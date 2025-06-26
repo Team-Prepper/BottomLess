@@ -15,7 +15,8 @@ class PREPPER_API AItemPickupAmmo : public AInteractableItem
 {
 	GENERATED_BODY()
 public:
-	virtual void Interaction(APlayerCharacter *Target) override;
+	AItemPickupAmmo();
+
 private:
 	UPROPERTY(EditAnywhere)
 	int32 AmmoAmount = 30;

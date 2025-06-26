@@ -23,4 +23,3 @@ void UTabActionComponent::TabReleased()
 {
 	UE_LOG(LogTemp, Warning, TEXT("TabReleased"));
 }
-

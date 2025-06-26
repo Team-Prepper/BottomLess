@@ -2,19 +2,10 @@
 
 
 #include "ItemPickupAmmo.h"
-#include "Prepper/___Legacy/Character/PlayerCharacter.h"
-#include "Prepper/___Legacy/Character/Component/Combat/CombatComponent.h"
 
-void AItemPickupAmmo::Interaction(APlayerCharacter* Target)
+#include "Prepper/GamePlay/InteractionEventComponent/InteractionAddAmmoEventComponent.h"
+
+AItemPickupAmmo::AItemPickupAmmo()
 {
-	Super::Interaction(Target);
-
-	if(Target)
-	{
-		if(UBaseCombatComponent* Combat = Target->GetCombatComponent())
-		{
-			Combat->AddAmmo(WeaponType, AmmoAmount);
-		}
-	}
-	Destroy();
+	InteractionEvent = CreateDefaultSubobject<UInteractionAddAmmoEventComponent>(TEXT("AddAmmo"));
 }

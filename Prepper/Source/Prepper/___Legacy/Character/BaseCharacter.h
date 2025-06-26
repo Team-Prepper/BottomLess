@@ -5,6 +5,7 @@
 #include "Prepper/__Base/Util/GaugeValue.h"
 #include "GameFramework/Character.h"
 #include "Prepper/GamePlay/Damageable.h"
+#include "Prepper/GamePlay/PlayerState/DeathMatchPlayerState.h"
 #include "BaseCharacter.generated.h"
 
 class UCharacterComponent;
@@ -98,7 +99,7 @@ public:
 	
 protected:
 	UPROPERTY()
-	class ADeathMatchPlayerState* DeathMatchPlayerState;
+	ADeathMatchPlayerState* DeathMatchPlayerState;
 	
 	void ConvertMovementState(const EMovementState& State);
 	UFUNCTION(Server, Reliable)
@@ -115,6 +116,7 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBaseCombatComponent> CombatComp;
+	
 public:
 	virtual void AttackTrigger(const bool IsTrigger);
 	virtual void Reload();

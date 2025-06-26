@@ -29,7 +29,7 @@ void AInventoryInteractableItem::Interaction(APlayerCharacter* Target)
 	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Cast<IPlayerAbility>(Target));
 	if (TargetInventory->TryGetItemCount(ItemCode) == 0)
 	{
-		DestroyInteractionItem();
+		//DestroyInteractionItem();
 	}
 }
 
@@ -38,7 +38,6 @@ void AInventoryInteractableItem::ShowPickUpWidget(bool bShowWidget)
 	UE_LOG(LogTemp, Warning, TEXT("toggle Pickup widget"));
 	PickUpWidget->SetVisibility(bShowWidget);
 }
-
 
 void AInventoryInteractableItem::InitializeWidget()
 {

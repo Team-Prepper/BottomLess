@@ -2,7 +2,6 @@
 
 #include "WeaponTypes.h"
 #include "Prepper/GamePlay/Equipment/Equipment.h"
-#include "Prepper/___Legacy/Object/InteractableActor.h"
 #include "Weapon.generated.h"
 
 
