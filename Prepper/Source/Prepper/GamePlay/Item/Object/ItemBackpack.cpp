@@ -28,13 +28,13 @@ AItemBackpack::AItemBackpack()
 	BackpackMesh->SetRenderCustomDepth(true);
 	BackpackMesh->SetCustomDepthStencilValue(CustomDepthColor);
 
-	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
-	AreaBox->SetupAttachment(RootComponent);
-	AreaBox->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AreaBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	InteractionArea = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	InteractionArea->SetupAttachment(RootComponent);
+	InteractionArea->SetCollisionResponseToAllChannels(ECR_Ignore);
+	InteractionArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
-	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
-	PickUpWidget->SetupAttachment(RootComponent);
+	InteractionWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
+	InteractionWidget->SetupAttachment(RootComponent);
 
 	Inventory = CreateDefaultSubobject<UUnrealInventoryComponent>(TEXT("Inventory"));
 }

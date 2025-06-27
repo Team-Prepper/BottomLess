@@ -43,14 +43,13 @@ AWeapon::AWeapon()
 	StaticWeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetupAttachment(RootComponent);
 
-	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
-	AreaBox->SetupAttachment(RootComponent);
-	AreaBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	ToggleTrigger(true);
-	AreaBox->SetCollisionObjectType(ECC_InteractMesh);
+	InteractionArea = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	InteractionArea->SetupAttachment(RootComponent);
+	InteractionArea->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	InteractionArea->SetCollisionObjectType(ECC_InteractMesh);
 
-	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
-	PickUpWidget->SetupAttachment(RootComponent);
+	InteractionWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
+	InteractionWidget->SetupAttachment(RootComponent);
 
 	Targeting = CreateDefaultSubobject<UWeaponTargeting>("WeaponTargeting");
 	Attacking = CreateDefaultSubobject<UWeaponAttacking>("WeaponAttacking");
@@ -62,6 +61,8 @@ AWeapon::AWeapon()
 
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
+	
+	ToggleTrigger(true);
 }
 
 void AWeapon::WeaponPhysicsActive(bool bActive)
@@ -114,8 +115,8 @@ void AWeapon::BeginPlay()
 
 	if (!HasAuthority()) return;
 	
-	AreaBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	AreaBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	InteractionArea->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	InteractionArea->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	SetWeaponState(EWeaponState::EWS_Initial);
 	SetWeaponState(EWeaponState::EWS_Dropped);
 	

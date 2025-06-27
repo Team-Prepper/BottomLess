@@ -15,18 +15,17 @@ UInteractionCraftingEventComponent::UInteractionCraftingEventComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	
 }
 
 void UInteractionCraftingEventComponent::Interaction(APlayerCharacter* Target)
 {
-	InteractionAct(Target);
+	InteractionAct(Target, Target->GetInventory());
 }
 
 void UInteractionCraftingEventComponent::Interaction(ICharacterController* Target)
 {
-	InteractionAct(Target->GetPawn());
+	InteractionAct(Target->GetPawn(), Target->GetInventory());
 }
 
 void UInteractionCraftingEventComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -40,10 +39,13 @@ void UInteractionCraftingEventComponent::TickComponent(float DeltaTime, ELevelTi
 	TargetPlayer = nullptr;
 	
 	if (CombinationWidget == nullptr) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Too Far"));
 	CombinationWidget->SetVisibility(ESlateVisibility::Hidden);
+	
 }
 
-void UInteractionCraftingEventComponent::InteractionAct(const TObjectPtr<APawn> Target)
+void UInteractionCraftingEventComponent::InteractionAct(const TObjectPtr<APawn> Target, const TObjectPtr<UInventoryComponent> TargetInventory)
 {
 	if(!Target->IsLocallyControlled()) return;
 
@@ -62,6 +64,6 @@ void UInteractionCraftingEventComponent::InteractionAct(const TObjectPtr<APawn> 
 
 	if (CombinationWidget == nullptr) return;
 
-	//CombinationWidget->SetTargetInventory(TargetPlayer->GetInventory());
+	CombinationWidget->SetTargetInventory(TargetInventory);
 	CombinationWidget->SetVisibility(ESlateVisibility::Visible);
 }

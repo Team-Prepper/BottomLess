@@ -1,6 +1,5 @@
 ﻿#include "BaseCharacter.h"
 
-#include "Component/ElimDissolveComponent.h"
 #include "Component/Combat/BaseCombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -8,6 +7,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/PrepperGameMode.h"
+#include "Prepper/GamePlay/Character/Component/ElimDissolveComponent.h"
 #include "Prepper/___Legacy/PlayerController/BasePlayerController.h"
 #include "Prepper/__Base/Util/GaugeFloat.h"
 

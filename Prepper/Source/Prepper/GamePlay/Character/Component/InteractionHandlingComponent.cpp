@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UnrealInteractionComponent.h"
+#include "InteractionHandlingComponent.h"
 
 #include "Prepper/Prepper.h"
 #include "Prepper/GamePlay/Interactable.h"
@@ -10,7 +10,7 @@
 
 
 // Sets default values for this component's properties
-UUnrealInteractionComponent::UUnrealInteractionComponent()
+UInteractionHandlingComponent::UInteractionHandlingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -19,21 +19,13 @@ UUnrealInteractionComponent::UUnrealInteractionComponent()
 	TargetCharacter = nullptr;
 }
 
-void UUnrealInteractionComponent::SetTargetCharacter(TObjectPtr<ABCharacter> Character)
+void UInteractionHandlingComponent::SetTargetCharacter(TObjectPtr<ABCharacter> Character)
 {
 	TargetCharacter = Character;
 }
 
-
-// Called when the game starts
-void UUnrealInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
 // Called every frame
-void UUnrealInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+void UInteractionHandlingComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                                 FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -43,7 +35,7 @@ void UUnrealInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	
 }
 
-void UUnrealInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
+void UInteractionHandlingComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 {
 	if (TargetCharacter == nullptr) return;
 	
@@ -72,7 +64,7 @@ void UUnrealInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResul
 }
 
 
-void UUnrealInteractionComponent::SetItemInteractable(const TScriptInterface<IInteractable> InteractableItem)
+void UInteractionHandlingComponent::SetItemInteractable(const TScriptInterface<IInteractable> InteractableItem)
 {
 	if(CurInteractableItem != nullptr && InteractableItem == nullptr)
 	{
@@ -94,7 +86,7 @@ void UUnrealInteractionComponent::SetItemInteractable(const TScriptInterface<IIn
 	}
 }
 
-void UUnrealInteractionComponent::Interaction()
+void UInteractionHandlingComponent::Interaction()
 {
 	const TScriptInterface<IInteractable> Target = GetInteractable();
 	

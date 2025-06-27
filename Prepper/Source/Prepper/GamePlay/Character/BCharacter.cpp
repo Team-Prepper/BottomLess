@@ -6,6 +6,8 @@
 #include "CharacterAnimInstance.h"
 #include "InputActionValue.h"
 #include "Component/CustomCameraComponent.h"
+#include "Component/ElimDissolveComponent.h"
+#include "Component/InteractionHandlingComponent.h"
 #include "Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -19,11 +21,9 @@
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCombatComponent.h"
-#include "Prepper/Unreal/CharacterComponent/UnrealInteractionComponent.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealStatusComponent.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
 #include "Prepper/___Legacy/Car/LegacyCarPawn.h"
-#include "Prepper/___Legacy/Character/Component/ElimDissolveComponent.h"
 
 // Sets default values
 ABCharacter::ABCharacter()
@@ -46,7 +46,7 @@ ABCharacter::ABCharacter()
 	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
 	Inventory = CreateDefaultSubobject<UUnrealInventoryComponent>(TEXT("Inventory"));
 	
-	Interaction = CreateDefaultSubobject<UUnrealInteractionComponent>(TEXT("InteractionComponent"));
+	Interaction = CreateDefaultSubobject<UInteractionHandlingComponent>(TEXT("InteractionComponent"));
 	CharacterMove = CreateDefaultSubobject<UUnrealCharacterMoveComponent>(TEXT("CharacterMoveComponent"));
 	ElimDissolve = CreateDefaultSubobject<UElimDissolveComponent>(TEXT("ElimDessolveComponent"));
 

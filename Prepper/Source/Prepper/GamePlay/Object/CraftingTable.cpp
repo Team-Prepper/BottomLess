@@ -1,11 +1,8 @@
 #include "CraftingTable.h"
 
-#include "Prepper/___Legacy/Character/PlayerCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/GamePlay/InteractionEventComponent/InteractionCraftingEventComponent.h"
-#include "Prepper/GamePlay/Item/ItemCombination/UI/ItemCombinationUI.h"
-#include "Prepper/___Legacy/PlayerController/BasePlayerController.h"
 
 ACraftingTable::ACraftingTable()
 {
@@ -28,48 +25,3 @@ ACraftingTable::ACraftingTable()
 
 	InteractionEvent = CreateDefaultSubobject<UInteractionCraftingEventComponent>(TEXT("CraftingTable"));
 }
-
-void ACraftingTable::Interaction(APlayerCharacter* Target)
-{
-	MulticastInteraction(Target);
-}
-
-void ACraftingTable::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if (TargetPlayer == nullptr) return;
-	
-	if (FVector::DistSquared(TargetPlayer->GetActorLocation(), GetActorLocation()) < Distance) return;
-
-	TargetPlayer = nullptr;
-	
-	if (CombinationWidget == nullptr) return;
-	CombinationWidget->SetVisibility(ESlateVisibility::Hidden);
-}
-
-void ACraftingTable::MulticastInteraction_Implementation(APlayerCharacter* Target)
-{
-	if(!Target->IsLocallyControlled()) return;
-
-	TargetPlayer = Target;
-	ABasePlayerController* PC = Target->GetController<ABasePlayerController>();
-
-	if (PC == nullptr) return;
-
-	if (CombinationWidget == nullptr)
-	{
-		if (CombinationWidgetClass == nullptr) return;
-		
-		CombinationWidget = CreateWidget<UItemCombinationUI>(PC, CombinationWidgetClass);
-		CombinationWidget->AddToViewport();
-	}
-
-	if (CombinationWidget == nullptr) return;
-
-	CombinationWidget->SetTargetInventory(TargetPlayer->GetInventory());
-	CombinationWidget->SetVisibility(ESlateVisibility::Visible);
-	
-	// DO SOMETHING
-}
-

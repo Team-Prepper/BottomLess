@@ -128,17 +128,17 @@ void UStatusComponent::AddThirsty(float Amount)
 
 float UStatusComponent::GetHungryRatio() const
 {
-	return FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100).GetRatio();
+	return StateEffectMap[EStatusEffect::ESE_HUNGRY] / 100.f;
 }
 
 float UStatusComponent::GetThirstyRatio() const
 {
-	return FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100).GetRatio();
+	return StateEffectMap[EStatusEffect::ESE_THIRSTY] / 100.f;
 }
 
 float UStatusComponent::GetInfectedRatio() const
 {
-	return FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100).GetRatio();
+	return StateEffectMap[EStatusEffect::ESE_INFECTED] / 100.f;
 }
 
 void UStatusComponent::Attach(IObserver<UStatusComponent>* Observer)

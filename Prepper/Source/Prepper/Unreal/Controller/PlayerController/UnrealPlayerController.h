@@ -14,7 +14,7 @@ class UTabActionComponent;
 class UUnrealCombatComponent;
 class UUnrealStatusComponent;
 class UUnrealPlayerInputComponent;
-class UUnrealInteractionComponent;
+class UInteractionHandlingComponent;
 class IControllerMapper;
 class ABCharacter;
 class ACar;
@@ -41,7 +41,9 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEscapeActionComponent> EscapeAction;
 
+	UPROPERTY()
 	TObjectPtr<ACar> TargetCar;
+	UPROPERTY()
 	TObjectPtr<ABCharacter> TargetCharacter;
 	
 	virtual void OnPossess(APawn* InPawn) override;
@@ -59,7 +61,7 @@ public:
 	virtual TObjectPtr<ACar> GetTargetCar();
 	
 	TObjectPtr<UAmmoBoxComponent> GetAmmoBox() const { return AmmoBox; }
-	
+
 	void TabButtonPressed() const;
 	void TabButtonReleased() const;
 	

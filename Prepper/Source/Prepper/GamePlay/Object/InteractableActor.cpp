@@ -18,12 +18,6 @@ AInteractableActor::AInteractableActor()
 
 }
 
-void AInteractableActor::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	GetComponents<TObjectPtr<UMeshComponent>>(MeshComponents);
-}
-
 void AInteractableActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -46,14 +40,6 @@ void AInteractableActor::ShowPickUpWidget(bool bShowWidget)
 	if(PickUpWidget)
 	{
 		PickUpWidget->SetVisibility(bShowWidget);
-	}
-}
-
-void AInteractableActor::ToggleOutline(const bool bEnable)
-{
-	for (const TObjectPtr<UMeshComponent> Mesh : MeshComponents)
-	{
-		Mesh->SetRenderCustomDepth(bEnable);
 	}
 }
 

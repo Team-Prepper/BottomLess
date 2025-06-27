@@ -107,12 +107,14 @@ void UUnrealPlayerInputComponent::AimButtonReleased()
 void UUnrealPlayerInputComponent::AttackButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->bShowMouseCursor) return;
 	CC->GetTargetCharacter()->GetCombat()->AttackTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::AttackButtonReleased()
 {
 	if (CC == nullptr) return;
+	if (CC->bShowMouseCursor) return;
 	CC->GetTargetCharacter()->GetCombat()->AttackTrigger(false);
 }
 

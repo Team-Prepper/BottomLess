@@ -46,7 +46,7 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category="Attack")
 	TObjectPtr<UWeaponAttacking> Attacking;
-	UPROPERTY(VisibleAnywhere, Category="Targeting")
+	UPROPERTY(EditAnywhere, Category="Targeting")
 	TObjectPtr<UWeaponTargeting> Targeting;
 	UPROPERTY(VisibleAnywhere, Category="Magazine")
 	TObjectPtr<UWeaponMagazine> Magazine;

@@ -16,8 +16,6 @@ class PREPPER_API AInteractableBox : public AInteractableActor
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TObjectPtr<UStaticMeshComponent> BoxMesh;
-	UPROPERTY()
-	TObjectPtr<UInteractionBoxOpenEventComponent> BoxOpen;
 	
 	AInteractableBox();
 	

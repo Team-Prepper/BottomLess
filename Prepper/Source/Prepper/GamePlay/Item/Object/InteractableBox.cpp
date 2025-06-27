@@ -26,7 +26,8 @@ AInteractableBox::AInteractableBox()
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
 
-	BoxOpen = CreateDefaultSubobject<UInteractionBoxOpenEventComponent>(TEXT("BoxOpenEvent"));
+	const TObjectPtr<UInteractionBoxOpenEventComponent> BoxOpen
+		= CreateDefaultSubobject<UInteractionBoxOpenEventComponent>(TEXT("BoxOpenEvent"));
 	BoxOpen->SetBoxMesh(BoxMesh);
 
 	InteractionEvent = BoxOpen;
@@ -35,8 +36,6 @@ AInteractableBox::AInteractableBox()
 void AInteractableBox::BeginPlay()	
 {
 	Super::BeginPlay();
-
-	InteractionEvent = BoxOpen;
 
 	CustomDepthColor = CUSTOM_DEPTH_MINT;
 

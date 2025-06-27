@@ -21,7 +21,7 @@ class UStatusComponent;
 class UBCombatComponent;
 class UCharacterMoveComponent;
 
-class UUnrealInteractionComponent;
+class UInteractionHandlingComponent;
 
 class UPawnSensingComponent;
 class UCustomCameraComponent;
@@ -46,7 +46,7 @@ class PREPPER_API ABCharacter : public ACharacter, public ICharacterController, 
 	TObjectPtr<UInventoryComponent> Inventory;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealInteractionComponent> Interaction;
+	TObjectPtr<UInteractionHandlingComponent> Interaction;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCharacterMoveComponent> CharacterMove;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

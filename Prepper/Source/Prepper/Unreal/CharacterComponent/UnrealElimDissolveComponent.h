@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/___Legacy/Character/Component/ElimDissolveComponent.h"
+#include "Prepper/GamePlay/Character/Component/ElimDissolveComponent.h"
 #include "UnrealElimDissolveComponent.generated.h"
 
 
