@@ -5,7 +5,7 @@
 #include "Prepper/__Base/Util/GaugeValue.h"
 #include "GameFramework/Character.h"
 #include "Prepper/GamePlay/Damageable.h"
-#include "Prepper/GamePlay/PlayerState/DeathMatchPlayerState.h"
+#include "Prepper/_DeathMatchMode/PlayerState/DeathMatchPlayerState.h"
 #include "BaseCharacter.generated.h"
 
 class UCharacterComponent;

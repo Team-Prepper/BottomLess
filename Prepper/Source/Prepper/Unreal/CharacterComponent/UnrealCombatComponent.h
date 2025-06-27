@@ -66,6 +66,10 @@ public:
 	// Sets default values for this component's properties
 	UUnrealCombatComponent();
 	virtual void Swap() override;
+	virtual void CharacterElim() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastCharacterElim();
 
 protected:
 	// Called when the game starts

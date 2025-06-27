@@ -21,8 +21,10 @@ void ADeathMatchPlayerController::BeginPlay()
 
 	if (!IsLocalController()) return;
 	
-	SetHUDScore(HUDScore);
-	SetHUDDefeats(HUDDefeats);
+	ADeathMatchPlayerState* DeathMatchPlayerState = GetPlayerState<ADeathMatchPlayerState>();
+	
+	if (!DeathMatchPlayerState) return;
+	DeathMatchPlayerState->Attach(this);
 }
 
 void ADeathMatchPlayerController::BeginWidget()
@@ -66,9 +68,6 @@ void ADeathMatchPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimePro
 void ADeathMatchPlayerController::LocalPossessNewPlayerCharacter()
 {
 	Super::LocalPossessNewPlayerCharacter();
-	
-	SetHUDScore(HUDScore);
-	SetHUDDefeats(HUDDefeats);
 
 	ADeathMatchGameState* DeathMatchGameState =
 		Cast<ADeathMatchGameState>(UGameplayStatics::GetGameState(this));
@@ -79,28 +78,17 @@ void ADeathMatchPlayerController::LocalPossessNewPlayerCharacter()
 	DeathMatchGameState->UpdateTopScore(DeathMatchPlayerState);
 }
 
-void ADeathMatchPlayerController::SetHUDScore(float Score)
+void ADeathMatchPlayerController::Update(const ADeathMatchPlayerState& NewData)
 {
-	if (DeathMatchWidget)
+	if (DeathMatchWidget == nullptr)
 	{
-		DeathMatchWidget->SetScore(Score);
+		HUDScore = NewData.GetScore();
+		HUDDefeats = NewData.GetDefeat();
+		return;
 	}
-	else
-	{
-		HUDScore = Score;
-	}
-}
-
-void ADeathMatchPlayerController::SetHUDDefeats(int32 Defeats)
-{
-	if (DeathMatchWidget)
-	{
-		DeathMatchWidget->SetDefeat(Defeats);
-	}
-	else
-	{
-		HUDDefeats = Defeats;
-	}
+	
+	DeathMatchWidget->SetScore(NewData.GetScore());
+	DeathMatchWidget->SetDefeat(NewData.GetDefeat());
 }
 
 void ADeathMatchPlayerController::SetHUDMatchCountdown(float CountdownTime)

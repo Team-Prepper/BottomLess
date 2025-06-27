@@ -4,7 +4,9 @@
 #include "SurvivorSettingUI.h"
 
 #include "Components/Button.h"
+#include "Prepper/Unreal/Controller/PlayerController/UnrealPlayerController.h"
 #include "Prepper/___Legacy/PlayerController/SurvivorController.h"
+
 
 void USurvivorSettingUI::NativeOnInitialized()
 {
@@ -26,4 +28,8 @@ void USurvivorSettingUI::LegacyDataSave()
 
 void USurvivorSettingUI::DataSave()
 {
+	const TObjectPtr<AUnrealPlayerController> PC = GetWorld()->GetFirstPlayerController<AUnrealPlayerController>();
+	if (PC == nullptr) return;
+
+	PC->GameSaveAction();
 }

@@ -1,13 +1,15 @@
 #pragma once
 
 #include "BasePlayerController.h"
+#include "Prepper/__Base/ObserverPattern/Observer.h"
 #include "DeathMatchPlayerController.generated.h"
 
+class ADeathMatchPlayerState;
 class UAnnouncement;
 class UDeathMatchWidget;
 class UScoreBoard;
 UCLASS()
-class PREPPER_API ADeathMatchPlayerController : public ABasePlayerController
+class PREPPER_API ADeathMatchPlayerController : public ABasePlayerController, public IObserver<ADeathMatchPlayerState>
 {
 	GENERATED_BODY()
 private:
@@ -34,8 +36,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void LocalPossessNewPlayerCharacter() override;
 
-	void SetHUDScore(float Score);
-	void SetHUDDefeats(int32 Defeats);
+	virtual void Update(const ADeathMatchPlayerState& NewData) override;
 	void SetHUDMatchCountdown(float CountdownTime);
 	void SetHUDAnnouncementCountdown(float CountdownTime);
 

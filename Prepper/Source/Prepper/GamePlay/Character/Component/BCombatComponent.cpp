@@ -3,6 +3,8 @@
 
 #include "BCombatComponent.h"
 
+#include "Prepper/GamePlay/Weapon/Weapon.h"
+
 
 // Sets default values for this component's properties
 UBCombatComponent::UBCombatComponent()
@@ -17,8 +19,19 @@ void UBCombatComponent::SetCrosshairOverlay(TObjectPtr<UPlayerOverlay> Overlay)
 
 void UBCombatComponent::SetTargetCharacter(TObjectPtr<ABCharacter> Character)
 {
-
 	TargetCharacter = Character;
+}
+
+void UBCombatComponent::CharacterElim()
+{
+	if (EquippedWeapon != nullptr)
+	{
+		EquippedWeapon->OnDropped(TargetCharacter);
+	}
+	if (SecondaryWeapon != nullptr)
+	{
+		SecondaryWeapon->OnDropped(TargetCharacter);
+	}
 }
 
 void UBCombatComponent::Attach(IObserver<UBCombatComponent>* Observer)

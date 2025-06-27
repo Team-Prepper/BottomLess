@@ -10,6 +10,7 @@
 
 
 class UEnhancedInputLocalPlayerSubsystem;
+
 // Sets default values for this component's properties
 UUnrealPlayerInputComponent::UUnrealPlayerInputComponent()
 {
@@ -32,6 +33,7 @@ UUnrealPlayerInputComponent::UUnrealPlayerInputComponent()
 	FireAction = nullptr;
 	OpenInventory = nullptr;
 	OpenSetting = nullptr;
+	
 }
 
 void UUnrealPlayerInputComponent::SetCC(const TObjectPtr<AUnrealPlayerController> TargetCC)
@@ -47,6 +49,7 @@ void UUnrealPlayerInputComponent::Move(const FInputActionValue& Value)
 		CC->GetTargetCar()->Move(Value, CC->GetTargetCharacter());
 		return;
 	}
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->Move(Value);
 }
 
@@ -58,6 +61,7 @@ void UUnrealPlayerInputComponent::Look(const FInputActionValue& Value)
 		CC->GetTargetCar()->Look(Value);
 		return;
 	}
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->Look(Value);
 }
 
@@ -70,43 +74,49 @@ void UUnrealPlayerInputComponent::JumpButtonPressed()
 		return;
 	}
 
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->JumpTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::JumpButtonReleased()
 {
 	if (CC == nullptr) return;
-
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->JumpTrigger(false);
 }
 
 void UUnrealPlayerInputComponent::CrouchButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->CrouchToggle();
 }
 
 void UUnrealPlayerInputComponent::ReloadButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->GetCombat()->Reload();
 }
 
 void UUnrealPlayerInputComponent::AimButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->GetCombat()->AimTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::AimButtonReleased()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->GetCombat()->AimTrigger(false);
 }
 
 void UUnrealPlayerInputComponent::AttackButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	if (CC->bShowMouseCursor) return;
 	CC->GetTargetCharacter()->GetCombat()->AttackTrigger(true);
 }
@@ -114,6 +124,7 @@ void UUnrealPlayerInputComponent::AttackButtonPressed()
 void UUnrealPlayerInputComponent::AttackButtonReleased()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	if (CC->bShowMouseCursor) return;
 	CC->GetTargetCharacter()->GetCombat()->AttackTrigger(false);
 }
@@ -139,12 +150,14 @@ void UUnrealPlayerInputComponent::EscapeButtonPressed()
 void UUnrealPlayerInputComponent::SprintButtonPressed()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->SprintTrigger(true);
 }
 
 void UUnrealPlayerInputComponent::SprintButtonReleased()
 {
 	if (CC == nullptr) return;
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->SprintTrigger(false);
 }
 
@@ -165,6 +178,7 @@ void UUnrealPlayerInputComponent::ServerEquipButtonPressed_Implementation()
 		CC->GetTargetCar()->InteractionAct(CC->GetTargetCharacter());
 		return;
 	}
+	if (CC->GetTargetCharacter() == nullptr) return;
 	CC->GetTargetCharacter()->EquipButtonPressed();
 }
 

@@ -31,6 +31,7 @@ public:
 	UInitialSettingComponent();
 	
 protected:
+	UPROPERTY()
 	TObjectPtr<AUnrealPlayerController> TargetCC;
 	
 	virtual void Attach();

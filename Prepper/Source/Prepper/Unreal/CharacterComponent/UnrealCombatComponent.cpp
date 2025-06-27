@@ -47,6 +47,16 @@ void UUnrealCombatComponent::Swap()
 	Notify();
 }
 
+void UUnrealCombatComponent::CharacterElim()
+{
+	MulticastCharacterElim();
+}
+
+void UUnrealCombatComponent::MulticastCharacterElim_Implementation()
+{
+	Super::CharacterElim();
+}
+
 // Called when the game starts
 void UUnrealCombatComponent::BeginPlay()
 {

@@ -28,7 +28,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Velocity.Z = 0.f;
 	Speed = Velocity.Size();
 
-	UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), PlayerCharacter->GetControlRotation().Yaw);
 	bIsInAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
 
 	bIsAccelerating = PlayerCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;

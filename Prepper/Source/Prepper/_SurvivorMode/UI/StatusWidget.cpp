@@ -15,6 +15,9 @@ void UStatusWidget::Update(const State& NewData)
 
 void UStatusWidget::Update(const UStatusComponent& NewData)
 {
+	UE_LOG(LogTemp, Warning, TEXT("H: %f, T: %f, I: %f"),
+		NewData.GetHungryRatio(), NewData.GetThirstyRatio(), NewData.GetInfectedRatio());
+	
 	HungerBar->SetPercent(NewData.GetHungryRatio());
 	ThirstBar->SetPercent(NewData.GetThirstyRatio());
 	InfectionBar->SetPercent(NewData.GetInfectedRatio());

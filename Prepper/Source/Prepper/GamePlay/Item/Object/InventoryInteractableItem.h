@@ -7,6 +7,7 @@
 #include "InventoryInteractableItem.generated.h"
 
 class UInventoryComponent;
+class UBoxComponent;
 /**
  * 
  */
@@ -27,16 +28,17 @@ private:
 	UInventoryComponent* TargetInventory;
 	
 	UPROPERTY(VisibleAnywhere)
-	class UBoxComponent* BoxCollision;
+	TObjectPtr<UBoxComponent> BoxCollision;
 
 	UPROPERTY(VisibleAnywhere)
-	class UWidgetComponent* WidgetComponent;
+	TObjectPtr<UWidgetComponent> WidgetComponent;
 	
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<class UUserWidget> WidgetClass;
+	TSubclassOf<UUserWidget> WidgetClass;
 
 	UPROPERTY()
-	class UUserWidget* WidgetInstance;
+	TObjectPtr<UUserWidget> WidgetInstance;
 
 	void InitializeWidget();
+	
 };

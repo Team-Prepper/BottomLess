@@ -28,6 +28,7 @@ public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController) override;
+	
 	virtual void Tick(float DeltaSeconds) override;
 	void AddMission();
 	int GetEnemyKillCount() const { return EnemyKillCount; }
@@ -37,4 +38,5 @@ public:
 	void AddAchievement(const FString &NewAchievement, bool Value = true);
 	bool IsAchieved(const FString &Achievement);
 	TMap<FString, bool> GetAchievement() { return Achievement; }
+	
 };

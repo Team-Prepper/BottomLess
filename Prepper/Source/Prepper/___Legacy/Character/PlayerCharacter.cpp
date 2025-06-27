@@ -21,7 +21,7 @@
 #include "Prepper/GamePlay/Interactable.h"
 #include "Prepper/GamePlay/Character/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 #include "Prepper/GamePlay/Item/Object/ItemBackpack.h"
-#include "Prepper/GamePlay/PlayerState/DeathMatchPlayerState.h"
+#include "Prepper/_DeathMatchMode/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
 #include "Prepper/_DeathMatchMode/DeathMatchGameMode.h"

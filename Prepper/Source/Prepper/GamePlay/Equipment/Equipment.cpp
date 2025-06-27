@@ -5,10 +5,18 @@
 
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Prepper/Prepper.h"
 
 void AEquipment::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if(InteractionArea)
+	{
+		InteractionArea->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		InteractionArea->SetCollisionObjectType(ECC_InteractMesh);
+		InteractionArea->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	}
 	
 	if(InteractionWidget)
 	{

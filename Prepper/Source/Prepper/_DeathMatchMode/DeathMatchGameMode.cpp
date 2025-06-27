@@ -2,8 +2,9 @@
 
 #include "GameFramework/Character.h"
 #include "Prepper/_DeathMatchMode/GameState/DeathMatchGameState.h"
-#include "Prepper/GamePlay/PlayerState/DeathMatchPlayerState.h"
+#include "Prepper/_DeathMatchMode/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/___Legacy/Character/BaseCharacter.h"
+#include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/___Legacy/PlayerController/DeathMatchPlayerController.h"
 
 namespace MatchState
@@ -76,12 +77,31 @@ void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
                                            ABasePlayerController* VictimController, ABasePlayerController* AttackerController)
 {
 	/* for Score */
-	ADeathMatchPlayerState* AttackPlayerState = AttackerController ? Cast<ADeathMatchPlayerState>(AttackerController->PlayerState) : nullptr;
-	ADeathMatchPlayerState* VictimPlayerState = VictimController ? Cast<ADeathMatchPlayerState>(VictimController->PlayerState) : nullptr;
-
-	ADeathMatchGameState* DeathMatchGameState = GetGameState<ADeathMatchGameState>();
+	ScoreCalc(VictimController, AttackerController);
+	AddRespawnQueue(ElimmedCharacter, VictimController);
 	
-	if (AttackPlayerState && AttackPlayerState != VictimPlayerState && DeathMatchGameState)
+	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
+}
+
+void ADeathMatchGameMode::PlayerEliminated(ABCharacter* ElimmedCharacter, AController* VictimController,
+	AController* AttackerController)
+{
+	ScoreCalc(VictimController, AttackerController);
+	AddRespawnQueue(ElimmedCharacter, VictimController);
+	
+	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
+}
+
+void ADeathMatchGameMode::ScoreCalc(const TObjectPtr<AController> VictimController,
+                                    const TObjectPtr<AController> AttackerController) const
+{
+	ADeathMatchPlayerState* AttackPlayerState =
+		AttackerController ? Cast<ADeathMatchPlayerState>(AttackerController->PlayerState) : nullptr;
+	ADeathMatchPlayerState* VictimPlayerState =
+		VictimController ? Cast<ADeathMatchPlayerState>(VictimController->PlayerState) : nullptr;
+
+	UE_LOG(LogTemp, Warning, TEXT("Score Good"));
+	if (ADeathMatchGameState* DeathMatchGameState = GetGameState<ADeathMatchGameState>(); AttackPlayerState && AttackPlayerState != VictimPlayerState && DeathMatchGameState)
 	{
 		AttackPlayerState->AddToScore(1.0f);
 		DeathMatchGameState->UpdateTopScore(AttackPlayerState);
@@ -90,22 +110,24 @@ void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 	{
 		VictimPlayerState->AddToDefeats(1);
 	}
+}
 
-	RequestQueue.Add(FRequestQueueUnit(ElimmedCharacter, VictimController));
+void ADeathMatchGameMode::AddRespawnQueue(const TObjectPtr<ACharacter> Character, const TObjectPtr<AController> Controller)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Respawn Queue"));
+	RequestQueue.Add(FRequestQueueUnit(Character, Controller));
 	
 	FTimerHandle TestTimeHandle;
 	GetWorld()->GetTimerManager().SetTimer(
 		TestTimeHandle, this, &ADeathMatchGameMode::Respawn, RespawnTime);
 	
-	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
 }
 
 void ADeathMatchGameMode::Respawn()
 {
-	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
-
-	if (!DeathMatchGameMode) return;
+	if (!HasAuthority()) return;
 	
-	DeathMatchGameMode->RequestRespawn(RequestQueue[0].Character, RequestQueue[0].Controller);
+	RequestRespawn(RequestQueue[0].Character, RequestQueue[0].Controller);
 	RequestQueue.RemoveAt(0);
+	
 }

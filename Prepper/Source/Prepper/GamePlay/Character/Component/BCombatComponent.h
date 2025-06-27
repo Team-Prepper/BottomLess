@@ -39,6 +39,7 @@ public:
 	virtual void Reload() {}
 
 	virtual void Swap() PURE_VIRTUAL();
+	virtual void CharacterElim();
 	
 	virtual TObjectPtr<AWeapon> GetEquippedWeapon() const { return EquippedWeapon; }
 	virtual TObjectPtr<AWeapon> GetSecondaryWeapon() const { return SecondaryWeapon; }

@@ -4,7 +4,7 @@
 #include "DeathMatchGameState.h"
 
 #include "Net/UnrealNetwork.h"
-#include "Prepper/GamePlay/PlayerState/DeathMatchPlayerState.h"
+#include "Prepper/_DeathMatchMode/PlayerState/DeathMatchPlayerState.h"
 
 void ADeathMatchGameState::OnRep_Player()
 {

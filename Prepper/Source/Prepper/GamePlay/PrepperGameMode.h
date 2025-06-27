@@ -27,8 +27,8 @@ public:
 	
 	virtual void PlayerEliminated(ABCharacter* ElimmedCharacter);
 	virtual void PlayerEliminated(ABCharacter* ElimmedCharacter,
-									ABasePlayerController* VictimController,
-									ABasePlayerController* AttackerController);
+									AController* VictimController,
+									AController* AttackerController);
 	
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 };

@@ -25,17 +25,16 @@ void APrepperGameMode::PlayerEliminated(ABCharacter* ElimmedCharacter)
 	}
 }
 
-void APrepperGameMode::PlayerEliminated(ABCharacter* ElimmedCharacter, ABasePlayerController* VictimController,
-	ABasePlayerController* AttackerController)
+void APrepperGameMode::PlayerEliminated(ABCharacter* ElimmedCharacter, AController* VictimController,
+	AController* AttackerController)
 {
 	PlayerEliminated(ElimmedCharacter);
-
-	if (VictimController) VictimController->Elim();
 }
 
 void APrepperGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
 
 {
+	
 	if (ElimmedCharacter)
 	{
 		ElimmedCharacter->Reset();

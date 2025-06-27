@@ -6,6 +6,7 @@
 #include "UnrealPlayerInputComponent.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/CharacterController/EscapeActionComponent.h"
+#include "Prepper/GamePlay/CharacterController/GameSaveComponent.h"
 #include "Prepper/GamePlay/CharacterController/InitialSettingComponent.h"
 #include "Prepper/GamePlay/CharacterController/TabActionComponent.h"
 #include "Prepper/Unreal/Controller/AmmoBox/UnrealAmmoBoxComponent.h"
@@ -36,6 +37,7 @@ TObjectPtr<ACar> AUnrealPlayerController::GetTargetCar()
 
 void AUnrealPlayerController::OnPossess(APawn* InPawn)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Possess"));
 	Super::OnPossess(InPawn);
 	
 	SetViewTarget(InPawn);
@@ -55,6 +57,8 @@ void AUnrealPlayerController::OnPossess(APawn* InPawn)
 	}
 	
 	if (TargetCharacter == GetPawn()) return;
+
+	TargetCharacter = GetPawn<ABCharacter>();
 	
 	InitialSetting->Initial(this);
 	GetTargetCharacter()->SetAmmoBox(AmmoBox);
@@ -83,6 +87,8 @@ void AUnrealPlayerController::OnRep_Pawn()
 	}
 
 	if (TargetCharacter == GetPawn()) return;
+	
+	TargetCharacter = GetPawn<ABCharacter>();
 	
 	InitialSetting->Initial(this);
 	GetTargetCharacter()->SetAmmoBox(AmmoBox);
@@ -138,4 +144,9 @@ void AUnrealPlayerController::TabButtonReleased() const
 void AUnrealPlayerController::EscapeButtonPressed() const
 {
 	EscapeAction->EscapePressed();
+}
+
+void AUnrealPlayerController::GameSaveAction() const
+{
+	GameSave->GameSave();
 }

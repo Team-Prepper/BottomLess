@@ -38,11 +38,7 @@ void UInteractionBoxOpenEventComponent::BeginPlay()
 
 void UInteractionBoxOpenEventComponent::BoxOpen()
 {
-	UE_LOG(LogTemp, Warning, TEXT("TryBoxOpen"));
-	
 	if(IsOpen) return;
-	
-	UE_LOG(LogTemp, Warning, TEXT("BoxOpen"));
 
 	IsOpen = true;
 	

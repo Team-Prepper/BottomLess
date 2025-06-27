@@ -15,6 +15,7 @@ class UUnrealCombatComponent;
 class UUnrealStatusComponent;
 class UUnrealPlayerInputComponent;
 class UInteractionHandlingComponent;
+class UGameSaveComponent;
 class IControllerMapper;
 class ABCharacter;
 class ACar;
@@ -33,13 +34,16 @@ class PREPPER_API AUnrealPlayerController : public APlayerController
 	TObjectPtr<UAmmoBoxComponent> AmmoBox;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUnrealPlayerInputComponent> InputConnector;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTabActionComponent> TabAction;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UEscapeActionComponent> EscapeAction;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UUnrealPlayerInputComponent> InputConnector;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInitialSettingComponent> InitialSetting;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UEscapeActionComponent> EscapeAction;
+	TObjectPtr<UGameSaveComponent> GameSave;
 
 	UPROPERTY()
 	TObjectPtr<ACar> TargetCar;
@@ -66,4 +70,5 @@ public:
 	void TabButtonReleased() const;
 	
 	void EscapeButtonPressed() const;
+	void GameSaveAction() const;
 };

@@ -29,15 +29,21 @@ class PREPPER_API USurvivorInitialSettingComponent : public UInitialSettingCompo
 	TSubclassOf<UQuickSlotUI> QuickSlotWidgetClass;
 	UPROPERTY()
 	TObjectPtr<UQuickSlotUI> QuickSlotWidget;
+	
+public:
+	// Sets default values for this component's properties
+	USurvivorInitialSettingComponent();
 
 protected:
 	virtual void Attach() override;
 	virtual void Detach() override;
+	
 public:
-	// Sets default values for this component's properties
-	USurvivorInitialSettingComponent();
 	virtual void WidgetSetting(TObjectPtr<AUnrealPlayerController> Target) override;
 	virtual void Initial(TObjectPtr<AUnrealPlayerController> Target) override;
+	
+	void LoadClientData();
+	void LoadServerData();
 	
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(UInventoryComponent* TargetInventory, const FString& ItemCode, int ItemCount);
@@ -46,11 +52,5 @@ public:
 	void ServerSetAmmo(UAmmoBoxComponent* AmmoBox, const TArray<FWeaponConvertData>& AmmoMap);
 	UFUNCTION(Server, Reliable)
 	void ServerEquipEquipment(ABCharacter* Target, const FString& EquipmentCode);
-	
-	void LoadClientData();
-	void LoadServerData();
-	void SaveClientData();
-	void SaveServerData();
-
 	
 };

@@ -193,14 +193,12 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 	
 	if (GetStatus()->GetCurHealth() > 0) return;
 
-	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	const TObjectPtr<APrepperGameMode> PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
 	
 	if(PrepperGameMode == nullptr) return;
 	
-	ABasePlayerController* PrepperPlayerController = GetController<ABasePlayerController>();
-	ABasePlayerController* AttackerController = Cast<ABasePlayerController>(InstigatorController);
-	
-	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
+	PrepperGameMode->PlayerEliminated(this,
+		Controller, InstigatorController);
 	
 }
 
@@ -208,6 +206,7 @@ void ABCharacter::ElimCharacter() const
 {
 	//PlayAnim(ElimMontage);
 	ElimDissolve->TargetElim();
+	Combat->CharacterElim();
 	
 }
 
