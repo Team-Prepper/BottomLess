@@ -4,10 +4,10 @@
 #include "PlayerOverlay.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/GamePlay/Character/Component/Status/StatusComponent.h"
+#include "Prepper/GamePlay/HealthPointComponent/HealthPointComponent.h"
 #include "Prepper/___Legacy/HUD/PrepperHUD.h"
 
-void UPlayerOverlay::Update(const UStatusComponent& NewData)
+void UPlayerOverlay::Update(const UHealthPointComponent& NewData)
 {
 	const float CurHP = NewData.GetCurHealth();
 	const float MaxHP = NewData.GetMaxHealth();

@@ -26,6 +26,7 @@ protected:
 	bool IsSprintLocal;
 	bool IsCrouchingLocal;
 
+	UPROPERTY()
 	TObjectPtr<ACar> TargetCar;
 
 	void CrouchingAct(bool IsTrigger) const;

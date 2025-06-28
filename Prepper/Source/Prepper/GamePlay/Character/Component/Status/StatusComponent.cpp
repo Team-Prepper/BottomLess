@@ -5,8 +5,6 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
-#include "Prepper/__Base/Util/GaugeFloat.h"
-#include "Prepper/___Legacy/Character/Component/State.h"
 
 
 // Sets default values for this component's properties
@@ -19,21 +17,9 @@ UStatusComponent::UStatusComponent()
 	// ...
 }
 
-void UStatusComponent::TakeDamage(int Amount)
-{
-	CurrentHealth -= Amount;
-
-	if (CurrentHealth < 0) CurrentHealth = 0;
-
-	Notify();
-	
-	if(CurrentHealth != 0.f) return;
-}
-
-void UStatusComponent::StatusTimerStart(TObjectPtr<UCharacterMoveComponent> Target)
+void UStatusComponent::StatusTimerStart(const TObjectPtr<UCharacterMoveComponent> Target)
 {
 	TargetMove = Target;
-	UE_LOG(LogTemp, Warning, TEXT("StatusEffectReady"));
 	StatusFlags.ClearAllEffects();
 	
 	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, 100);
@@ -99,21 +85,6 @@ void UStatusComponent::StatusTimerFinish()
 	}
 }
 
-State UStatusComponent::GetState()
-{
-	return State(FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
-					   FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
-					   FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100));
-}
-
-void UStatusComponent::AddHP(float Amount)
-{
-	CurrentHealth += Amount;
-	if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
-
-	Notify();
-}
-
 void UStatusComponent::AddHungry(float Amount)
 {
 	StateEffectMap[EStatusEffect::ESE_HUNGRY] += Amount;
@@ -144,7 +115,6 @@ float UStatusComponent::GetInfectedRatio() const
 void UStatusComponent::Attach(IObserver<UStatusComponent>* Observer)
 {
 	Observers.Add(Observer);;
-	UE_LOG(LogTemp, Warning, TEXT("CurrentHealth: %d"), GetCurHealth());
 	Observer->Update(*this);
 }
 

@@ -7,12 +7,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/GamePlay/Object/ElectricSwitch.h"
 
-
-void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-}
-
 // Sets default values
 ABombCharacter::ABombCharacter()
 {
@@ -53,7 +47,7 @@ void ABombCharacter::Bomb()
 	}
 
 	TargetSwitch->DefenderWin();
-	Destroy();
+	Destroy(true);
 }
 
 void ABombCharacter::SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch)

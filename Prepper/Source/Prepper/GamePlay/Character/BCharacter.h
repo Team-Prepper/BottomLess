@@ -11,6 +11,7 @@
 #include "Prepper/GamePlay/Weapon/AmmoBox.h"
 #include "BCharacter.generated.h"
 
+class UHealthPointComponent;
 enum class EWeaponType : uint8;
 
 class ICombat;
@@ -36,6 +37,8 @@ class PREPPER_API ABCharacter : public ACharacter, public ICharacterController, 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<UFlexibleSpringArmComponent> FlexibleCameraBoom;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UHealthPointComponent> HealthPoint;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStatusComponent> Status;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -70,12 +73,14 @@ public:
 	// Sets default values for this actor's properties
 	ABCharacter();
 	virtual TObjectPtr<APawn> GetPawn() override;
+	virtual TObjectPtr<UHealthPointComponent> GetHealthPoint();
 	virtual TObjectPtr<UStatusComponent> GetStatus() override;
 	virtual TObjectPtr<UBCombatComponent> GetCombat() override;
 	virtual TObjectPtr<UInventoryComponent> GetInventory() override;
 	virtual TObjectPtr<UCharacterMoveComponent> GetMove();
 	virtual IAmmoBox* GetAmmoBox() override;
 	
+	virtual void EquipWeapon(TObjectPtr<AWeapon> Weapon) override;
 	void SetAmmoBox(TObjectPtr<UAmmoBoxComponent> NewAmmoBox);
 
 	virtual void Boarding(TObjectPtr<ACar> Vehicle) override;
@@ -100,9 +105,6 @@ public:
 	void AttachActorAtSocket(FName SocketName, AActor* TargetActor) const;
 	void SetEquippedWeaponType(EWeaponType WeaponType);
 	
-	virtual void AddItem(const FString& ItemCode, int Count) override;
-	virtual void UseQuickSlotItem(int Idx) override;
-	virtual void EquipWeapon(class AWeapon* Weapon) override;
 	virtual void EquipBackpack(class AItemBackpack* BackpackToEquip) override;
 
 	virtual void Heal(float Amount) override;
@@ -112,7 +114,7 @@ public:
 	virtual UInventoryComponent* GetInventory() const override;
 	
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-	void ElimCharacter() const;
+	void ElimCharacter();
 	
 	void SetTeamIdx(int Idx);
 	int GetTeam() const { return TeamIdx; }
@@ -126,7 +128,6 @@ protected:
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	virtual void Crouch(bool bClientSimulation = false) override;
 	virtual void UnCrouch(bool bClientSimulation = false) override;

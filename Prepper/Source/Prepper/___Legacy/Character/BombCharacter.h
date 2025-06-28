@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/GamePlay/Object/DamageableObject.h"
+#include "Prepper/GamePlay/Object/DamageableObject/DamageableObject.h"
 #include "BombCharacter.generated.h"
 
 class AElectricSwitch;
@@ -26,7 +26,6 @@ private:
 	bool IsElim = false;
 	
 public:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// Sets default values for this actor's properties
 	ABombCharacter();
 
@@ -39,5 +38,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void Bomb();
 	void SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch);
-	virtual void RemoveAction();
+	virtual void RemoveAction() override;
 };

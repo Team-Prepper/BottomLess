@@ -63,6 +63,7 @@ AWeapon::AWeapon()
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 	
 	ToggleTrigger(true);
+	WeaponState = EWeaponState::EWS_Dropped;
 }
 
 void AWeapon::WeaponPhysicsActive(bool bActive)
@@ -113,12 +114,15 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (WeaponState == EWeaponState::EWS_Dropped)
+	{
+		OnDropped();
+	}
+	
 	if (!HasAuthority()) return;
 	
 	InteractionArea->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	InteractionArea->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	SetWeaponState(EWeaponState::EWS_Initial);
-	SetWeaponState(EWeaponState::EWS_Dropped);
 	
 }
 
@@ -126,7 +130,7 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AWeapon, WeaponState);
+	DOREPLIFETIME(AWeapon, LegacyWeaponState);
 	DOREPLIFETIME_CONDITION(AWeapon, bUseServerSideRewind, COND_OwnerOnly);
 }
 
@@ -157,7 +161,7 @@ void AWeapon::Interaction(APlayerCharacter* Target)
 
 void AWeapon::Interaction(ICharacterController* Target)
 {
-	Target->GetCombat()->EquipWeapon(this);
+	Target->EquipWeapon(this);
 }
 
 void AWeapon::SetStateAiming(const TObjectPtr<ABCharacter> TargetCharacter)
@@ -228,7 +232,7 @@ void AWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, FHUDPackage& Crossha
 
 void AWeapon::OnWeaponStateSet()
 {
-	switch (WeaponState)
+	switch (LegacyWeaponState)
 	{
 	case EWeaponState::EWS_Equipped:
 		OnEquipped(Cast<ABaseCharacter>(GetOwner()));
@@ -246,10 +250,15 @@ void AWeapon::OnWeaponStateSet()
 
 void AWeapon::OnEquipped(const TObjectPtr<ABCharacter> TargetCharacter)
 {
+	WeaponState = EWeaponState::EWS_Equipped;
 	ShowPickUpWidget(false);
 	WeaponPhysicsActive(false);
 
-	if (!TargetCharacter) return;
+	if (TargetCharacter == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Target Null"));
+		return;
+	}
 	
 	TargetCharacter->SetEquippedWeaponType(WeaponType);
 	TargetCharacter->AttachActorAtSocket(WeaponSocketName, this);
@@ -257,23 +266,24 @@ void AWeapon::OnEquipped(const TObjectPtr<ABCharacter> TargetCharacter)
 	PlayEquipWeaponSound(TargetCharacter);
 }
 
-void AWeapon::OnDropped(TObjectPtr<ABCharacter> TargetCharacter)
-{
-	const FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-
-	WeaponPhysicsActive(true);
-	WeaponMesh->DetachFromComponent(DetachRules);
-}
-
 void AWeapon::OnEquippedSecondary(TObjectPtr<ABCharacter> TargetCharacter)
 {
+	WeaponState = EWeaponState::EWS_Holstered;
 	ShowPickUpWidget(false);
 	WeaponPhysicsActive(false);
 
-	if (!TargetCharacter) return;
+	if (TargetCharacter == nullptr) return;
 
 	TargetCharacter->AttachActorAtSocket(HolsteredWeaponSocketName, this);
 	PlayEquipWeaponSound(TargetCharacter);
+}
+
+void AWeapon::OnDropped()
+{
+	WeaponState = EWeaponState::EWS_Dropped;
+
+	WeaponPhysicsActive(true);
+	WeaponMesh->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 }
 
 TArray<FVector_NetQuantize> AWeapon::GetTarget(FVector& HitTarget) const
@@ -371,6 +381,6 @@ void AWeapon::OnPingTooHigh(bool bPingTooHigh)
 
 void AWeapon::SetWeaponState(EWeaponState State)
 {
-	WeaponState = State;
+	LegacyWeaponState = State;
 	OnWeaponStateSet();
 }

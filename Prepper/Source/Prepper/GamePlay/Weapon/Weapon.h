@@ -64,6 +64,7 @@ protected:
 	UPROPERTY()
 	TArray<UPlayerAimingEffect*> AimingEffects;
 	TArray<UPlayerAimingEffect*> GetAimingEffect();
+	EWeaponState WeaponState;
 	
 	void WeaponPhysicsActive(bool bActive);
 	
@@ -88,8 +89,8 @@ public:
 	void Fire(const TArray<FVector_NetQuantize>& HitTargets, AController* Attacker, bool IsSimulate) const;
 	bool CanReload();
 	virtual void OnEquipped(TObjectPtr<ABCharacter> TargetCharacter);
-	virtual void OnDropped(TObjectPtr<ABCharacter> TargetCharacter);
 	virtual void OnEquippedSecondary(TObjectPtr<ABCharacter> TargetCharacter);
+	virtual void OnDropped();
 	
 	int GetLeftAmmo() const;
 	void SetLeftAmmo(const int Amount) const;
@@ -106,7 +107,7 @@ protected:
 	float Damage = 20.f;
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
-	EWeaponState WeaponState;
+	EWeaponState LegacyWeaponState;
 	IWeaponHandler* GetWeaponHandler();
 	
 	UFUNCTION()

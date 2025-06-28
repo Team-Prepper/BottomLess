@@ -87,12 +87,13 @@ void UUnrealCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UUnrealCombatComponent, NetworkDroppedWeapon);
 }
 
-void UUnrealCombatComponent::EquipWeapon(AWeapon* Weapon)
+void UUnrealCombatComponent::EquipWeapon(TObjectPtr<ABCharacter> Target, TObjectPtr<AWeapon> Weapon)
 {
+	Super::EquipWeapon(Target, Weapon);
 	if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
 	{
 		SecondaryWeapon = Weapon;
-		SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
+		SecondaryWeapon->OnEquippedSecondary(Target);
 		NetworkSecondaryWeapon = SecondaryWeapon;
 		return;
 	}
@@ -101,11 +102,11 @@ void UUnrealCombatComponent::EquipWeapon(AWeapon* Weapon)
 	
 	if (NetworkDroppedWeapon != nullptr)
 	{
-		NetworkDroppedWeapon->OnDropped(TargetCharacter);
+		NetworkDroppedWeapon->OnDropped();
 	}
 	
 	EquippedWeapon = Weapon;
-	EquippedWeapon->OnEquipped(TargetCharacter);
+	EquippedWeapon->OnEquipped(Target);
 	NetworkEquippedWeapon = EquippedWeapon;
 	
 	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
@@ -150,7 +151,7 @@ void UUnrealCombatComponent::OnRep_SecondaryWeapon()
 void UUnrealCombatComponent::OnRep_DroppedWeapon()
 {
 	if (!NetworkDroppedWeapon) return;
-	NetworkDroppedWeapon->OnDropped(TargetCharacter);
+	NetworkDroppedWeapon->OnDropped();
 }
 
 void UUnrealCombatComponent::MulticastAttackWeapon_Implementation(

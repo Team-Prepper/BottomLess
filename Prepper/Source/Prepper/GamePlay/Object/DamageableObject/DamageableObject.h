@@ -8,6 +8,7 @@
 #include "Prepper/GamePlay/Damageable.h"
 #include "DamageableObject.generated.h"
 
+class UHealthPointComponent;
 class UNiagaraSystem;
 
 UCLASS()
@@ -26,16 +27,12 @@ class PREPPER_API ADamageableObject : public AActor, public IDamageable
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> ObjectMesh;
-
-	/* 체력 관련 */
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
-	float MaxHealth = 100.f;
-	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
-	float CurrentHealth = 100.f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UHealthPointComponent> HealthPoint;
 	
 public:	
 	ADamageableObject();
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
@@ -45,7 +42,5 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void RemoveAction();
-	UFUNCTION()
-	void OnRep_Health();
 
 };

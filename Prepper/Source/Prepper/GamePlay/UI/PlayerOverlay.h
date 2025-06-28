@@ -6,6 +6,7 @@
 #include "Prepper/___Legacy/HUD/UI/CharacterOverlay/CharacterOverlay.h"
 #include "PlayerOverlay.generated.h"
 
+class UHealthPointComponent;
 class APrepperHUD;
 class UStatusComponent;
 class IStatus;
@@ -15,7 +16,7 @@ struct FHUDPackage;
  */
 UCLASS()
 class PREPPER_API UPlayerOverlay : public UUserWidget,
-									public IObserver<UStatusComponent>
+									public IObserver<UHealthPointComponent>
 {
 	GENERATED_BODY()
 private:
@@ -30,7 +31,7 @@ private:
 	TObjectPtr<APrepperHUD> TargetHUD;
 	
 public:
-	virtual void Update(const UStatusComponent& NewData) override;
+	virtual void Update(const UHealthPointComponent& NewData) override;
 	void SetHUD(TObjectPtr<APrepperHUD> HUD);
 	void DrawCrosshair(const FHUDPackage& Crosshair);
 	void DrawCrosshairUnit(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread,

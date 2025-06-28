@@ -22,15 +22,20 @@ void UBCombatComponent::SetTargetCharacter(TObjectPtr<ABCharacter> Character)
 	TargetCharacter = Character;
 }
 
+void UBCombatComponent::EquipWeapon(TObjectPtr<ABCharacter> Target, TObjectPtr<AWeapon> Weapon)
+{
+	UE_LOG(LogTemp, Warning, TEXT("EquipWeapon"));
+}
+
 void UBCombatComponent::CharacterElim()
 {
 	if (EquippedWeapon != nullptr)
 	{
-		EquippedWeapon->OnDropped(TargetCharacter);
+		EquippedWeapon->OnDropped();
 	}
 	if (SecondaryWeapon != nullptr)
 	{
-		SecondaryWeapon->OnDropped(TargetCharacter);
+		SecondaryWeapon->OnDropped();
 	}
 }
 

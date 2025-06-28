@@ -9,6 +9,7 @@
 #include "Component/ElimDissolveComponent.h"
 #include "Component/InteractionHandlingComponent.h"
 #include "Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
+#include "Component/Status/StatusComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -16,12 +17,13 @@
 #include "Prepper/GamePlay/PrepperGameMode.h"
 #include "Prepper/GamePlay/Car/Car.h"
 #include "Prepper/GamePlay/Character/Component/AmmoBoxComponent.h"
+#include "Prepper/GamePlay/Equipment/EquipmentManager.h"
+#include "Prepper/GamePlay/HealthPointComponent/HealthPointComponent.h"
 #include "Prepper/GamePlay/Item/Object/ItemBackpack.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCombatComponent.h"
-#include "Prepper/Unreal/CharacterComponent/UnrealStatusComponent.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
 #include "Prepper/___Legacy/Car/LegacyCarPawn.h"
 
@@ -42,7 +44,8 @@ ABCharacter::ABCharacter()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SetComponentTickEnabled(false);
 
-	Status = CreateDefaultSubobject<UUnrealStatusComponent>(TEXT("StatusComponent"));
+	HealthPoint = CreateDefaultSubobject<UHealthPointComponent>(TEXT("HealthPointComponent"));
+	Status = CreateDefaultSubobject<UStatusComponent>(TEXT("StatusComponent"));
 	Combat = CreateDefaultSubobject<UUnrealCombatComponent>(TEXT("CombatComponent"));
 	Inventory = CreateDefaultSubobject<UUnrealInventoryComponent>(TEXT("Inventory"));
 	
@@ -57,6 +60,11 @@ ABCharacter::ABCharacter()
 TObjectPtr<APawn> ABCharacter::GetPawn()
 {
 	return this;
+}
+
+TObjectPtr<UHealthPointComponent> ABCharacter::GetHealthPoint()
+{
+	return HealthPoint;
 }
 
 TObjectPtr<UStatusComponent> ABCharacter::GetStatus()
@@ -82,6 +90,11 @@ TObjectPtr<UCharacterMoveComponent> ABCharacter::GetMove()
 IAmmoBox* ABCharacter::GetAmmoBox()
 {
 	return AmmoBox;
+}
+
+void ABCharacter::EquipWeapon(TObjectPtr<AWeapon> Weapon)
+{
+	GetCombat()->EquipWeapon(this, Weapon);
 }
 
 void ABCharacter::SetAmmoBox(const TObjectPtr<UAmmoBoxComponent> NewAmmoBox)
@@ -147,21 +160,6 @@ void ABCharacter::SetEquippedWeaponType(const EWeaponType WeaponType)
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetEquippedWeaponType(WeaponType);
 }
 
-void ABCharacter::AddItem(const FString& ItemCode, int Count)
-{
-
-}
-
-void ABCharacter::UseQuickSlotItem(int Idx)
-{
-
-}
-
-void ABCharacter::EquipWeapon(AWeapon* Weapon)
-{
-
-}
-
 void ABCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 {
 
@@ -169,17 +167,17 @@ void ABCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 
 void ABCharacter::Heal(float Amount)
 {
-	GetStatus()->AddHP(Amount);
+	GetHealthPoint()->AddHP(Amount);
 }
 
 void ABCharacter::Eat(float Amount)
 {
-	GetStatus()->AddHP(Amount);
+	GetStatus()->AddHungry(Amount);
 }
 
 void ABCharacter::Drink(float Amount)
 {
-	GetStatus()->AddHP(Amount);
+	GetStatus()->AddThirsty(Amount);
 }
 
 UInventoryComponent* ABCharacter::GetInventory() const
@@ -189,9 +187,9 @@ UInventoryComponent* ABCharacter::GetInventory() const
 
 void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
-	GetStatus()->TakeDamage(Damage);
+	GetHealthPoint()->TakeDamage(Damage);
 	
-	if (GetStatus()->GetCurHealth() > 0) return;
+	if (GetHealthPoint()->GetCurHealth() > 0) return;
 
 	const TObjectPtr<APrepperGameMode> PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
 	
@@ -202,7 +200,7 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 	
 }
 
-void ABCharacter::ElimCharacter() const
+void ABCharacter::ElimCharacter()
 {
 	//PlayAnim(ElimMontage);
 	ElimDissolve->TargetElim();
@@ -256,20 +254,12 @@ void ABCharacter::SpawnWeaponActor()
 	if(!HasAuthority()) return;
 	if (WeaponActorClass == nullptr) return;
 	
-	UWorld* World = GetWorld();
-	if (World == nullptr) return;
+	const TObjectPtr<AEquipment> SpawnEquipment =
+		EquipmentManager::GetInstance()->SpawnEquipment<AEquipment>(GetWorld(), WeaponActorClass);
 
-	const FVector Location = GetActorLocation();
-	const FRotator Rotation = GetActorRotation();
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this; // Setting the owner
+	if (!SpawnEquipment) return;
 
-	const TObjectPtr<AWeapon> EquippedWeapon =
-		World->SpawnActor<AWeapon>(WeaponActorClass, Location, Rotation, SpawnParams);
-
-	if (!EquippedWeapon) return;
-
-	EquippedWeapon->Interaction(this);
+	SpawnEquipment->Interaction(this);
 }
 
 void ABCharacter::Move(const FInputActionValue& Value)
@@ -366,9 +356,4 @@ void ABCharacter::AimTrigger(const bool IsTrigger) const
 {
 	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetAiming(IsTrigger);
 	CharacterMove->SetAiming(IsTrigger);
-}
-
-void ABCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }

@@ -19,6 +19,7 @@ AUnrealPlayerController::AUnrealPlayerController()
 	EscapeAction = CreateDefaultSubobject<UEscapeActionComponent>(TEXT("EscapeActionComponent"));
 	
 	AmmoBox = CreateDefaultSubobject<UUnrealAmmoBoxComponent>(TEXT("AmmoBoxComponent"));
+	GameSave = CreateDefaultSubobject<UGameSaveComponent>(TEXT("GameSaveComponent"));
 }
 
 TObjectPtr<ABCharacter> AUnrealPlayerController::GetTargetCharacter()
@@ -37,7 +38,6 @@ TObjectPtr<ACar> AUnrealPlayerController::GetTargetCar()
 
 void AUnrealPlayerController::OnPossess(APawn* InPawn)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Possess"));
 	Super::OnPossess(InPawn);
 	
 	SetViewTarget(InPawn);

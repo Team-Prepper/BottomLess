@@ -7,6 +7,7 @@
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 #include "Prepper/GamePlay/Character/Component/Status/StatusComponent.h"
+#include "Prepper/GamePlay/HealthPointComponent/HealthPointComponent.h"
 #include "Prepper/GamePlay/UI/PlayerOverlay.h"
 #include "Prepper/GamePlay/UI/WeaponWidget.h"
 #include "Prepper/Unreal/Controller/PlayerController/UnrealPlayerController.h"
@@ -27,7 +28,7 @@ void UInitialSettingComponent::Attach()
 	if (PlayerOverlay != nullptr)
 	{
 		PlayerOverlay->SetHUD(TargetCC->GetHUD<APrepperHUD>());
-		TargetCC->GetTargetCharacter()->GetStatus()->Attach(PlayerOverlay);
+		TargetCC->GetTargetCharacter()->GetHealthPoint()->Attach(PlayerOverlay);
 		TargetCC->GetTargetCharacter()->GetCombat()->SetCrosshairOverlay(PlayerOverlay);
 	}
 	if (WeaponOverlay != nullptr)
@@ -40,7 +41,7 @@ void UInitialSettingComponent::Detach()
 {
 	if (PlayerOverlay != nullptr)
 	{
-		TargetCC->GetTargetCharacter()->GetStatus()->Detach(PlayerOverlay);
+		TargetCC->GetTargetCharacter()->GetHealthPoint()->Detach(PlayerOverlay);
 	}
 	if (WeaponOverlay != nullptr)
 	{

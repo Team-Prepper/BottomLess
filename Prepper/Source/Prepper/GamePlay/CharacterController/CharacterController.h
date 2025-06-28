@@ -40,6 +40,7 @@ public:
 	virtual TObjectPtr<UInventoryComponent> GetInventory() PURE_VIRTUAL(ICharacterController::GetInventory, return nullptr; )
 	virtual IAmmoBox* GetAmmoBox() PURE_VIRTUAL(ICharacterController::GetAmmoBox, return nullptr; )
 
+	virtual void EquipWeapon(TObjectPtr<AWeapon> Weapon) PURE_VIRTUAL();
 	virtual void Boarding(TObjectPtr<ACar> Vehicle) PURE_VIRTUAL();
 	virtual void GetOff() PURE_VIRTUAL();
 

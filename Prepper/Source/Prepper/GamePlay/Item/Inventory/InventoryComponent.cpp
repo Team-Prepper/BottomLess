@@ -76,7 +76,6 @@ bool UInventoryComponent::TryAddItem(const FString& ItemCode, const int Count)
 	
 	// 새로운 아이템을 추가하고 true 반환
 	ItemUnits.Add(ItemCode, Count);
-	UE_LOG(LogTemp, Warning, TEXT("Init : Add Item %s, %d"), *ItemCode, Count);
 	
 	Notify();
 	return true;
@@ -107,7 +106,6 @@ bool UInventoryComponent::TryDiscardItem(const FString& ItemCode, const int Coun
 	{
 		ItemUnits.Add(ItemCode, ItemCount);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
 	// 아이템 사용에 성공했으므로 true 반환
 	Notify();
 	return true;
@@ -139,8 +137,6 @@ void UInventoryComponent::QuickSlotAdd(const FString& ItemCode, const int Idx)
 	QuickSlotItem[TargetIdx] = ItemCode;
 
 	Notify();
-
-	UE_LOG(LogTemp, Warning, TEXT("Add Item To QuickSlot:%s"), *ItemCode);
 }
 
 void UInventoryComponent::QuickSlotRemove(const int Idx)

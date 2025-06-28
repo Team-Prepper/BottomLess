@@ -31,9 +31,9 @@ public:
 	UBCombatComponent();
 
 	void SetCrosshairOverlay(TObjectPtr<UPlayerOverlay> Overlay);
-	void SetTargetCharacter(TObjectPtr<ABCharacter> Character);
 	
-	virtual void EquipWeapon(AWeapon* Weapon) {}
+	void SetTargetCharacter(TObjectPtr<ABCharacter> Character);
+	virtual void EquipWeapon(TObjectPtr<ABCharacter> Target, TObjectPtr<AWeapon> Weapon);
 	virtual void AttackTrigger(bool IsTrigger) {}
 	virtual void AimTrigger(bool IsTrigger) {}
 	virtual void Reload() {}

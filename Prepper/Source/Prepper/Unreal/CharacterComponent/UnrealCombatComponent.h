@@ -80,7 +80,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	virtual void EquipWeapon(AWeapon* Weapon) override;
+	virtual void EquipWeapon(TObjectPtr<ABCharacter> Target, TObjectPtr<AWeapon> Weapon) override;
 	virtual void AimTrigger(bool IsTrigger) override;
 	virtual void AttackTrigger(bool IsTrigger) override;
 	virtual void Reload() override;

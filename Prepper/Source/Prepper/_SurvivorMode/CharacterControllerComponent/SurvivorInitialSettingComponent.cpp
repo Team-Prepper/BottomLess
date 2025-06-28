@@ -4,6 +4,7 @@
 #include "SurvivorInitialSettingComponent.h"
 
 #include "Blueprint/UserWidget.h"
+#include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/Character/Component/AmmoBoxComponent.h"
@@ -51,7 +52,7 @@ void USurvivorInitialSettingComponent::Detach()
 	
 	if (StatusWidget != nullptr)
 	{
-		//TargetCC->GetTargetCharacter()->GetStatus()->Detach(StatusWidget);
+		TargetCC->GetTargetCharacter()->GetStatus()->Detach(StatusWidget);
 	}
 
 	if (QuickSlotWidget != nullptr)
@@ -84,11 +85,11 @@ void USurvivorInitialSettingComponent::Initial(TObjectPtr<AUnrealPlayerControlle
 
 	if (Target->HasAuthority())
 	{
-		LoadServerData();
+		LoadServerData(Target);
 	}
 	if (Target->IsLocalController())
 	{
-		LoadClientData();
+		LoadClientData(Target);
 	}
 	
 }
@@ -108,19 +109,29 @@ void USurvivorInitialSettingComponent::ServerSetAmmo_Implementation(
 void USurvivorInitialSettingComponent::ServerEquipEquipment_Implementation(ABCharacter* Target,
 	const FString& EquipmentCode)
 {
-	AEquipment* SpawnEquipment =
+	const TObjectPtr<AEquipment> SpawnEquipment =
 		EquipmentManager::GetInstance()->SpawnEquipment<AEquipment>(GetWorld(), EquipmentCode);
 
+	UE_LOG(LogTemp, Warning, TEXT("Equip Try"));
 	if (SpawnEquipment == nullptr) return;
-	
+
+	UE_LOG(LogTemp, Warning, TEXT("Equip %s"), *SpawnEquipment->GetName());
+	if (Target == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SERVER: TargetNULL"));
+	}
 	SpawnEquipment->Interaction(Target);
 }
 
-void USurvivorInitialSettingComponent::LoadClientData()
+void USurvivorInitialSettingComponent::LoadClientData(TObjectPtr<AUnrealPlayerController> Target)
 {
 	USurvivorSaveGame* LoadGameInstance =
 		Cast<USurvivorSaveGame>(UGameplayStatics::LoadGameFromSlot("Test", 0));
 
+	if (Target == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CLIENT: TargetNULL"));
+	}
 	if (LoadGameInstance)
 	{
 		TArray<FWeaponConvertData> AmmoArray;
@@ -133,11 +144,11 @@ void USurvivorInitialSettingComponent::LoadClientData()
 			AmmoArray.Add(ItemData);
 		}
 		
-		ServerSetAmmo(TargetCC->GetAmmoBox(), AmmoArray);
+		ServerSetAmmo(Target->GetAmmoBox(), AmmoArray);
 		
 		for (auto Code : LoadGameInstance->Equipments)
 		{
-			ServerEquipEquipment(TargetCC->GetTargetCharacter(), Code);
+			ServerEquipEquipment(Target->GetTargetCharacter(), Code);
 		}
 		
 		int QuickSlotIdx = 0;
@@ -145,22 +156,22 @@ void USurvivorInitialSettingComponent::LoadClientData()
 		for (auto Item : LoadGameInstance->QuickSlotItemCode)
 		{
 			if (LoadGameInstance->QuickSlotItemCount[QuickSlotIdx] < 1) continue;
-			ServerAddItem(TargetCC->GetTargetCharacter()->GetInventory(),
+			ServerAddItem(Target->GetTargetCharacter()->GetInventory(),
 				Item, LoadGameInstance->QuickSlotItemCount[QuickSlotIdx]);
-			TargetCC->GetTargetCharacter()->GetInventory()->QuickSlotAdd(Item, QuickSlotIdx++);
+			Target->GetTargetCharacter()->GetInventory()->QuickSlotAdd(Item, QuickSlotIdx++);
 		}
 		
 		int ItemIdx = 0;
 		for (auto Item : LoadGameInstance->InventoryItemCode)
 		{
-			ServerAddItem(TargetCC->GetTargetCharacter()->GetInventory(),
+			ServerAddItem(Target->GetTargetCharacter()->GetInventory(),
 				Item, LoadGameInstance->InventoryItemCount[ItemIdx++]);
 		}
 		
 	}
 }
 
-void USurvivorInitialSettingComponent::LoadServerData()
+void USurvivorInitialSettingComponent::LoadServerData(TObjectPtr<AUnrealPlayerController> Target)
 {
 	USurvivorServerSaveGame* LoadGameInstance =
 		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("%s-%s"), *GetWorld()->GetMapName(), *FString("Server")), 0));
@@ -168,6 +179,6 @@ void USurvivorInitialSettingComponent::LoadServerData()
 	if (LoadGameInstance)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Pos: %f, %f, %f"), LoadGameInstance->LastPosition.X, LoadGameInstance->LastPosition.Y, LoadGameInstance->LastPosition.Z );
-		GetOwner<AUnrealPlayerController>()->GetTargetCharacter()->SetActorLocation(LoadGameInstance->LastPosition);
+		Target->GetTargetCharacter()->SetActorLocation(LoadGameInstance->LastPosition);
 	}
 }

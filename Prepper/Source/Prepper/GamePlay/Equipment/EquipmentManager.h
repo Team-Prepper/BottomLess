@@ -17,6 +17,8 @@ public:
 	TObjectPtr<UTexture2D> GetEquipmentIcon(const FString& EquipmentCode);
 	template <typename T>
 	TObjectPtr<T> SpawnEquipment(UWorld* World, const FString& WeaponCode);
+	template <typename T>
+	TObjectPtr<T> SpawnEquipment(UWorld* World, const TSubclassOf<AEquipment> EquipmentClass);
 };
 
 template <typename T>
@@ -25,4 +27,11 @@ TObjectPtr<T> EquipmentManager::SpawnEquipment(UWorld* World, const FString& Equ
 	if (World == nullptr) return nullptr;
 	if (!EquipmentData.Contains(EquipmentCode)) return nullptr;
 	return World->SpawnActor<T>((*EquipmentData.Find(EquipmentCode))->EquipmentClass);
+}
+
+template <typename T>
+TObjectPtr<T> EquipmentManager::SpawnEquipment(UWorld* World, const TSubclassOf<AEquipment> EquipmentClass)
+{
+	if (World == nullptr) return nullptr;
+	return World->SpawnActor<T>(EquipmentClass);
 }

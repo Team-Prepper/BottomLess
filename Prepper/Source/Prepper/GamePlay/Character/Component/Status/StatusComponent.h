@@ -40,27 +40,13 @@ class PREPPER_API UStatusComponent : public UActorComponent, public ISubject<USt
 	};
 	
 	const float StatusEffectTickValue[3] = { 0.2f, 0.3f, 0.5f };
-protected:
-	
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
-	float MaxHealth = 100.f;
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
-	float CurrentHealth = 100.f;
 	
 public:
 	// Sets default values for this component's properties
 	UStatusComponent();
-	
-	virtual int GetMaxHealth() const { return MaxHealth; }
-	virtual int GetCurHealth() const { return CurrentHealth; }
-	virtual void TakeDamage(int Amount);
 
 	void StatusTimerStart(TObjectPtr<UCharacterMoveComponent> Target);
 	void StatusTimerFinish();
-	
-	State GetState();
-	
-	virtual void AddHP(float Amount);
 	
 	void AddHungry(float Amount);
 	void AddThirsty(float Amount);

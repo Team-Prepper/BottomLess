@@ -42,8 +42,8 @@ public:
 	virtual void WidgetSetting(TObjectPtr<AUnrealPlayerController> Target) override;
 	virtual void Initial(TObjectPtr<AUnrealPlayerController> Target) override;
 	
-	void LoadClientData();
-	void LoadServerData();
+	void LoadClientData(TObjectPtr<AUnrealPlayerController> Target);
+	void LoadServerData(TObjectPtr<AUnrealPlayerController> Target);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(UInventoryComponent* TargetInventory, const FString& ItemCode, int ItemCount);
