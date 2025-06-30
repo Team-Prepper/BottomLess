@@ -24,6 +24,7 @@
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCharacterMoveComponent.h"
 #include "Prepper/Unreal/CharacterComponent/UnrealCombatComponent.h"
+#include "Prepper/Unreal/Controller/PlayerController/UnrealPlayerController.h"
 #include "Prepper/Unreal/Inventory/UnrealInventoryComponent.h"
 #include "Prepper/___Legacy/Car/LegacyCarPawn.h"
 
@@ -191,16 +192,21 @@ void ABCharacter::ReceiveDamage(float Damage, AController* InstigatorController,
 	
 	if (GetHealthPoint()->GetCurHealth() > 0) return;
 
-	const TObjectPtr<APrepperGameMode> PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	if(const TObjectPtr<APrepperGameMode> PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>(); PrepperGameMode != nullptr)
+	{
+		PrepperGameMode->PlayerEliminated(this,
+			Controller, InstigatorController);
+	}
+
+	const TObjectPtr<AUnrealPlayerController> PlayerController = GetController<AUnrealPlayerController>();
+
+	if (PlayerController == nullptr) return;
 	
-	if(PrepperGameMode == nullptr) return;
-	
-	PrepperGameMode->PlayerEliminated(this,
-		Controller, InstigatorController);
+	PlayerController->PlayerDeath();
 	
 }
 
-void ABCharacter::ElimCharacter()
+void ABCharacter::OnDeath()
 {
 	//PlayAnim(ElimMontage);
 	ElimDissolve->TargetElim();
@@ -242,7 +248,8 @@ TArray<FString> ABCharacter::GetEquipmentCodes() const
 void ABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	HealthPoint->SetDamageableTarget(this);
 	Combat->SetTargetCharacter(this);
 	Interaction->SetTargetCharacter(this);
 	Inventory->SetOwner(this);

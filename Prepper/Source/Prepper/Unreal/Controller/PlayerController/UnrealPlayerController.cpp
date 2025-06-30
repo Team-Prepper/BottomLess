@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "UnrealPlayerInputComponent.h"
+#include "Prepper/GamePlay/PrepperGameMode.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
 #include "Prepper/GamePlay/CharacterController/EscapeActionComponent.h"
 #include "Prepper/GamePlay/CharacterController/GameSaveComponent.h"
@@ -149,4 +150,28 @@ void AUnrealPlayerController::EscapeButtonPressed() const
 void AUnrealPlayerController::GameSaveAction() const
 {
 	GameSave->GameSave();
+}
+
+void AUnrealPlayerController::PlayerDeath()
+{
+	if (!HasAuthority()) return;
+	MulticastPlayerDeath();
+}
+
+void AUnrealPlayerController::Respawn()
+{
+	ServerRespawn();
+}
+
+void AUnrealPlayerController::ServerRespawn_Implementation()
+{
+	const TObjectPtr<APrepperGameMode> GameMode = GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	if (GameMode == nullptr) return;
+	GameMode->RequestRespawn(TargetCharacter, this);
+}
+
+void AUnrealPlayerController::MulticastPlayerDeath_Implementation()
+{
+	if (!IsLocalController()) return;
+	InitialSetting->Elimed();
 }

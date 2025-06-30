@@ -23,6 +23,10 @@ public:
 	UUnrealHealthPointComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void OnDeath() override;
 	virtual void TakeDamage(int Amount) override;
-	virtual void AddHP(float Amount) override;	
+	virtual void AddHP(float Amount) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnDeath();
 };

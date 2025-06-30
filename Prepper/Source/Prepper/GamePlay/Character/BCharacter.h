@@ -114,7 +114,7 @@ public:
 	virtual UInventoryComponent* GetInventory() const override;
 	
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-	void ElimCharacter();
+	virtual void OnDeath() override;
 	
 	void SetTeamIdx(int Idx);
 	int GetTeam() const { return TeamIdx; }

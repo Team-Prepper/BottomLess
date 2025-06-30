@@ -24,13 +24,14 @@ ADamageableObject::ADamageableObject()
 void ADamageableObject::BeginPlay()
 {
 	Super::BeginPlay();
+	HealthPoint->SetDamageableTarget(this);
 	if(HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
 	}
 }
 
-void ADamageableObject::RemoveAction()
+void ADamageableObject::OnDeath()
 {
 	if(DestroyParticles)
 	{
@@ -44,19 +45,10 @@ void ADamageableObject::RemoveAction()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, DestroySound, GetActorLocation());
 	}
+	Destroy();
 }
 
 void ADamageableObject::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
 	HealthPoint->TakeDamage(Damage);
-	
-	if (HealthPoint->GetCurHealth() > 0) return;
-
-	Destroy(true);
-}
-
-void ADamageableObject::Destroyed()
-{
-	Super::Destroyed();
-	RemoveAction();
 }

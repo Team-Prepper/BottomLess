@@ -83,6 +83,8 @@ void UStatusComponent::StatusTimerFinish()
 	{
 		TargetMove->CoefficientMovementSpeed = 1.0f;
 	}
+	
+	Notify();
 }
 
 void UStatusComponent::AddHungry(float Amount)

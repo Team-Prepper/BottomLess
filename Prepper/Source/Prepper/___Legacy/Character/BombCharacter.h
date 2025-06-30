@@ -38,5 +38,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void Bomb();
 	void SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch);
-	virtual void RemoveAction() override;
+	virtual void OnDeath() override;
 };

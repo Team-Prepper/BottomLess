@@ -47,7 +47,10 @@ void UInitialSettingComponent::Detach()
 	{
 		TargetCC->GetTargetCharacter()->GetCombat()->Detach(WeaponOverlay);
 	}
-	
+	if (PlayerDeath != nullptr)
+	{
+		PlayerDeath->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void UInitialSettingComponent::WidgetSetting(TObjectPtr<AUnrealPlayerController> Target)
@@ -79,10 +82,28 @@ void UInitialSettingComponent::Initial(TObjectPtr<AUnrealPlayerController> Targe
 	}
 	
 	TargetCC = Target;
+	TargetCC->SetInputMode(FInputModeGameOnly());
+	TargetCC->SetShowMouseCursor(false);
 
 	if (TargetCC != nullptr)
 	{
 		Attach();
 	}
 	
+}
+
+void UInitialSettingComponent::Elimed()
+{
+	if (PlayerDeath == nullptr)
+	{
+		if (PlayerDeathClass == nullptr) return;
+		PlayerDeath = CreateWidget<UUserWidget>(TargetCC, PlayerDeathClass);
+		PlayerDeath->AddToViewport();
+	}
+	
+	if (PlayerDeath == nullptr) return;
+
+	TargetCC->SetInputMode(FInputModeUIOnly());
+	TargetCC->SetShowMouseCursor(true);
+	PlayerDeath->SetVisibility(ESlateVisibility::Visible);
 }

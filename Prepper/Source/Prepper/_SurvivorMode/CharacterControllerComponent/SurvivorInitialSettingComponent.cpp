@@ -34,6 +34,8 @@ void USurvivorInitialSettingComponent::Attach()
 	
 	if (StatusWidget != nullptr)
 	{
+		TargetCC->GetTargetCharacter()->GetStatus()
+			->StatusTimerStart(TargetCC->GetTargetCharacter()->GetMove());
 		TargetCC->GetTargetCharacter()->GetStatus()->Attach(StatusWidget);
 	}
 
@@ -41,9 +43,6 @@ void USurvivorInitialSettingComponent::Attach()
 	{
 		TargetCC->GetTargetCharacter()->GetInventory()->Attach(QuickSlotWidget);
 	}
-
-	TargetCC->GetTargetCharacter()->GetStatus()
-		->StatusTimerStart(TargetCC->GetTargetCharacter()->GetMove());
 }
 
 void USurvivorInitialSettingComponent::Detach()

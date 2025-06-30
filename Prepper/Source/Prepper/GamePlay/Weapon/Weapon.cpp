@@ -283,6 +283,7 @@ void AWeapon::OnDropped()
 	WeaponState = EWeaponState::EWS_Dropped;
 
 	WeaponPhysicsActive(true);
+	ShowPickUpWidget(false);
 	WeaponMesh->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 }
 

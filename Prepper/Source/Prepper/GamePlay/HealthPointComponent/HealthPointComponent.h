@@ -8,6 +8,8 @@
 #include "HealthPointComponent.generated.h"
 
 
+class IDamageable;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PREPPER_API UHealthPointComponent : public UActorComponent, public ISubject<UHealthPointComponent>
 {
@@ -20,10 +22,14 @@ protected:
 	
 private:
 	TSet<IObserver<UHealthPointComponent>*> Observers;
+	IDamageable* Target;
 	
 public:
 	// Sets default values for this component's properties
 	UHealthPointComponent();
+	void SetDamageableTarget(IDamageable* DamageableTarget);
+
+	virtual void OnDeath();
 	
 	virtual int GetMaxHealth() const { return MaxHealth; }
 	virtual int GetCurHealth() const { return CurrentHealth; }

@@ -29,6 +29,12 @@ void UUnrealHealthPointComponent::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	DOREPLIFETIME(UUnrealHealthPointComponent, NetworkCurrentHealth);
 }
 
+void UUnrealHealthPointComponent::OnDeath()
+{
+	if (!GetOwner()->HasAuthority()) return;
+	MulticastOnDeath();
+}
+
 void UUnrealHealthPointComponent::TakeDamage(int Amount)
 {
 	Super::TakeDamage(Amount);
@@ -39,4 +45,9 @@ void UUnrealHealthPointComponent::AddHP(float Amount)
 {
 	Super::AddHP(Amount);
 	NetworkCurrentHealth = CurrentHealth;
+}
+
+void UUnrealHealthPointComponent::MulticastOnDeath_Implementation()
+{
+	Super::OnDeath();
 }

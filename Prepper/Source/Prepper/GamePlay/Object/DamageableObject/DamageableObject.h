@@ -36,11 +36,10 @@ public:
 
 	UFUNCTION()
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void RemoveAction();
+	virtual void OnDeath() override;
 
 };

@@ -65,10 +65,17 @@ public:
 	virtual TObjectPtr<ACar> GetTargetCar();
 	
 	TObjectPtr<UAmmoBoxComponent> GetAmmoBox() const { return AmmoBox; }
-
+	
 	void TabButtonPressed() const;
 	void TabButtonReleased() const;
 	
 	void EscapeButtonPressed() const;
 	void GameSaveAction() const;
+	void PlayerDeath();
+	void Respawn();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayerDeath();
+	UFUNCTION(Server, Reliable)
+	void ServerRespawn();
 };

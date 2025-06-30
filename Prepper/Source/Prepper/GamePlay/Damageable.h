@@ -33,4 +33,5 @@ public:
 	}
 	
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) PURE_VIRTUAL();
+	virtual void OnDeath() PURE_VIRTUAL();
 };

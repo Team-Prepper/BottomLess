@@ -3,6 +3,8 @@
 
 #include "HealthPointComponent.h"
 
+#include "Prepper/GamePlay/Damageable.h"
+
 
 // Sets default values for this component's properties
 UHealthPointComponent::UHealthPointComponent()
@@ -10,8 +12,20 @@ UHealthPointComponent::UHealthPointComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
+	Target = nullptr;
 	// ...
+}
+
+void UHealthPointComponent::SetDamageableTarget(IDamageable* DamageableTarget)
+{
+	Target = DamageableTarget;
+}
+
+void UHealthPointComponent::OnDeath()
+{
+	if (Target == nullptr) return;
+
+	Target->OnDeath();
 }
 
 void UHealthPointComponent::TakeDamage(int Amount)
@@ -22,7 +36,9 @@ void UHealthPointComponent::TakeDamage(int Amount)
 
 	Notify();
 	
-	if(CurrentHealth != 0.f) return;
+	if(CurrentHealth > 0.0f) return;
+
+	OnDeath();
 }
 
 void UHealthPointComponent::AddHP(float Amount)

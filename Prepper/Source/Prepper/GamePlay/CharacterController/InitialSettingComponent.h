@@ -25,6 +25,11 @@ class PREPPER_API UInitialSettingComponent : public UActorComponent
 	TSubclassOf<UWeaponWidget> WeaponOverlayClass;
 	UPROPERTY()
 	TObjectPtr<UWeaponWidget> WeaponOverlay;
+
+	UPROPERTY(EditAnywhere, Category="Player HUD")
+	TSubclassOf<UUserWidget> PlayerDeathClass;
+	UPROPERTY()
+	TObjectPtr<UUserWidget> PlayerDeath;
 	
 public:
 	// Sets default values for this component's properties
@@ -39,4 +44,5 @@ protected:
 public:
 	virtual void WidgetSetting(TObjectPtr<AUnrealPlayerController> Target);
 	virtual void Initial(TObjectPtr<AUnrealPlayerController> Target);
+	virtual void Elimed();
 };

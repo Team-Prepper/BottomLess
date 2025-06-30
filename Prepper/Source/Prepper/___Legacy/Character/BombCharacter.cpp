@@ -55,10 +55,10 @@ void ABombCharacter::SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch)
 	TargetSwitch = Switch;
 }
 
-void ABombCharacter::RemoveAction()
+void ABombCharacter::OnDeath()
 {
 	IsElim = true;
-	Super::RemoveAction();
+	Super::OnDeath();
 	if (TargetSwitch == nullptr) return;
 	TargetSwitch->DefenderRemove();
 }

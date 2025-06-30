@@ -3,7 +3,6 @@
 
 #include "PrepperGameMode.h"
 
-#include "Character/BCharacter.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/___Legacy/Character/BaseCharacter.h"
@@ -19,22 +18,18 @@ void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABaseP
 
 void APrepperGameMode::PlayerEliminated(ABCharacter* ElimmedCharacter)
 {
-	if (ElimmedCharacter)
-	{
-		ElimmedCharacter->ElimCharacter();
-	}
+	
 }
 
 void APrepperGameMode::PlayerEliminated(ABCharacter* ElimmedCharacter, AController* VictimController,
 	AController* AttackerController)
 {
-	PlayerEliminated(ElimmedCharacter);
+	
 }
 
 void APrepperGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
 
 {
-	
 	if (ElimmedCharacter)
 	{
 		ElimmedCharacter->Reset();
@@ -44,13 +39,10 @@ void APrepperGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController*
 	
 	TArray<AActor*> PlayerStarts;
 	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
+	
 	const int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
 	RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
 	
-	if (ABasePlayerController* ElimmedPlayerController = Cast<ABasePlayerController>(ElimmedController))
-	{
-		//ElimmedPlayerController->SetPossessPawn();
-	}
 }
 
 void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter)
