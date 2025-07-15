@@ -154,13 +154,6 @@ void ABCharacter::AttachActorAtSocket(FName SocketName, AActor* TargetActor) con
 	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
-void ABCharacter::SetEquippedWeaponType(const EWeaponType WeaponType)
-{
-	bUseControllerRotationYaw = WeaponType != EWeaponType::EWT_MAX;
-	GetCharacterMovement()->bOrientRotationToMovement = !bUseControllerRotationYaw;
-	Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance())->SetEquippedWeaponType(WeaponType);
-}
-
 void ABCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 {
 

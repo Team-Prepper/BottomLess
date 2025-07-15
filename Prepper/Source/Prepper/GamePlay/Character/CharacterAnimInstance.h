@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "Prepper/___Legacy/PlayerController/SurvivorController.h"
 #include "CharacterAnimInstance.generated.h"
 
+enum class EWeaponType : uint8;
+class AWeapon;
 enum class ETurningInPlace : uint8;
 /**
  * 
@@ -23,6 +24,7 @@ class PREPPER_API UCharacterAnimInstance : public UAnimInstance
 private:
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = true))
 	TObjectPtr<ABCharacter> PlayerCharacter;
+	TObjectPtr<AWeapon> EquippedWeapon;
 	
 	FRotator CharacterRotation;
 	
@@ -85,6 +87,7 @@ private:
 public:
 	void SetAiming(bool Trigger);
 	void SetCrouch(bool Crouch);
+	void SetEquippedWeapon(TObjectPtr<AWeapon> Weapon);
 	void SetEquippedWeaponType(EWeaponType WeaponType);
 	
 };

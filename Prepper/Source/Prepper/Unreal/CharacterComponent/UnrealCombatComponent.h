@@ -24,20 +24,10 @@ class PREPPER_API UUnrealCombatComponent : public UBCombatComponent
 	UPROPERTY(ReplicatedUsing = OnRep_DroppedWeapon)
 	TObjectPtr<AWeapon> NetworkDroppedWeapon;
 	
-	UPROPERTY(EditAnywhere, Category = Combat)
-	TObjectPtr<UAnimMontage> ReloadMontage;
-	
 	UPROPERTY(ReplicatedUsing=OnRep_Aiming)
-	bool IsAiming;
+	bool NetworkIsAiming;
 	UPROPERTY(ReplicatedUsing=OnRep_Ammo)
-	int EquippedAmmo;
-	
-	bool IsAttack;
-	bool IsReload;
-	bool IsAimingLocal;
-	
-	FTimerHandle ActionTimer;
-	bool IsAttackNow;
+	int NetworkEquippedAmmo;
 
 	UFUNCTION()
 	void OnRep_Aiming();
@@ -51,16 +41,14 @@ class PREPPER_API UUnrealCombatComponent : public UBCombatComponent
 	virtual void OnRep_DroppedWeapon();
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastAttackWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
+	void MulticastFireWeaponToTargets(const TArray<FVector_NetQuantize>& TraceHitTargets) const;
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastReloadWeapon();
 	
-	void TryAttack();
-	void ReloadAct();
-	void TryReload();
-	void AttackAct();
-	void AimingAct(bool IsTrigger) const;
-	void FinishAttack();
-	void FinishReload();
-	FVector TraceHit() const;
+protected:
+	virtual void SetEquippedAmmo(int AmmoCnt) override;
+	virtual void FireWeaponToTargets(const TArray<FVector_NetQuantize>& TraceHitTargets) const override;
+	virtual void ReloadAct() override;
 
 public:	
 	// Sets default values for this component's properties
@@ -70,14 +58,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastCharacterElim();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual void EquipWeapon(TObjectPtr<ABCharacter> Target, TObjectPtr<AWeapon> Weapon) override;

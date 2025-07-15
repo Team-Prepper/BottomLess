@@ -103,7 +103,6 @@ public:
 	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
 	void GetLookDirection(FVector& Start, FVector& Forward) const;
 	void AttachActorAtSocket(FName SocketName, AActor* TargetActor) const;
-	void SetEquippedWeaponType(EWeaponType WeaponType);
 	
 	virtual void EquipBackpack(class AItemBackpack* BackpackToEquip) override;
 

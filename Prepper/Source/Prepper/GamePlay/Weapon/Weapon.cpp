@@ -8,7 +8,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/Character/Component/BCombatComponent.h"
 #include "Prepper/GamePlay/CharacterController/CharacterController.h"
 #include "Prepper/GamePlay/Weapon/Ammo/WeaponMagazine.h"
 #include "Prepper/GamePlay/Weapon/Attack/WeaponAttacking.h"
@@ -260,7 +259,6 @@ void AWeapon::OnEquipped(const TObjectPtr<ABCharacter> TargetCharacter)
 		return;
 	}
 	
-	TargetCharacter->SetEquippedWeaponType(WeaponType);
 	TargetCharacter->AttachActorAtSocket(WeaponSocketName, this);
 	
 	PlayEquipWeaponSound(TargetCharacter);

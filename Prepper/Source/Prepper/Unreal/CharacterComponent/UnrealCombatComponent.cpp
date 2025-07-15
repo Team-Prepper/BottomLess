@@ -4,47 +4,28 @@
 
 #include "Net/UnrealNetwork.h"
 #include "Prepper/GamePlay/Character/BCharacter.h"
-#include "Prepper/GamePlay/UI/PlayerOverlay.h"
 #include "Prepper/GamePlay/Weapon/Weapon.h"
-#include "Prepper/___Legacy/HUD/PrepperHUD.h"
 
 // Sets default values for this component's properties
 UUnrealCombatComponent::UUnrealCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicated(true);
-
-	TargetCharacter = nullptr;
+	
 	NetworkEquippedWeapon = nullptr;
 	NetworkSecondaryWeapon = nullptr;
 	NetworkDroppedWeapon = nullptr;
 	
-	EquippedAmmo = 0;
-
-	IsAiming = false;
-	IsAttack = false;
-	IsAttackNow = false;
-	IsReload = false;
-
-	IsAimingLocal = false;
+	NetworkEquippedAmmo = 0;
+	NetworkIsAiming = false;
 }
 
 void UUnrealCombatComponent::Swap()
 {
-	if (NetworkSecondaryWeapon == nullptr) return;
+	Super::Swap();
 	
-	const TObjectPtr<AWeapon> Temp = EquippedWeapon;
-	
-	EquippedWeapon = SecondaryWeapon;
-	SecondaryWeapon = Temp;
-	
-	EquippedWeapon->OnEquipped(TargetCharacter);
-	SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
-
 	NetworkEquippedWeapon = EquippedWeapon;
 	NetworkSecondaryWeapon = SecondaryWeapon;
-	
-	Notify();
 }
 
 void UUnrealCombatComponent::CharacterElim()
@@ -57,63 +38,33 @@ void UUnrealCombatComponent::MulticastCharacterElim_Implementation()
 	Super::CharacterElim();
 }
 
-// Called when the game starts
-void UUnrealCombatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void UUnrealCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                           FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	if (TargetOverlay == nullptr) return;
-	if (EquippedWeapon == nullptr) return;
-	
-	FHUDPackage HUDPackage;
-	EquippedWeapon->GetCrosshair(DeltaTime, IsAimingLocal, HUDPackage);
-	TargetOverlay->DrawCrosshair(HUDPackage);
-}
-
 void UUnrealCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UUnrealCombatComponent, IsAiming);
+	DOREPLIFETIME(UUnrealCombatComponent, NetworkIsAiming);
 	DOREPLIFETIME(UUnrealCombatComponent, NetworkEquippedWeapon);
-	DOREPLIFETIME(UUnrealCombatComponent, EquippedAmmo);
+	DOREPLIFETIME(UUnrealCombatComponent, NetworkEquippedAmmo);
 	DOREPLIFETIME(UUnrealCombatComponent, NetworkSecondaryWeapon);
 	DOREPLIFETIME(UUnrealCombatComponent, NetworkDroppedWeapon);
 }
 
 void UUnrealCombatComponent::EquipWeapon(TObjectPtr<ABCharacter> Target, TObjectPtr<AWeapon> Weapon)
 {
+	const TObjectPtr<AWeapon> BeforeEquippedWeapon = EquippedWeapon;
+	
 	Super::EquipWeapon(Target, Weapon);
-	if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
-	{
-		SecondaryWeapon = Weapon;
-		SecondaryWeapon->OnEquippedSecondary(Target);
-		NetworkSecondaryWeapon = SecondaryWeapon;
-		return;
-	}
-	
-	NetworkDroppedWeapon = EquippedWeapon;
-	
-	if (NetworkDroppedWeapon != nullptr)
-	{
-		NetworkDroppedWeapon->OnDropped();
-	}
-	
-	EquippedWeapon = Weapon;
-	EquippedWeapon->OnEquipped(Target);
-	NetworkEquippedWeapon = EquippedWeapon;
-	
-	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
 
-	Notify();
+	if (BeforeEquippedWeapon != EquippedWeapon)
+	{
+		NetworkDroppedWeapon = BeforeEquippedWeapon;
+	}
+	else
+	{
+		NetworkDroppedWeapon = nullptr;
+	}
 	
-	TryAttack();
+	NetworkEquippedWeapon = EquippedWeapon;
+	NetworkSecondaryWeapon = SecondaryWeapon;
 	
 }
 
@@ -121,155 +72,65 @@ void UUnrealCombatComponent::OnRep_Aiming()
 {
 	if (GetOwner()->GetInstigatorController() &&
 		GetOwner()->GetInstigatorController()->IsLocalController()) return;
-	AimingAct(IsAiming);
+	AimingAct(NetworkIsAiming);
 }
 
 void UUnrealCombatComponent::OnRep_Ammo()
 {
-	EquippedWeapon->SetLeftAmmo(EquippedAmmo);
-
-	Notify();
+	Super::SetEquippedAmmo(NetworkEquippedAmmo);
 }
 
 void UUnrealCombatComponent::OnRep_EquippedWeapon()
 {
-	EquippedWeapon = NetworkEquippedWeapon;
-	
-	if (!EquippedWeapon) return;
-	EquippedWeapon->OnEquipped(TargetCharacter);
-	Notify();
+	EquippedAct(NetworkEquippedWeapon);
 }
 
 void UUnrealCombatComponent::OnRep_SecondaryWeapon()
 {
-	SecondaryWeapon = NetworkSecondaryWeapon;
-	
-	if (!SecondaryWeapon) return;
-	SecondaryWeapon->OnEquippedSecondary(TargetCharacter);
+	SecondaryEquippedAct(NetworkSecondaryWeapon);
 }
 
 void UUnrealCombatComponent::OnRep_DroppedWeapon()
 {
-	if (!NetworkDroppedWeapon) return;
+	if (NetworkDroppedWeapon == nullptr) return;
 	NetworkDroppedWeapon->OnDropped();
 }
 
-void UUnrealCombatComponent::MulticastAttackWeapon_Implementation(
+void UUnrealCombatComponent::FireWeaponToTargets(const TArray<FVector_NetQuantize>& TraceHitTargets) const
+{
+	MulticastFireWeaponToTargets(TraceHitTargets);
+}
+
+void UUnrealCombatComponent::MulticastFireWeaponToTargets_Implementation(
 	const TArray<FVector_NetQuantize>& TraceHitTargets) const
 {
-	NetworkEquippedWeapon->Fire(TraceHitTargets, GetOwner()->GetInstigatorController(), !GetOwner()->HasAuthority());
-}
-
-void UUnrealCombatComponent::AimingAct(const bool IsTrigger) const
-{
-	const TObjectPtr<ABCharacter> Target = TargetCharacter;
-
-	if (Target == nullptr) return;
-	Target->AimTrigger(IsTrigger);
-}
-
-void UUnrealCombatComponent::FinishAttack()
-{
-	EquippedAmmo = NetworkEquippedWeapon->GetLeftAmmo();
-	Notify();
-	IsAttackNow = false;
-	TryAttack();
-}
-
-void UUnrealCombatComponent::TryAttack()
-{
-	if (EquippedWeapon == nullptr) return;
-	if (!IsAttack) return;
-	if (IsAttackNow) return;
-	if (IsReload) return;
-	if (!EquippedWeapon->CanAttack()) return;
-
-	AttackAct();
-}
-
-void UUnrealCombatComponent::TryReload()
-{
-	if (EquippedWeapon == nullptr) return;
-	if (!EquippedWeapon->CanReload()) return;
-	if (IsAttackNow) return;
-	if (IsReload) return;
-
-	ReloadAct();
-}
-
-void UUnrealCombatComponent::AttackAct()
-{
-	IsAttackNow = true;
-
-	FVector HitTarget = TraceHit();
-
-	const TArray<FVector_NetQuantize> HitTargets = EquippedWeapon->GetTarget(HitTarget);
-
-	MulticastAttackWeapon(HitTargets);
-
-	GetOwner()->GetWorldTimerManager().SetTimer(
-		ActionTimer,
-		this,
-		&UUnrealCombatComponent::FinishAttack,
-		EquippedWeapon->GetFireDelay()
-	);
+	Super::FireWeaponToTargets(TraceHitTargets);
 }
 
 void UUnrealCombatComponent::ReloadAct()
 {
-	IsReload = true;
-	GetOwner()->GetWorldTimerManager().SetTimer(
-		ActionTimer,
-		this,
-		&UUnrealCombatComponent::FinishReload,
-		EquippedWeapon->GetFireDelay()
-	);
-	EquippedWeapon->PlayReload(TargetCharacter, ReloadMontage);
+	MulticastReloadWeapon();
 }
 
-void UUnrealCombatComponent::FinishReload()
+void UUnrealCombatComponent::MulticastReloadWeapon_Implementation()
 {
-	EquippedWeapon->Reload(TargetCharacter->GetAmmoBox());
-	EquippedAmmo = EquippedWeapon->GetLeftAmmo();
-	IsReload = false;
-
-	Notify();
+	Super::ReloadAct();
 }
 
-FVector UUnrealCombatComponent::TraceHit() const
+void UUnrealCombatComponent::SetEquippedAmmo(const int AmmoCnt)
 {
-	FVector Start;
-	FVector Direction;
-
-	TargetCharacter->GetLookDirection(Start, Direction);
-	float TraceDistance = 80000.f; // 트레이스 거리 (1,000 유닛)
-	FVector End = Start + (Direction * TraceDistance);
-
-	FCollisionQueryParams TraceParams;
-	TraceParams.bTraceComplex = true; // 복잡한 충돌 확인 여부
-	TraceParams.AddIgnoredActor(TargetCharacter); // 자신은 충돌 무시
-
-	if (FHitResult HitResult; GetWorld()->LineTraceSingleByChannel(
-		HitResult, // 충돌 결과 저장
-		Start, // 시작 위치
-		End, // 끝 위치
-		ECC_Visibility, // 충돌 채널
-		TraceParams // 쿼리 매개변수
-	))
-	{
-		return HitResult.Location;
-	}
-	return End;
+	NetworkEquippedAmmo = AmmoCnt;
+	Super::SetEquippedAmmo(AmmoCnt);
 }
 
-void UUnrealCombatComponent::AimTrigger(bool IsTrigger)
+void UUnrealCombatComponent::AimTrigger(const bool IsTrigger)
 {
 	IsAimingLocal = IsTrigger;
 	ServerAimTrigger(IsAimingLocal);
 	AimingAct(IsAimingLocal);
 }
 
-void UUnrealCombatComponent::AttackTrigger(bool IsTrigger)
+void UUnrealCombatComponent::AttackTrigger(const bool IsTrigger)
 {
 	IsAttack = IsTrigger;
 	ServerAttackTrigger(IsAttack);
@@ -286,18 +147,17 @@ FString UUnrealCombatComponent::GetAmmoValue() const
 	return EquippedWeapon->GetAmmoValue();
 }
 
-void UUnrealCombatComponent::ServerAimTrigger_Implementation(bool IsTrigger)
+void UUnrealCombatComponent::ServerAimTrigger_Implementation(const bool IsTrigger)
 {
-	IsAiming = IsTrigger;
+	NetworkIsAiming = IsTrigger;
 }
 
-void UUnrealCombatComponent::ServerAttackTrigger_Implementation(bool IsTrigger)
+void UUnrealCombatComponent::ServerAttackTrigger_Implementation(const bool IsTrigger)
 {
-	IsAttack = IsTrigger;
-	TryAttack();
+	Super::AttackTrigger(IsTrigger);
 }
 
 void UUnrealCombatComponent::ServerReload_Implementation()
 {
-	TryReload();
+	Super::Reload();
 }

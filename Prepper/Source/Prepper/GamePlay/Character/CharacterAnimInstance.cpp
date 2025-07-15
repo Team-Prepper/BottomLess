@@ -8,6 +8,7 @@
 #include "BCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Prepper/GamePlay/Weapon/Weapon.h"
 #include "Prepper/GamePlay/Weapon/WeaponTypes.h"
 #include "Prepper/___Legacy/Character/Enums/TurningInPlace.h"
 
@@ -39,8 +40,6 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Velocity.Z = 0.f;
 	
 	Speed = Velocity.Size();
-
-	//UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), PlayerCharacter->GetControlRotation().Yaw);
 	
 	if (Speed > 0)
 	{
@@ -50,12 +49,8 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		
 		YawOffset = DeltaRot.Yaw;
 		AO_Pitch = DeltaRot.Pitch;
-
-		//UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), YawOffset);
 		
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Speed: %f"), Speed);
 	
 	bIsInAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
 
@@ -70,8 +65,6 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!bWeaponEquipped) return;
 	if (!PlayerCharacter->GetMesh()) return;
 
-	return;
-	/*
 	LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), RTS_World);
 	FVector OutPosition;
 	FRotator OutRotator;
@@ -79,7 +72,6 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		FRotator::ZeroRotator, OutPosition, OutRotator);
 	LeftHandTransform.SetLocation(OutPosition);
 	LeftHandTransform.SetRotation(FQuat(OutRotator));
-	*/
 
 }
 
@@ -101,4 +93,12 @@ void UCharacterAnimInstance::SetAiming(const bool Trigger)
 void UCharacterAnimInstance::SetCrouch(const bool Crouch)
 {
 	bIsCrouch = Crouch;
+}
+
+void UCharacterAnimInstance::SetEquippedWeapon(const TObjectPtr<AWeapon> Weapon)
+{
+	EquippedWeapon = Weapon;
+	if (EquippedWeapon == nullptr) return;
+	
+	SetEquippedWeaponType(Weapon->GetWeaponType());
 }
